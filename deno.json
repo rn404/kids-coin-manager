@@ -1,6 +1,8 @@
 {
   "tasks": {
-    "precommit": "deno fmt && deno lint && deno test",
+    "autofix": "deno fmt && deno lint",
+    "test": "deno test",
+    "precommit": "deno task autofix && deno task test",
     "dev": "vite",
     "build": "vite build",
     "start": "deno serve -A _fresh/server.js",

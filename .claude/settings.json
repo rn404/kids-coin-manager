@@ -1,0 +1,30 @@
+{
+  "attribution": {
+    "commit": "",
+    "pr": ""
+  },
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash(git commit:*)",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "deno task precommit && exit 0 || { echo '❌ Pre-commit checks failed' >&2; exit 2; }"
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "deno task autofix"
+          }
+        ]
+      }
+    ]
+  }
+}

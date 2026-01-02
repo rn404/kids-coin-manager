@@ -1,6 +1,6 @@
 ---
 description: Start working on an existing issue document
-argument-hint: "<issue-file-name>"
+argument-hint: '<issue-file-name>'
 ---
 
 Start working on the issue:
@@ -19,4 +19,3 @@ Start working on the issue:
 6. Periodically update the issue document with progress
 
 Remember: The issue document is the source of truth for this work session.
-

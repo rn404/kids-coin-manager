@@ -1,15 +1,16 @@
 ---
 description: Create a new issue document with template
-argument-hint: "<brief summary>"
+argument-hint: '<brief summary>'
 ---
 
 Create a new issue document:
 
 1. Ask the user for additional context if the summary is too brief
-2. Generate filename: `YYYY-MM-DD_<sanitized-summary>.md` 
+2. Generate filename: `YYYY-MM-DD_<sanitized-summary>.md`
 3. Create the file in `/docs/issues/` with this template:
 
 \`\`\`markdown
+
 # [Summary from user input]
 
 **Created**: YYYY-MM-DD
