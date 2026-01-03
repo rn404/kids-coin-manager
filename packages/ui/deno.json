@@ -1,0 +1,8 @@
+{
+  "name": "@workspace/ui",
+  "version": "0.1.0",
+  "exports": "./mod.ts",
+  "imports": {
+    "preact": "npm:preact@^10.27.2"
+  }
+}

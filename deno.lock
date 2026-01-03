@@ -1436,6 +1436,30 @@
       "npm:preact@^10.27.2",
       "npm:tailwindcss@^4.1.10",
       "npm:vite@^7.1.3"
-    ]
+    ],
+    "members": {
+      "apps/web": {
+        "dependencies": [
+          "jsr:@fresh/core@^2.2.0",
+          "jsr:@fresh/plugin-vite@^1.0.8",
+          "jsr:@std/assert@^1.0.16",
+          "npm:@preact/signals@^2.5.0",
+          "npm:@tailwindcss/vite@^4.1.12",
+          "npm:preact@^10.27.2",
+          "npm:tailwindcss@^4.1.10",
+          "npm:vite@^7.1.3"
+        ]
+      },
+      "packages/ui": {
+        "dependencies": [
+          "npm:preact@^10.27.2"
+        ]
+      },
+      "packages/utils": {
+        "dependencies": [
+          "jsr:@fresh/core@^2.2.0"
+        ]
+      }
+    }
   }
 }

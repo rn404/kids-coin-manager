@@ -1,14 +1,20 @@
 {
+  "workspace": [
+    "./apps/web",
+    "./packages/ui",
+    "./packages/utils",
+    "./packages/styles"
+  ],
   "tasks": {
     "autofix": "deno fmt && deno lint",
     "test": "deno test",
     "precommit": "deno task autofix && deno task test",
-    "dev": "vite",
-    "build": "vite build",
-    "start": "deno serve -A _fresh/server.js",
+    "dev": "cd apps/web && deno task dev",
+    "build": "cd apps/web && deno task build",
+    "start": "cd apps/web && deno task start",
     "update": "deno run -A -r jsr:@fresh/update .",
     "source-guard": "deno fmt --check . && deno lint . && deno check",
-    "runtime-guard": "deno test && vite build"
+    "runtime-guard": "deno test && cd apps/web && deno task build"
   },
   "fmt": {
     "semiColons": false,

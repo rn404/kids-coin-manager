@@ -1,5 +1,5 @@
 import { Head, } from 'fresh/runtime'
-import { define, } from '../utils.ts'
+import { define, } from '@workspace/utils'
 
 export default define.page(function Home(_ctx,) {
   return (
