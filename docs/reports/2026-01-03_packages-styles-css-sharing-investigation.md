@@ -265,12 +265,12 @@ module.exports = {
 
 `@theme` で定義したCSS変数は、自動的にTailwindのユーティリティクラスとして生成されます：
 
-| CSS変数                            | 生成されるクラス例                                                        |
+| CSS変数                          | 生成されるクラス例                                               |
 | -------------------------------- | ---------------------------------------------------------------- |
 | `--color-brand-primary: #3b82f6` | `bg-brand-primary`, `text-brand-primary`, `border-brand-primary` |
 | `--spacing-section: 2rem`        | `p-section`, `m-section`, `gap-section`                          |
 | `--font-heading: "Inter"`        | `font-heading`                                                   |
-| `--breakpoint-tablet: 768px`     | `tablet:*` (メディアクエリ)                                             |
+| `--breakpoint-tablet: 768px`     | `tablet:*` (メディアクエリ)                                      |
 
 ### 通常のCSSとしても使用可能
 
