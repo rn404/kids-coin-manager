@@ -3,7 +3,7 @@
     "./apps/web",
     "./packages/ui",
     "./packages/utils",
-    "./packages/styles"
+    "./packages/tokens"
   ],
   "tasks": {
     "autofix": "deno fmt && deno lint",

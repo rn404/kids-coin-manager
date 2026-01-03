@@ -1,0 +1,5 @@
+# Usage
+
+```
+import '@workspace/tokens'
+```
