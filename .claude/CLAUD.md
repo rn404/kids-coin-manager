@@ -16,6 +16,10 @@ Kids coin manager
 
 ## Directory Structure
 
+This project uses a Deno workspace-based monorepo structure.
+
 - `/docs` - Documentation
 - `/docs/reports` - Technical research reports. Research reports should be saved to here.
 - `/docs/issues` - Issue documents
+- `/apps/web` - Main application of this repository
+- `/packages` - Shared packages used across applications
