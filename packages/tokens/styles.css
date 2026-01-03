@@ -1,0 +1,24 @@
+:root {
+  /* colors */
+  --color-primary: #2563eb;
+  --color-secondary: #64748b;
+  --color-danger: #dc2626;
+
+  /* spacing */
+  --spacing-xs: 4px;
+  --spacing-sm: 8px;
+  --spacing-md: 16px;
+  --spacing-lg: 24px;
+
+  /* typography */
+  --font-body: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, monospace;
+
+  /* radius */
+  --radius-sm: 4px;
+  --radius-md: 8px;
+
+  /* base background-color */
+  --color-viewport-light: #fdfdfd;
+  --color-viewport-dark: #1e1e1e;
+}
