@@ -24,9 +24,24 @@ Create a new issue document:
 
 [Background information]
 
+## Acceptance Criteria
+
+[Specific requirements from user. Concrete conditions that must be met to resolve the Problem/Goal. Detail what needs to be cleared in this issue.]
+
+- ...
+- ...
+
+## References
+
+[Links to related docs, PRs, etc]
+
+---
+
 ## Approach
 
 [To be filled before starting work]
+
+---
 
 ## Work Log
 
@@ -34,9 +49,12 @@ Create a new issue document:
 
 [Daily progress notes]
 
-## References
+---
 
-[Links to related docs, PRs, etc]
+## Feedback
+
+[Post-completion reflection. User reviews, validity of changes, lessons learned, discussions about decisions made.]
+
 \`\`\`
 
 4. Open an interactive conversation to fill in the Problem/Goal and Context sections
