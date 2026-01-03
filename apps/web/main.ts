@@ -1,5 +1,5 @@
 import { App, staticFiles, } from 'fresh'
-import { define, type State, } from './utils.ts'
+import { define, type State, } from '@workspace/utils'
 
 export const app = new App<State>()
 
