@@ -1,5 +1,6 @@
 import { Head, } from 'fresh/runtime'
 import { define, } from '@workspace/utils'
+import { Button, Link, TextButton, } from '@workspace/ui'
 
 export default define.page(function Home(_ctx,) {
   return (
@@ -24,6 +25,9 @@ export default define.page(function Home(_ctx,) {
           </a>
         </nav>
       </div>
+      <Button>ButtonExample</Button>
+      <TextButton>TextButtonExample</TextButton>
+      <Link href='/timer'>Link Sample</Link>
     </div>
   )
 },)
