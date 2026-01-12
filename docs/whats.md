@@ -24,7 +24,7 @@
 - 将来的に、お手伝いパスポートは管理アカウントで定義をすることができるようにする
 - 将来的に、コインの種類とコインの交換レート、設定時間は管理アカウントで定義をすることができるようにする
 
-```
+```mermaid
   erDiagram
       User ||--o{ Coin : "has"
       User ||--o{ StampCard : "has"
@@ -111,11 +111,11 @@
       }
 ```
 
-```
-```
 
 ## Account
 
 - User
 - Family
 - Role
+	- Manager
+	- Member
