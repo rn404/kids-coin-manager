@@ -3,7 +3,9 @@
     "./apps/web",
     "./packages/ui",
     "./packages/utils",
-    "./packages/tokens"
+    "./packages/tokens",
+    "./packages/types",
+    "./packages/foundations"
   ],
   "tasks": {
     "autofix": "deno fmt && deno lint",
