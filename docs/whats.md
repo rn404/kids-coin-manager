@@ -111,11 +111,10 @@
       }
 ```
 
-
 ## Account
 
 - User
 - Family
 - Role
-	- Manager
-	- Member
+  - Manager
+  - Member
