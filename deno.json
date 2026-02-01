@@ -16,7 +16,8 @@
     "start": "cd apps/web && deno task start",
     "update": "deno run -A -r jsr:@fresh/update .",
     "source-guard": "deno fmt --check . && deno lint . && deno check",
-    "runtime-guard": "deno test && cd apps/web && deno task build"
+    "runtime-guard": "deno test && cd apps/web && deno task build",
+    "validate-mermaid": "./scripts/validate-mermaid.sh"
   },
   "fmt": {
     "semiColons": false,
