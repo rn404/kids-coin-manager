@@ -30,6 +30,8 @@
       User ||--o{ StampCard : "has"
       User ||--o{ CoinTransaction : "has"
       User ||--o{ UserDailySummary : "has"
+      User ||--o{ TimeSession : "has"
+      User ||--o| ActiveTimer : "has"
 
       CoinType ||--o{ Coin : "defines"
       CoinType ||--o{ ExchangeRate : "from"
@@ -37,6 +39,8 @@
       CoinType ||--o{ StampType : "rewards"
       CoinType ||--o{ CoinTransaction : "records"
       CoinType ||--o{ UserDailySummary : "tracks"
+      CoinType ||--o{ TimeSession : "defines"
+      CoinType ||--o| ActiveTimer : "defines"
 
       StampType ||--o{ StampCard : "defines"
       StampCard ||--o{ CoinTransaction : "generates"
@@ -109,7 +113,53 @@
           int usedDurationMinutes "使用した時間(useの場合)"
           datetime createdAt
       }
+
+      TimeSession {
+          string id PK
+          string userId FK
+          string coinTypeId FK
+          int remainingSeconds "残り時間(秒)"
+          int remainingNanos "残り時間(ナノ秒、optional)"
+          datetime startedAt "このセッション開始時刻"
+          datetime stoppedAt "このセッション停止時刻"
+          datetime createdAt
+          datetime updatedAt
+      }
+
+      ActiveTimer {
+          string id PK
+          string userId FK
+          string coinTypeId FK
+          datetime startedAt "タイマー開始時刻"
+          datetime createdAt
+          datetime updatedAt
+      }
 ```
+
+### TimeSession について
+
+- 時間の残高履歴を管理
+- 複数レコード存在可能
+- デフラグで統合可能
+- `remainingSeconds` と `remainingNanos` で Duration型を表現
+
+### ActiveTimer について
+
+- 実行中のタイマーを管理
+- userId + coinTypeId で1レコードのみ
+- 実行中のときだけ存在する
+
+### Duration型
+
+```typescript
+type Duration = {
+  seconds: number
+  nanos?: number // ナノ秒（オプショナル）
+}
+```
+
+protobuf の `google.protobuf.Duration` を参考にした構造体。
+TimeSessionでは `remainingSeconds` と `remainingNanos` として保存される。
 
 ## Account
 
