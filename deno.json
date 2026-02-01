@@ -11,7 +11,7 @@
   ],
   "tasks": {
     "autofix": "deno fmt && deno lint",
-    "test": "deno test",
+    "test": "deno test --unstable-kv",
     "precommit": "deno task autofix && deno task test",
     "dev": "cd apps/web && deno task dev",
     "build": "cd apps/web && deno task build",
