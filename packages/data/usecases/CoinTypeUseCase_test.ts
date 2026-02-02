@@ -1,24 +1,24 @@
 import { afterEach, beforeEach, describe, it, } from '@std/testing/bdd'
 import { assertEquals, assertExists, assertRejects, } from '@std/assert'
-import { CoinTypeRepository, } from './CoinTypeRepository.ts'
+import { makeCoinTypeUseCase, } from './CoinTypeUseCase.ts'
 import { cleanupTestKv, setupTestKv, } from '../test-helpers/kv.ts'
 
 let kv: Deno.Kv
-let repo: CoinTypeRepository
+let useCase: ReturnType<typeof makeCoinTypeUseCase>
 
 beforeEach(async () => {
   kv = await setupTestKv()
-  repo = new CoinTypeRepository(kv,)
+  useCase = makeCoinTypeUseCase({ kv, },)
 },)
 
 afterEach(async () => {
   await cleanupTestKv(kv,)
 },)
 
-describe('CoinTypeRepository#create', () => {
+describe('CoinTypeUseCase#create', () => {
   it('should create a CoinType and retrieve it by ID', async () => {
     const familyId = 'family-1'
-    const created = await repo.create(
+    const created = await useCase.create(
       familyId,
       'ゴールドコイン',
       30,
@@ -35,37 +35,39 @@ describe('CoinTypeRepository#create', () => {
     assertExists(created.createdAt,)
     assertExists(created.updatedAt,)
 
-    const retrieved = await repo.findById(familyId, created.id,)
+    // findByIdで取得できることを確認
+    const retrieved = await useCase.findById(familyId, created.id,)
     assertEquals(retrieved, created,)
   })
 })
 
-describe('CoinTypeRepository#findById', () => {
+describe('CoinTypeUseCase#findById', () => {
   it('should return null when CoinType does not exist', async () => {
-    const result = await repo.findById('family-1', 'non-existent-id',)
+    const result = await useCase.findById('family-1', 'non-existent-id',)
     assertEquals(result, null,)
   })
 
   it('should not retrieve CoinType with different familyId', async () => {
-    const created = await repo.create(
+    const created = await useCase.create(
       'family-1',
       'ゴールドコイン',
       30,
       4,
     )
 
-    const result = await repo.findById('family-2', created.id,)
+    // 異なるfamilyIdでは取得できない
+    const result = await useCase.findById('family-2', created.id,)
     assertEquals(result, null,)
   })
 })
 
-describe('CoinTypeRepository#listAllByFamily', () => {
+describe('CoinTypeUseCase#listAllByFamily', () => {
   it('should list all CoinTypes belonging to the family', async () => {
     const familyId = 'family-1'
-    const coin1 = await repo.create(familyId, 'ゴールド', 30, 4,)
-    const coin2 = await repo.create(familyId, 'シルバー', 15, 7,)
+    const coin1 = await useCase.create(familyId, 'ゴールド', 30, 4,)
+    const coin2 = await useCase.create(familyId, 'シルバー', 15, 7,)
 
-    const list = await repo.listAllByFamily(familyId,)
+    const list = await useCase.listAllByFamily(familyId,)
 
     assertEquals(list.length, 2,)
     assertEquals(list.some((c,) => c.id === coin1.id), true,)
@@ -73,11 +75,11 @@ describe('CoinTypeRepository#listAllByFamily', () => {
   })
 
   it('should not include CoinTypes from different families', async () => {
-    await repo.create('family-1', 'ゴールド', 30, 4,)
-    await repo.create('family-2', 'シルバー', 15, 7,)
+    await useCase.create('family-1', 'ゴールド', 30, 4,)
+    await useCase.create('family-2', 'シルバー', 15, 7,)
 
-    const family1List = await repo.listAllByFamily('family-1',)
-    const family2List = await repo.listAllByFamily('family-2',)
+    const family1List = await useCase.listAllByFamily('family-1',)
+    const family2List = await useCase.listAllByFamily('family-2',)
 
     assertEquals(family1List.length, 1,)
     assertEquals(family2List.length, 1,)
@@ -86,10 +88,10 @@ describe('CoinTypeRepository#listAllByFamily', () => {
   })
 })
 
-describe('CoinTypeRepository#update', () => {
+describe('CoinTypeUseCase#update', () => {
   it('should update properties (partial update)', async () => {
     const familyId = 'family-1'
-    const created = await repo.create(
+    const created = await useCase.create(
       familyId,
       'ゴールドコイン',
       30,
@@ -97,7 +99,7 @@ describe('CoinTypeRepository#update', () => {
     )
 
     // 部分更新
-    const updated = await repo.update(familyId, created.id, {
+    const updated = await useCase.update(familyId, created.id, {
       name: '新ゴールドコイン',
       durationMinutes: 45,
     },)
@@ -112,7 +114,7 @@ describe('CoinTypeRepository#update', () => {
   it('should throw error when updating non-existent CoinType', async () => {
     await assertRejects(
       async () => {
-        await repo.update('family-1', 'non-existent-id', {
+        await useCase.update('family-1', 'non-existent-id', {
           name: '新しい名前',
         },)
       },
@@ -122,10 +124,10 @@ describe('CoinTypeRepository#update', () => {
   })
 })
 
-describe('CoinTypeRepository#discard', () => {
+describe('CoinTypeUseCase#discard', () => {
   it('should return null from findById after deletion', async () => {
     const familyId = 'family-1'
-    const created = await repo.create(
+    const created = await useCase.create(
       familyId,
       'ゴールドコイン',
       30,
@@ -133,14 +135,14 @@ describe('CoinTypeRepository#discard', () => {
     )
 
     // 削除前は取得できる
-    const beforeDiscard = await repo.findById(familyId, created.id,)
+    const beforeDiscard = await useCase.findById(familyId, created.id,)
     assertExists(beforeDiscard,)
 
     // 削除
-    await repo.discard(familyId, created.id,)
+    await useCase.discard(familyId, created.id,)
 
     // 削除後はnullが返る
-    const afterDiscard = await repo.findById(familyId, created.id,)
+    const afterDiscard = await useCase.findById(familyId, created.id,)
     assertEquals(afterDiscard, null,)
   })
 })
