@@ -168,3 +168,19 @@ TimeSessionでは `remainingSeconds` と `remainingNanos` として保存され�
 - Role
   - Manager
   - Member
+
+# Use Cases
+
+## MVP
+
+- Login
+  - Login でコインを取得する
+- CoinManage
+  - CoinType を追加する
+  - CoinType を編集する
+- Coin
+  - Coin を使う
+  - Coin を増やす
+- Timer
+  - Timerを使う
+  - Timerを止める
