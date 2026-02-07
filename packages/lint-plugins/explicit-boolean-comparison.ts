@@ -41,6 +41,7 @@ const explicitBooleanComparison = {
       },
     }
   },
+  defaultSeverity: 'error',
 }
 
 export { explicitBooleanComparison, }
