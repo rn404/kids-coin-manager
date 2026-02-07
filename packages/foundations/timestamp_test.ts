@@ -72,7 +72,7 @@ describe('isTimestamp()', () => {
   describe('when given non-string value', () => {
     it('returns false', () => {
       // TODO: introduce parameterized test helper
-      const testCases: unknown[] = [
+      const testCases: Array<unknown> = [
         null,
         undefined,
         123,

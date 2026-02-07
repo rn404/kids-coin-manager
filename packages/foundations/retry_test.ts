@@ -71,7 +71,7 @@ describe('withRetry', () => {
   })
 
   it('should apply exponential backoff', async () => {
-    const timestamps: number[] = []
+    const timestamps: Array<number> = []
 
     await assertRejects(async () => {
       await withRetry(

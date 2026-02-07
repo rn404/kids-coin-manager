@@ -32,6 +32,7 @@
   },
   "lint": {
     "plugins": [
+      "jsr:@narumincho/type-lint",
       "./packages/lint-plugins/mod.ts"
     ],
     "rules": {

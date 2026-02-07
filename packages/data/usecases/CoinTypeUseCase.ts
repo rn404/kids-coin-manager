@@ -74,7 +74,7 @@ const makeCoinTypeUseCase = (
   const listAllByFamily = async (
     familyId: CoinTypeDataModel['familyId'],
   ): ReturnType<CoinTypeUseCaseInterface['listAllByFamily']> => {
-    const coinTypes: CoinTypeDataModel[] = []
+    const coinTypes: Array<CoinTypeDataModel> = []
     const entries = deps.kv.list<CoinTypeDataModel>({
       prefix: ['coinTypes', familyId,],
     },)
