@@ -38,9 +38,6 @@
       "tags": [
         "fresh",
         "recommended"
-      ],
-      "include": [
-        "internal/explicit-boolean-comparison"
       ]
     }
   },
