@@ -108,9 +108,7 @@
           string userId FK
           string coinTypeId FK
           int amount
-          string transactionType "daily_distribution/use/exchange/stamp_reward"
-          string relatedStampCardId FK "optional"
-          int usedDurationMinutes "使用した時間(useの場合)"
+          object metadata "type: daily_distribution | use | exchange | stamp_reward"
           datetime createdAt
       }
 
