@@ -2,12 +2,20 @@ import type { CoinDataModel, } from '../Coin.ts'
 import { getTimestamp, withRetry, } from '@workspace/foundations'
 
 interface CoinUseCaseInterface {
-  spend(
+  increaseBy(
     userId: CoinDataModel['userId'],
     familyId: CoinDataModel['familyId'],
     coinTypeId: CoinDataModel['coinTypeId'],
     properties: {
-      amount: CoinDataModel['amount']
+      amount: number
+    },
+  ): Promise<CoinDataModel>
+  decreaseBy(
+    userId: CoinDataModel['userId'],
+    familyId: CoinDataModel['familyId'],
+    coinTypeId: CoinDataModel['coinTypeId'],
+    properties: {
+      amount: number
     },
   ): Promise<CoinDataModel>
   findById(
@@ -20,16 +28,12 @@ interface CoinUseCaseInterface {
 const makeCoinUseCase = (
   deps: { kv: Deno.Kv },
 ): CoinUseCaseInterface => {
-  const spend = async (
+  const updateAmount = async (
     userId: CoinDataModel['userId'],
     familyId: CoinDataModel['familyId'],
     coinTypeId: CoinDataModel['coinTypeId'],
-    properties: {
-      amount: CoinDataModel['amount']
-    },
-  ): ReturnType<
-    CoinUseCaseInterface['spend']
-  > => {
+    delta: number,
+  ): Promise<CoinDataModel> => {
     return await withRetry(async () => {
       const currentEntry = await deps.kv.get<CoinDataModel>([
         'coins',
@@ -44,11 +48,13 @@ const makeCoinUseCase = (
         )
       }
 
-      const newAmount = currentEntry.value.amount - properties.amount
+      const newAmount = currentEntry.value.amount + delta
 
       if (newAmount < 0) {
         throw new Error(
-          `Insufficient coin balance. Current: ${currentEntry.value.amount}, Required: ${properties.amount}`,
+          `Insufficient coin balance. Current: ${currentEntry.value.amount}, Required: ${
+            Math.abs(delta,)
+          }`,
         )
       }
 
@@ -71,6 +77,38 @@ const makeCoinUseCase = (
     },)
   }
 
+  const increaseBy = async (
+    userId: CoinDataModel['userId'],
+    familyId: CoinDataModel['familyId'],
+    coinTypeId: CoinDataModel['coinTypeId'],
+    properties: {
+      amount: number
+    },
+  ): ReturnType<CoinUseCaseInterface['increaseBy']> => {
+    return await updateAmount(
+      userId,
+      familyId,
+      coinTypeId,
+      Math.abs(properties.amount,),
+    )
+  }
+
+  const decreaseBy = async (
+    userId: CoinDataModel['userId'],
+    familyId: CoinDataModel['familyId'],
+    coinTypeId: CoinDataModel['coinTypeId'],
+    properties: {
+      amount: number
+    },
+  ): ReturnType<CoinUseCaseInterface['decreaseBy']> => {
+    return await updateAmount(
+      userId,
+      familyId,
+      coinTypeId,
+      -Math.abs(properties.amount,),
+    )
+  }
+
   const findById = async (
     userId: CoinDataModel['userId'],
     familyId: CoinDataModel['familyId'],
@@ -88,7 +126,8 @@ const makeCoinUseCase = (
   }
 
   return {
-    spend,
+    increaseBy,
+    decreaseBy,
     findById,
   }
 }

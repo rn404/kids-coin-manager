@@ -66,15 +66,15 @@ describe('CoinUseCase#findById', () => {
   })
 })
 
-describe('CoinUseCase#spend', () => {
-  it('should spend coins and reduce amount', async () => {
+describe('CoinUseCase#decreaseBy', () => {
+  it('should decrease coins and reduce amount', async () => {
     const userId = 'user-1'
     const familyId = 'family-1'
     const coinTypeId = 'cointype-1'
 
     await createCoin(kv, { userId, familyId, coinTypeId, amount: 1000, },)
 
-    const result = await useCase.spend(userId, familyId, coinTypeId, {
+    const result = await useCase.decreaseBy(userId, familyId, coinTypeId, {
       amount: 300,
     },)
 
@@ -89,16 +89,16 @@ describe('CoinUseCase#spend', () => {
     assertEquals(retrieved?.amount, 700,)
   })
 
-  it('should spend multiple times sequentially', async () => {
+  it('should decrease multiple times sequentially', async () => {
     const userId = 'user-1'
     const familyId = 'family-1'
     const coinTypeId = 'cointype-1'
 
     await createCoin(kv, { userId, familyId, coinTypeId, amount: 1000, },)
 
-    await useCase.spend(userId, familyId, coinTypeId, { amount: 200, },)
-    await useCase.spend(userId, familyId, coinTypeId, { amount: 300, },)
-    await useCase.spend(userId, familyId, coinTypeId, { amount: 100, },)
+    await useCase.decreaseBy(userId, familyId, coinTypeId, { amount: 200, },)
+    await useCase.decreaseBy(userId, familyId, coinTypeId, { amount: 300, },)
+    await useCase.decreaseBy(userId, familyId, coinTypeId, { amount: 100, },)
 
     const retrieved = await useCase.findById(userId, familyId, coinTypeId,)
     assertEquals(retrieved?.amount, 400,)
@@ -107,9 +107,12 @@ describe('CoinUseCase#spend', () => {
   it('should throw error when coin does not exist', async () => {
     await assertRejects(
       async () => {
-        await useCase.spend('user-1', 'family-1', 'non-existent-cointype', {
-          amount: 100,
-        },)
+        await useCase.decreaseBy(
+          'user-1',
+          'family-1',
+          'non-existent-cointype',
+          { amount: 100, },
+        )
       },
       Error,
       'Coin not found',
@@ -125,7 +128,7 @@ describe('CoinUseCase#spend', () => {
 
     await assertRejects(
       async () => {
-        await useCase.spend(userId, familyId, coinTypeId, {
+        await useCase.decreaseBy(userId, familyId, coinTypeId, {
           amount: 600,
         },)
       },
@@ -138,21 +141,76 @@ describe('CoinUseCase#spend', () => {
     assertEquals(retrieved?.amount, 500,)
   })
 
-  it('should allow spending exact amount to reach zero', async () => {
+  it('should allow decreasing exact amount to reach zero', async () => {
     const userId = 'user-1'
     const familyId = 'family-1'
     const coinTypeId = 'cointype-1'
 
     await createCoin(kv, { userId, familyId, coinTypeId, amount: 500, },)
 
-    const result = await useCase.spend(userId, familyId, coinTypeId, {
+    const result = await useCase.decreaseBy(userId, familyId, coinTypeId, {
       amount: 500,
     },)
 
     assertEquals(result.amount, 0,)
   })
+})
 
-  it('should handle concurrent spends with retry mechanism', async (t,) => {
+describe('CoinUseCase#increaseBy', () => {
+  it('should increase coins and add to amount', async () => {
+    const userId = 'user-1'
+    const familyId = 'family-1'
+    const coinTypeId = 'cointype-1'
+
+    await createCoin(kv, { userId, familyId, coinTypeId, amount: 1000, },)
+
+    const result = await useCase.increaseBy(userId, familyId, coinTypeId, {
+      amount: 300,
+    },)
+
+    assertEquals(result.amount, 1300,)
+    assertEquals(result.userId, userId,)
+    assertEquals(result.familyId, familyId,)
+    assertEquals(result.coinTypeId, coinTypeId,)
+    assertExists(result.updatedAt,)
+
+    // DBから取得して確認
+    const retrieved = await useCase.findById(userId, familyId, coinTypeId,)
+    assertEquals(retrieved?.amount, 1300,)
+  })
+
+  it('should throw error when coin does not exist', async () => {
+    await assertRejects(
+      async () => {
+        await useCase.increaseBy(
+          'user-1',
+          'family-1',
+          'non-existent-cointype',
+          { amount: 100, },
+        )
+      },
+      Error,
+      'Coin not found',
+    )
+  })
+
+  it('should increase from zero balance', async () => {
+    const userId = 'user-1'
+    const familyId = 'family-1'
+    const coinTypeId = 'cointype-1'
+
+    await createCoin(kv, { userId, familyId, coinTypeId, amount: 0, },)
+
+    const result = await useCase.increaseBy(userId, familyId, coinTypeId, {
+      amount: 500,
+    },)
+
+    assertEquals(result.amount, 500,)
+  })
+})
+
+describe('CoinUseCase#concurrent operations', () => {
+  it('should handle concurrent increases and decreases with retry mechanism', async (t,) => {
     const userId = 'user-1'
     const familyId = 'family-1'
     const coinTypeId = 'cointype-1'
@@ -162,23 +220,24 @@ describe('CoinUseCase#spend', () => {
     },)
 
     await t.step(
-      'concurrent spends: execute 3 spends in parallel',
+      'concurrent operations: execute mixed increases and decreases in parallel',
       async () => {
         const results = await Promise.all([
-          useCase.spend(userId, familyId, coinTypeId, { amount: 100, },),
-          useCase.spend(userId, familyId, coinTypeId, { amount: 200, },),
-          useCase.spend(userId, familyId, coinTypeId, { amount: 150, },),
+          useCase.increaseBy(userId, familyId, coinTypeId, { amount: 100, },),
+          useCase.decreaseBy(userId, familyId, coinTypeId, { amount: 200, },),
+          useCase.increaseBy(userId, familyId, coinTypeId, { amount: 150, },),
+          useCase.decreaseBy(userId, familyId, coinTypeId, { amount: 50, },),
         ],)
 
         // すべて成功することを確認
-        assertEquals(results.length, 3,)
+        assertEquals(results.length, 4,)
       },
     )
 
-    await t.step('verify: final balance should be 550', async () => {
-      // 最終的な残高を確認（1000 - 100 - 200 - 150 = 550）
+    await t.step('verify: final balance should be 1000', async () => {
+      // 最終的な残高を確認（1000 + 100 - 200 + 150 - 50 = 1000）
       const retrieved = await useCase.findById(userId, familyId, coinTypeId,)
-      assertEquals(retrieved?.amount, 550,)
+      assertEquals(retrieved?.amount, 1000,)
     },)
   })
 })
