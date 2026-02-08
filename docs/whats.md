@@ -107,7 +107,8 @@
           string id PK
           string userId FK
           string coinTypeId FK
-          int amount
+          int amount "増減額"
+          int balance "取引後の残高"
           object metadata "type: daily_distribution | use | exchange | stamp_reward"
           datetime createdAt
       }
