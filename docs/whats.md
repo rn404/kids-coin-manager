@@ -173,8 +173,8 @@ TimeSessionでは `remainingSeconds` と `remainingNanos` として保存され�
 
 ## MVP
 
-- Login
-  - Login でコインを取得する
+- Session
+  - セッション開始時に当日分のコインを配布する
 - CoinManage
   - CoinType を追加する
   - CoinType を編集する
