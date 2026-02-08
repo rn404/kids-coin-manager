@@ -76,6 +76,8 @@ describe('CoinUseCase#decreaseBy', () => {
 
     const result = await useCase.decreaseBy(userId, familyId, coinTypeId, {
       amount: 300,
+      transactionType: 'use',
+      metadata: { type: 'use', },
     },)
 
     assertEquals(result.amount, 700,)
@@ -96,9 +98,21 @@ describe('CoinUseCase#decreaseBy', () => {
 
     await createCoin(kv, { userId, familyId, coinTypeId, amount: 1000, },)
 
-    await useCase.decreaseBy(userId, familyId, coinTypeId, { amount: 200, },)
-    await useCase.decreaseBy(userId, familyId, coinTypeId, { amount: 300, },)
-    await useCase.decreaseBy(userId, familyId, coinTypeId, { amount: 100, },)
+    await useCase.decreaseBy(userId, familyId, coinTypeId, {
+      amount: 200,
+      transactionType: 'use',
+      metadata: { type: 'use', },
+    },)
+    await useCase.decreaseBy(userId, familyId, coinTypeId, {
+      amount: 300,
+      transactionType: 'use',
+      metadata: { type: 'use', },
+    },)
+    await useCase.decreaseBy(userId, familyId, coinTypeId, {
+      amount: 100,
+      transactionType: 'use',
+      metadata: { type: 'use', },
+    },)
 
     const retrieved = await useCase.findById(userId, familyId, coinTypeId,)
     assertEquals(retrieved?.amount, 400,)
@@ -111,7 +125,11 @@ describe('CoinUseCase#decreaseBy', () => {
           'user-1',
           'family-1',
           'non-existent-cointype',
-          { amount: 100, },
+          {
+            amount: 100,
+            transactionType: 'use',
+            metadata: { type: 'use', },
+          },
         )
       },
       Error,
@@ -130,6 +148,8 @@ describe('CoinUseCase#decreaseBy', () => {
       async () => {
         await useCase.decreaseBy(userId, familyId, coinTypeId, {
           amount: 600,
+          transactionType: 'use',
+          metadata: { type: 'use', },
         },)
       },
       Error,
@@ -150,6 +170,8 @@ describe('CoinUseCase#decreaseBy', () => {
 
     const result = await useCase.decreaseBy(userId, familyId, coinTypeId, {
       amount: 500,
+      transactionType: 'use',
+      metadata: { type: 'use', },
     },)
 
     assertEquals(result.amount, 0,)
@@ -166,6 +188,8 @@ describe('CoinUseCase#increaseBy', () => {
 
     const result = await useCase.increaseBy(userId, familyId, coinTypeId, {
       amount: 300,
+      transactionType: 'daily_distribution',
+      metadata: { type: 'daily_distribution', },
     },)
 
     assertEquals(result.amount, 1300,)
@@ -186,7 +210,11 @@ describe('CoinUseCase#increaseBy', () => {
           'user-1',
           'family-1',
           'non-existent-cointype',
-          { amount: 100, },
+          {
+            amount: 100,
+            transactionType: 'daily_distribution',
+            metadata: { type: 'daily_distribution', },
+          },
         )
       },
       Error,
@@ -203,6 +231,8 @@ describe('CoinUseCase#increaseBy', () => {
 
     const result = await useCase.increaseBy(userId, familyId, coinTypeId, {
       amount: 500,
+      transactionType: 'daily_distribution',
+      metadata: { type: 'daily_distribution', },
     },)
 
     assertEquals(result.amount, 500,)
@@ -223,10 +253,26 @@ describe('CoinUseCase#concurrent operations', () => {
       'concurrent operations: execute mixed increases and decreases in parallel',
       async () => {
         const results = await Promise.all([
-          useCase.increaseBy(userId, familyId, coinTypeId, { amount: 100, },),
-          useCase.decreaseBy(userId, familyId, coinTypeId, { amount: 200, },),
-          useCase.increaseBy(userId, familyId, coinTypeId, { amount: 150, },),
-          useCase.decreaseBy(userId, familyId, coinTypeId, { amount: 50, },),
+          useCase.increaseBy(userId, familyId, coinTypeId, {
+            amount: 100,
+            transactionType: 'daily_distribution',
+            metadata: { type: 'daily_distribution', },
+          },),
+          useCase.decreaseBy(userId, familyId, coinTypeId, {
+            amount: 200,
+            transactionType: 'use',
+            metadata: { type: 'use', },
+          },),
+          useCase.increaseBy(userId, familyId, coinTypeId, {
+            amount: 150,
+            transactionType: 'stamp_reward',
+            metadata: { type: 'stamp_reward', stampCardId: 'stamp-1', },
+          },),
+          useCase.decreaseBy(userId, familyId, coinTypeId, {
+            amount: 50,
+            transactionType: 'use',
+            metadata: { type: 'use', timeSessionId: 'session-1', },
+          },),
         ],)
 
         // すべて成功することを確認

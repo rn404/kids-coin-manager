@@ -1,4 +1,5 @@
 import type { CoinDataModel, } from '../Coin.ts'
+import type { CoinTransactionDataModel, } from '../CoinTransaction.ts'
 import { getTimestamp, withRetry, } from '@workspace/foundations'
 
 interface CoinUseCaseInterface {
@@ -8,6 +9,8 @@ interface CoinUseCaseInterface {
     coinTypeId: CoinDataModel['coinTypeId'],
     properties: {
       amount: number
+      transactionType: CoinTransactionDataModel['transactionType']
+      metadata: CoinTransactionDataModel['metadata']
     },
   ): Promise<CoinDataModel>
   decreaseBy(
@@ -16,6 +19,8 @@ interface CoinUseCaseInterface {
     coinTypeId: CoinDataModel['coinTypeId'],
     properties: {
       amount: number
+      transactionType: CoinTransactionDataModel['transactionType']
+      metadata: CoinTransactionDataModel['metadata']
     },
   ): Promise<CoinDataModel>
   findById(
@@ -33,6 +38,10 @@ const makeCoinUseCase = (
     familyId: CoinDataModel['familyId'],
     coinTypeId: CoinDataModel['coinTypeId'],
     delta: number,
+    transactionInfo: Pick<
+      CoinTransactionDataModel,
+      'transactionType' | 'metadata'
+    >,
   ): Promise<CoinDataModel> => {
     return await withRetry(async () => {
       const currentEntry = await deps.kv.get<CoinDataModel>([
@@ -64,9 +73,32 @@ const makeCoinUseCase = (
         updatedAt: getTimestamp(),
       }
 
+      const timestamp = getTimestamp()
+      const transactionId = crypto.randomUUID()
+
+      const transaction: CoinTransactionDataModel = {
+        id: transactionId,
+        userId,
+        familyId,
+        coinTypeId,
+        amount: delta,
+        balance: newAmount,
+        transactionType: transactionInfo.transactionType,
+        metadata: transactionInfo.metadata,
+        createdAt: timestamp,
+        updatedAt: timestamp,
+      }
+
       const res = await deps.kv.atomic()
         .check(currentEntry,)
         .set(['coins', userId, familyId, coinTypeId,], updatedCoin,)
+        .set([
+          'coin_transactions',
+          userId,
+          familyId,
+          coinTypeId,
+          transactionId,
+        ], transaction,)
         .commit()
 
       if (res.ok === false) {
@@ -83,6 +115,8 @@ const makeCoinUseCase = (
     coinTypeId: CoinDataModel['coinTypeId'],
     properties: {
       amount: number
+      transactionType: CoinTransactionDataModel['transactionType']
+      metadata: CoinTransactionDataModel['metadata']
     },
   ): ReturnType<CoinUseCaseInterface['increaseBy']> => {
     return await updateAmount(
@@ -90,6 +124,10 @@ const makeCoinUseCase = (
       familyId,
       coinTypeId,
       Math.abs(properties.amount,),
+      {
+        transactionType: properties.transactionType,
+        metadata: properties.metadata,
+      },
     )
   }
 
@@ -99,6 +137,8 @@ const makeCoinUseCase = (
     coinTypeId: CoinDataModel['coinTypeId'],
     properties: {
       amount: number
+      transactionType: CoinTransactionDataModel['transactionType']
+      metadata: CoinTransactionDataModel['metadata']
     },
   ): ReturnType<CoinUseCaseInterface['decreaseBy']> => {
     return await updateAmount(
@@ -106,6 +146,10 @@ const makeCoinUseCase = (
       familyId,
       coinTypeId,
       -Math.abs(properties.amount,),
+      {
+        transactionType: properties.transactionType,
+        metadata: properties.metadata,
+      },
     )
   }
 
