@@ -1,6 +1,7 @@
 {
   "workspace": [
     "./apps/web",
+    "./apps/ops",
     "./packages/ui",
     "./packages/utils",
     "./packages/tokens",
@@ -14,6 +15,7 @@
     "test": "deno test --unstable-kv",
     "precommit": "deno task autofix && deno task test",
     "dev": "cd apps/web && deno task dev",
+    "dev:ops": "cd apps/ops && deno task dev",
     "build": "cd apps/web && deno task build",
     "start": "cd apps/web && deno task start",
     "update": "deno run -A -r jsr:@fresh/update .",
