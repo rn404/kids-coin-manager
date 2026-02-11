@@ -3,6 +3,7 @@
  */
 
 import { generateUuid, getTimestamp, } from '@workspace/foundations'
+import { COIN_TYPE_PREFIX_KEY, } from '../../CoinType.ts'
 import type { CoinTypeDataModel, } from '../../CoinType.ts'
 
 /**
@@ -67,6 +68,6 @@ export async function createCoinType(
   params: CreateCoinTypeParams,
 ): Promise<CoinTypeDataModel> {
   const coinType = buildCoinType(params,)
-  await kv.set(['coinTypes', params.familyId, coinType.id,], coinType,)
+  await kv.set([COIN_TYPE_PREFIX_KEY, params.familyId, coinType.id,], coinType,)
   return coinType
 }

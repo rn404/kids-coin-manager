@@ -1,11 +1,20 @@
 import { page, } from 'fresh'
 import { define, } from '@/main.ts'
+import {
+  COIN_PREFIX_KEY,
+  COIN_TRANSACTION_PREFIX_KEY,
+  COIN_TYPE_PREFIX_KEY,
+  DAILY_COIN_DISTRIBUTION_PREFIX_KEY,
+} from '@workspace/data'
 
 const KV_PREFIXES = [
-  { prefix: 'coinTypes', label: 'CoinType', },
-  { prefix: 'coins', label: 'Coin', },
-  { prefix: 'coin_transactions', label: 'CoinTransaction', },
-  { prefix: 'coin_daily_distributions', label: 'DailyCoinDistribution', },
+  { prefix: COIN_TYPE_PREFIX_KEY, label: 'CoinType', },
+  { prefix: COIN_PREFIX_KEY, label: 'Coin', },
+  { prefix: COIN_TRANSACTION_PREFIX_KEY, label: 'CoinTransaction', },
+  {
+    prefix: DAILY_COIN_DISTRIBUTION_PREFIX_KEY,
+    label: 'DailyCoinDistribution',
+  },
 ] as const
 
 export const handler = define.handlers({

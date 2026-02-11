@@ -1,4 +1,6 @@
+import { COIN_PREFIX_KEY, } from '../Coin.ts'
 import type { CoinDataModel, } from '../Coin.ts'
+import { COIN_TRANSACTION_PREFIX_KEY, } from '../CoinTransaction.ts'
 import type { CoinTransactionDataModel, } from '../CoinTransaction.ts'
 import { getTimestamp, withRetry, } from '@workspace/foundations'
 
@@ -45,7 +47,7 @@ const makeCoinUseCase = (
   ): Promise<CoinDataModel> => {
     return await withRetry(async () => {
       const currentEntry = await deps.kv.get<CoinDataModel>([
-        'coins',
+        COIN_PREFIX_KEY,
         userId,
         familyId,
         coinTypeId,
@@ -91,9 +93,9 @@ const makeCoinUseCase = (
 
       const res = await deps.kv.atomic()
         .check(currentEntry,)
-        .set(['coins', userId, familyId, coinTypeId,], updatedCoin,)
+        .set([COIN_PREFIX_KEY, userId, familyId, coinTypeId,], updatedCoin,)
         .set([
-          'coin_transactions',
+          COIN_TRANSACTION_PREFIX_KEY,
           userId,
           familyId,
           coinTypeId,
@@ -161,7 +163,7 @@ const makeCoinUseCase = (
     CoinUseCaseInterface['findById']
   > => {
     const result = await deps.kv.get<CoinDataModel>([
-      'coins',
+      COIN_PREFIX_KEY,
       userId,
       familyId,
       coinTypeId,

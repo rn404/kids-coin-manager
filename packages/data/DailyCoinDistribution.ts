@@ -1,13 +1,15 @@
 import type { DataModel, ISODateString, } from '@workspace/types'
 import type { CoinTypeDataModel, } from './CoinType.ts'
 
+const DAILY_COIN_DISTRIBUTION_PREFIX_KEY = 'daily_coin_distributions'
+
 /**
  * 毎日のコイン配布済み記録
  *
  * - 存在すればその日の配布済みを示す中間レコード
  * - CoinTransaction を参照せず、このレコードだけで配布済み判定が完結する
- * - key: ['coin_daily_distributions', familyId, userId, summaryDate]
- * - prefix: ['coin_daily_distributions', familyId] で家族全体の配布状況を一覧取得可能
+ * - key: ['daily_coin_distributions', familyId, userId, summaryDate]
+ * - prefix: ['daily_coin_distributions', familyId] で家族全体の配布状況を一覧取得可能
  */
 type DailyCoinDistributionDataModel = DataModel<{
   familyId: string
@@ -36,4 +38,5 @@ type DailyCoinDistributionDataModel = DataModel<{
   }
 }>
 
+export { DAILY_COIN_DISTRIBUTION_PREFIX_KEY, }
 export type { DailyCoinDistributionDataModel, }

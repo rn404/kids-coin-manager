@@ -1,3 +1,4 @@
+import { COIN_TYPE_PREFIX_KEY, } from '../CoinType.ts'
 import type { CoinTypeDataModel, } from '../CoinType.ts'
 import { generateUuid, getTimestamp, withRetry, } from '@workspace/foundations'
 
@@ -54,7 +55,7 @@ const makeCoinTypeUseCase = (
       updatedAt: now,
     }
 
-    await deps.kv.set(['coinTypes', familyId, id,], coinType,)
+    await deps.kv.set([COIN_TYPE_PREFIX_KEY, familyId, id,], coinType,)
 
     return coinType
   }
@@ -64,7 +65,7 @@ const makeCoinTypeUseCase = (
     id: CoinTypeDataModel['id'],
   ): ReturnType<CoinTypeUseCaseInterface['findById']> => {
     const result = await deps.kv.get<CoinTypeDataModel>([
-      'coinTypes',
+      COIN_TYPE_PREFIX_KEY,
       familyId,
       id,
     ],)
@@ -76,7 +77,7 @@ const makeCoinTypeUseCase = (
   ): ReturnType<CoinTypeUseCaseInterface['listAllByFamily']> => {
     const coinTypes: Array<CoinTypeDataModel> = []
     const entries = deps.kv.list<CoinTypeDataModel>({
-      prefix: ['coinTypes', familyId,],
+      prefix: [COIN_TYPE_PREFIX_KEY, familyId,],
     },)
 
     for await (const entry of entries) {
@@ -98,7 +99,7 @@ const makeCoinTypeUseCase = (
   ): ReturnType<CoinTypeUseCaseInterface['update']> => {
     return await withRetry(async () => {
       const currentEntry = await deps.kv.get<CoinTypeDataModel>([
-        'coinTypes',
+        COIN_TYPE_PREFIX_KEY,
         familyId,
         id,
       ],)
@@ -115,7 +116,7 @@ const makeCoinTypeUseCase = (
 
       const res = await deps.kv.atomic()
         .check(currentEntry,)
-        .set(['coinTypes', familyId, id,], updatedCoinType,)
+        .set([COIN_TYPE_PREFIX_KEY, familyId, id,], updatedCoinType,)
         .commit()
 
       if (res.ok === false) {
@@ -130,7 +131,7 @@ const makeCoinTypeUseCase = (
     familyId: CoinTypeDataModel['familyId'],
     id: CoinTypeDataModel['id'],
   ): ReturnType<CoinTypeUseCaseInterface['discard']> => {
-    await deps.kv.delete(['coinTypes', familyId, id,],)
+    await deps.kv.delete([COIN_TYPE_PREFIX_KEY, familyId, id,],)
   }
 
   return {

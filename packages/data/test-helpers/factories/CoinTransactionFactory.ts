@@ -3,6 +3,7 @@
  */
 
 import { generateUuid, getTimestamp, } from '@workspace/foundations'
+import { COIN_TRANSACTION_PREFIX_KEY, } from '../../CoinTransaction.ts'
 import type { CoinTransactionDataModel, } from '../../CoinTransaction.ts'
 
 /**
@@ -102,7 +103,7 @@ export async function createCoinTransaction(
   const transaction = buildCoinTransaction(params,)
   await kv.set(
     [
-      'coin_transactions',
+      COIN_TRANSACTION_PREFIX_KEY,
       params.userId,
       params.familyId,
       params.coinTypeId,

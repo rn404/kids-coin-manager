@@ -2,6 +2,7 @@ import { afterEach, beforeEach, describe, it, } from '@std/testing/bdd'
 import { assertEquals, assertExists, assertRejects, } from '@std/assert'
 import { makeCoinUseCase, } from './CoinUseCase.ts'
 import { cleanupTestKv, createCoin, setupTestKv, } from '../test-helpers/mod.ts'
+import { COIN_TRANSACTION_PREFIX_KEY, } from '../CoinTransaction.ts'
 import type { CoinTransactionDataModel, } from '../CoinTransaction.ts'
 
 /**
@@ -14,7 +15,7 @@ async function listTransactions(
   coinTypeId: string,
 ): Promise<Array<CoinTransactionDataModel>> {
   const entries = kv.list<CoinTransactionDataModel>({
-    prefix: ['coin_transactions', userId, familyId, coinTypeId,],
+    prefix: [COIN_TRANSACTION_PREFIX_KEY, userId, familyId, coinTypeId,],
   },)
   const results: Array<CoinTransactionDataModel> = []
   for await (const entry of entries) {

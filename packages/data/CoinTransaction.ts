@@ -1,5 +1,7 @@
 import type { DataModel, } from '@workspace/types'
 
+const COIN_TRANSACTION_PREFIX_KEY = 'coin_transactions'
+
 type CoinTransactionDataModel = DataModel<
   & {
     userId: string
@@ -63,4 +65,5 @@ type CoinTransactionDataModel = DataModel<
   )
 >
 
+export { COIN_TRANSACTION_PREFIX_KEY, }
 export type { CoinTransactionDataModel, }

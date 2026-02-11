@@ -7,6 +7,7 @@ import {
   getDateOnly,
   getTimestamp,
 } from '@workspace/foundations'
+import { DAILY_COIN_DISTRIBUTION_PREFIX_KEY, } from '../../DailyCoinDistribution.ts'
 import type { DailyCoinDistributionDataModel, } from '../../DailyCoinDistribution.ts'
 import type { CoinTypeDataModel, } from '../../CoinType.ts'
 
@@ -81,7 +82,7 @@ export async function createDailyCoinDistribution(
   const distribution = buildDailyCoinDistribution(params,)
   await kv.set(
     [
-      'coin_daily_distributions',
+      DAILY_COIN_DISTRIBUTION_PREFIX_KEY,
       distribution.familyId,
       distribution.userId,
       distribution.summaryDate,
