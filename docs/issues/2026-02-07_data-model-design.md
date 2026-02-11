@@ -32,6 +32,19 @@ type CoinTypeDataModel = DataModel<{
 | C: ヘルパー関数         | `toKvKey()` でキー生成を一元化 | o            | 中         |
 | D: key 変数宣言         | 関数冒頭で `const key = [...]` | x            | 最小       |
 
+### KV prefix 文字列の散在状況（2026-02-11 調査）
+
+テストファクトリや UseCase テストの追加に伴い、同じ prefix 文字列がさらに多くの箇所に散らばっている:
+
+| prefix                       | 使用箇所数 | 散在ファイル                                            |
+| ---------------------------- | ---------- | ------------------------------------------------------- |
+| `'coins'`                    | 4          | CoinUseCase, CoinFactory                                |
+| `'coinTypes'`                | 7          | CoinTypeUseCase, CoinTypeFactory                        |
+| `'coin_transactions'`        | 3          | CoinUseCase, CoinTransactionFactory, CoinUseCase テスト |
+| `'coin_daily_distributions'` | 2          | DailyCoinDistributionFactory                            |
+
+prefix の typo や不一致がサイレントに壊れるリスクがあり、ヘルパー関数（アプローチ C）への移行の優先度が上がっている。
+
 ### 暫定結論
 
 - 短期: アプローチ D（key 変数宣言）で設計意図を明示
