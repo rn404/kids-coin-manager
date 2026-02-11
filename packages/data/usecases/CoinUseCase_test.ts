@@ -2,6 +2,26 @@ import { afterEach, beforeEach, describe, it, } from '@std/testing/bdd'
 import { assertEquals, assertExists, assertRejects, } from '@std/assert'
 import { makeCoinUseCase, } from './CoinUseCase.ts'
 import { cleanupTestKv, createCoin, setupTestKv, } from '../test-helpers/mod.ts'
+import type { CoinTransactionDataModel, } from '../CoinTransaction.ts'
+
+/**
+ * KV から指定ユーザー・コインタイプのトランザクション一覧を取得する
+ */
+async function listTransactions(
+  kv: Deno.Kv,
+  userId: string,
+  familyId: string,
+  coinTypeId: string,
+): Promise<CoinTransactionDataModel[]> {
+  const entries = kv.list<CoinTransactionDataModel>({
+    prefix: ['coin_transactions', userId, familyId, coinTypeId,],
+  },)
+  const results: CoinTransactionDataModel[] = []
+  for await (const entry of entries) {
+    results.push(entry.value,)
+  }
+  return results
+}
 
 let kv: Deno.Kv
 let useCase: ReturnType<typeof makeCoinUseCase>
@@ -89,6 +109,25 @@ describe('CoinUseCase#decreaseBy', () => {
     // DBから取得して確認
     const retrieved = await useCase.findById(userId, familyId, coinTypeId,)
     assertEquals(retrieved?.amount, 700,)
+
+    // トランザクションが保存されていることを確認
+    const transactions = await listTransactions(
+      kv,
+      userId,
+      familyId,
+      coinTypeId,
+    )
+    assertEquals(transactions.length, 1,)
+    assertEquals(transactions[0].amount, -300,)
+    assertEquals(transactions[0].balance, 700,)
+    assertEquals(transactions[0].transactionType, 'use',)
+    assertEquals(transactions[0].metadata, { type: 'use', },)
+    assertEquals(transactions[0].userId, userId,)
+    assertEquals(transactions[0].familyId, familyId,)
+    assertEquals(transactions[0].coinTypeId, coinTypeId,)
+    assertExists(transactions[0].id,)
+    assertExists(transactions[0].createdAt,)
+    assertExists(transactions[0].updatedAt,)
   })
 
   it('should decrease multiple times sequentially', async () => {
@@ -116,6 +155,15 @@ describe('CoinUseCase#decreaseBy', () => {
 
     const retrieved = await useCase.findById(userId, familyId, coinTypeId,)
     assertEquals(retrieved?.amount, 400,)
+
+    // 3件のトランザクションが保存されていることを確認
+    const transactions = await listTransactions(
+      kv,
+      userId,
+      familyId,
+      coinTypeId,
+    )
+    assertEquals(transactions.length, 3,)
   })
 
   it('should throw error when coin does not exist', async () => {
@@ -159,6 +207,15 @@ describe('CoinUseCase#decreaseBy', () => {
     // 残高は変わっていないことを確認
     const retrieved = await useCase.findById(userId, familyId, coinTypeId,)
     assertEquals(retrieved?.amount, 500,)
+
+    // トランザクションも保存されていないことを確認
+    const transactions = await listTransactions(
+      kv,
+      userId,
+      familyId,
+      coinTypeId,
+    )
+    assertEquals(transactions.length, 0,)
   })
 
   it('should allow decreasing exact amount to reach zero', async () => {
@@ -201,6 +258,28 @@ describe('CoinUseCase#increaseBy', () => {
     // DBから取得して確認
     const retrieved = await useCase.findById(userId, familyId, coinTypeId,)
     assertEquals(retrieved?.amount, 1300,)
+
+    // トランザクションが保存されていることを確認
+    const transactions = await listTransactions(
+      kv,
+      userId,
+      familyId,
+      coinTypeId,
+    )
+    assertEquals(transactions.length, 1,)
+    assertEquals(transactions[0].amount, 300,)
+    assertEquals(transactions[0].balance, 1300,)
+    assertEquals(transactions[0].transactionType, 'daily_distribution',)
+    assertEquals(
+      transactions[0].metadata,
+      { type: 'daily_distribution', },
+    )
+    assertEquals(transactions[0].userId, userId,)
+    assertEquals(transactions[0].familyId, familyId,)
+    assertEquals(transactions[0].coinTypeId, coinTypeId,)
+    assertExists(transactions[0].id,)
+    assertExists(transactions[0].createdAt,)
+    assertExists(transactions[0].updatedAt,)
   })
 
   it('should throw error when coin does not exist', async () => {
@@ -284,6 +363,15 @@ describe('CoinUseCase#concurrent operations', () => {
       // 最終的な残高を確認（1000 + 100 - 200 + 150 - 50 = 1000）
       const retrieved = await useCase.findById(userId, familyId, coinTypeId,)
       assertEquals(retrieved?.amount, 1000,)
+
+      // 4件のトランザクションが保存されていることを確認
+      const transactions = await listTransactions(
+        kv,
+        userId,
+        familyId,
+        coinTypeId,
+      )
+      assertEquals(transactions.length, 4,)
     },)
   })
 })
