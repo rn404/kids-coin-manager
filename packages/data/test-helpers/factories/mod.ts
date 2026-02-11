@@ -4,3 +4,7 @@
 
 export { buildCoin, createCoin, } from './CoinFactory.ts'
 export { buildCoinType, createCoinType, } from './CoinTypeFactory.ts'
+export {
+  buildDailyCoinDistribution,
+  createDailyCoinDistribution,
+} from './DailyCoinDistributionFactory.ts'
