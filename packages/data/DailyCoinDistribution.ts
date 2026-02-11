@@ -1,4 +1,5 @@
 import type { DataModel, ISODateString, } from '@workspace/types'
+import type { CoinTypeDataModel, } from './CoinType.ts'
 
 /**
  * 毎日のコイン配布済み記録
@@ -23,10 +24,7 @@ type DailyCoinDistributionDataModel = DataModel<{
   /**
    * CoinType ごとの配布結果
    */
-  distributions: Array<{
-    coinTypeId: string
-    amount: number
-  }>
+  distributions: Record<CoinTypeDataModel['id'], { amount: number }>
 
   metadata: {
     /**
