@@ -12,11 +12,11 @@ async function listTransactions(
   userId: string,
   familyId: string,
   coinTypeId: string,
-): Promise<CoinTransactionDataModel[]> {
+): Promise<Array<CoinTransactionDataModel>> {
   const entries = kv.list<CoinTransactionDataModel>({
     prefix: ['coin_transactions', userId, familyId, coinTypeId,],
   },)
-  const results: CoinTransactionDataModel[] = []
+  const results: Array<CoinTransactionDataModel> = []
   for await (const entry of entries) {
     results.push(entry.value,)
   }
