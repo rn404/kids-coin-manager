@@ -25,6 +25,7 @@ jobs:
       - uses: denoland/setup-deno@v2
         with:
           deno-version: ${{ steps.deno-version.outputs.version }}
+          cache: true
       - run: deno task source-guard
 
   runtime-guard:
@@ -37,4 +38,5 @@ jobs:
       - uses: denoland/setup-deno@v2
         with:
           deno-version: ${{ steps.deno-version.outputs.version }}
+          cache: true
       - run: deno task runtime-guard
