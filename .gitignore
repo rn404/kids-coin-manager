@@ -13,6 +13,10 @@ _fresh/
 node_modules/
 vendor/
 
+# Local KV database
+data/*.sqlite
+data/*.sqlite-*
+
 .DS_Store
 .obsidian
 tmp/

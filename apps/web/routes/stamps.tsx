@@ -1,5 +1,5 @@
 import { Head, } from 'fresh/runtime'
-import { define, } from '@workspace/utils'
+import { define, } from '@/main.ts'
 
 export default define.page(function Stamps(_ctx,) {
   return (

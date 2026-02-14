@@ -8,9 +8,11 @@ export const define = createDefine<OpsState>()
 
 export const app = new App<OpsState>()
 
+const kv = await Deno.openKv(Deno.env.get('DENO_KV_PATH',),)
+
 app.use(staticFiles(),)
 app.use(async (ctx,) => {
-  ctx.state.kv = await Deno.openKv()
+  ctx.state.kv = kv
   return await ctx.next()
 },)
 app.fsRoutes()

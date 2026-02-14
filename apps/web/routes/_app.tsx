@@ -1,4 +1,4 @@
-import { define, } from '@workspace/utils'
+import { define, } from '@/main.ts'
 
 export default define.page(function App({ Component, },) {
   return (

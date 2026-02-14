@@ -1522,11 +1522,6 @@
         "dependencies": [
           "npm:preact@^10.27.2"
         ]
-      },
-      "packages/utils": {
-        "dependencies": [
-          "jsr:@fresh/core@^2.2.0"
-        ]
       }
     }
   }

@@ -1,8 +1,5 @@
 {
   "name": "@workspace/utils",
   "version": "0.1.0",
-  "exports": "./mod.ts",
-  "imports": {
-    "fresh": "jsr:@fresh/core@^2.2.0"
-  }
+  "exports": "./mod.ts"
 }

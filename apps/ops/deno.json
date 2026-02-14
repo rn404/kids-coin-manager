@@ -1,12 +1,13 @@
 {
   "tasks": {
-    "dev": "deno run -A --unstable-kv npm:vite",
+    "dev": "deno run -A --unstable-kv --env-file npm:vite",
     "build": "vite build",
     "start": "deno serve -A _fresh/server.js"
   },
   "imports": {
     "@/": "./",
     "@workspace/data": "../../packages/data/mod.ts",
+    "@workspace/foundations": "../../packages/foundations/mod.ts",
     "fresh": "jsr:@fresh/core@^2.2.0",
     "preact": "npm:preact@^10.27.2",
     "@preact/signals": "npm:@preact/signals@^2.5.0",

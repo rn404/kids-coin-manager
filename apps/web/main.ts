@@ -1,13 +1,19 @@
-import { App, staticFiles, } from 'fresh'
-import { define, type State, } from '@workspace/utils'
+import { App, createDefine, staticFiles, } from 'fresh'
+
+export interface State {
+  kv: Deno.Kv
+}
+
+export const define = createDefine<State>()
 
 export const app = new App<State>()
 
+const kv = await Deno.openKv(Deno.env.get('DENO_KV_PATH',),)
+
 app.use(staticFiles(),)
 
-// Pass a shared value from a middleware
 app.use(async (ctx,) => {
-  ctx.state.shared = 'hello'
+  ctx.state.kv = kv
   return await ctx.next()
 },)
 

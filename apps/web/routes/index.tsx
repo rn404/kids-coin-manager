@@ -1,5 +1,5 @@
 import { Head, } from 'fresh/runtime'
-import { define, } from '@workspace/utils'
+import { define, } from '@/main.ts'
 import { Button, Link, TextButton, } from '@workspace/ui'
 
 export default define.page(function Home(_ctx,) {
@@ -22,6 +22,12 @@ export default define.page(function Home(_ctx,) {
             class='px-6 py-3 bg-green-500 text-white rounded-lg hover:bg-green-600 text-center'
           >
             Stamps
+          </a>
+          <a
+            href='/coin-types'
+            class='px-6 py-3 bg-purple-500 text-white rounded-lg hover:bg-purple-600 text-center'
+          >
+            コイン種類管理
           </a>
         </nav>
       </div>
