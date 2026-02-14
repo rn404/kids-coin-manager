@@ -1,9 +1,9 @@
 import { Head, } from 'fresh/runtime'
-import { define, } from '@/main.ts'
+import { define, } from '../../main.ts'
 import { page, } from 'fresh'
-import { makeCoinManageService, } from '@/services/CoinManageService.ts'
+import { makeCoinManageService, } from '../../services/CoinManageService.ts'
 import type { CoinTypeDataModel, } from '@workspace/data'
-import type { ValidationError, } from '@/services/CoinManageService.ts'
+import type { ValidationError, } from '../../services/CoinManageService.ts'
 
 const FAMILY_ID = 'default-family'
 

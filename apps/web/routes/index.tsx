@@ -1,5 +1,5 @@
 import { Head, } from 'fresh/runtime'
-import { define, } from '@/main.ts'
+import { define, } from '../main.ts'
 import { Button, Link, TextButton, } from '@workspace/ui'
 
 export default define.page(function Home(_ctx,) {

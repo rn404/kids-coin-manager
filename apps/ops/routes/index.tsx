@@ -1,5 +1,5 @@
 import { page, } from 'fresh'
-import { define, } from '@/main.ts'
+import { define, } from '../main.ts'
 import {
   COIN_PREFIX_KEY,
   COIN_TRANSACTION_PREFIX_KEY,

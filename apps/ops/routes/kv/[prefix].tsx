@@ -1,5 +1,5 @@
 import { page, } from 'fresh'
-import { define, } from '@/main.ts'
+import { define, } from '../../main.ts'
 
 const DEFAULT_LIMIT = 100
 
