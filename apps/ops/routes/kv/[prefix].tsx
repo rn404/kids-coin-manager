@@ -13,7 +13,7 @@ export const handler = define.handlers({
     for await (
       const entry of ctx.state.kv.list(
         { prefix: [prefix,], },
-        { limit, },
+        { limit, reverse: true, },
       )
     ) {
       entries.push({ key: entry.key, value: entry.value, },)
