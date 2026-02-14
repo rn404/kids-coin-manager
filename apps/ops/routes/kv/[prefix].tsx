@@ -1,5 +1,6 @@
 import { page, } from 'fresh'
 import { define, } from '../../main.ts'
+import KvTable from '../../islands/KvTable.tsx'
 
 const DEFAULT_LIMIT = 100
 
@@ -9,17 +10,33 @@ export const handler = define.handlers({
     const url = new URL(ctx.req.url,)
     const limit = Number(url.searchParams.get('limit',),) || DEFAULT_LIMIT
 
-    const entries: Array<{ key: Deno.KvKey; value: unknown }> = []
+    const entries: Array<{ key: Array<string | number>; value: unknown }> = []
     for await (
       const entry of ctx.state.kv.list(
         { prefix: [prefix,], },
         { limit, reverse: true, },
       )
     ) {
-      entries.push({ key: entry.key, value: entry.value, },)
+      entries.push({
+        key: entry.key as Array<string | number>,
+        value: entry.value,
+      },)
     }
 
     return page({ prefix, entries, limit, },)
+  },
+  async DELETE(ctx,) {
+    const { keys, } = await ctx.req.json() as {
+      keys: Array<Array<string | number>>
+    }
+
+    const atomic = ctx.state.kv.atomic()
+    for (const key of keys) {
+      atomic.delete(key,)
+    }
+    await atomic.commit()
+
+    return new Response(null, { status: 204, },)
   },
 },)
 
@@ -39,34 +56,7 @@ export default define.page<typeof handler>(function PrefixPage({ data, },) {
 
       {entries.length === 0
         ? <p class='text-gray-500'>No entries found.</p>
-        : (
-          <div class='overflow-x-auto'>
-            <table class='w-full bg-white rounded-lg shadow text-sm'>
-              <thead>
-                <tr class='bg-gray-100 text-left'>
-                  <th class='px-4 py-2 font-semibold'>#</th>
-                  <th class='px-4 py-2 font-semibold'>Key</th>
-                  <th class='px-4 py-2 font-semibold'>Value</th>
-                </tr>
-              </thead>
-              <tbody>
-                {entries.map((entry, i,) => (
-                  <tr key={i} class='border-t hover:bg-gray-50'>
-                    <td class='px-4 py-2 text-gray-400'>{i + 1}</td>
-                    <td class='px-4 py-2 font-mono text-xs whitespace-nowrap'>
-                      {JSON.stringify(entry.key,)}
-                    </td>
-                    <td class='px-4 py-2'>
-                      <pre class='font-mono text-xs whitespace-pre-wrap max-w-3xl overflow-auto'>
-                        {JSON.stringify(entry.value, null, 2,)}
-                      </pre>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
+        : <KvTable prefix={prefix} entries={entries} />}
     </div>
   )
 },)
