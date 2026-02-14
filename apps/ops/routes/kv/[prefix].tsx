@@ -1,8 +1,11 @@
 import { page, } from 'fresh'
 import { define, } from '../../main.ts'
+import { getTimestamp, } from '@workspace/foundations'
 import KvTable from '../../islands/KvTable.tsx'
 
 const DEFAULT_LIMIT = 100
+
+const PROTECTED_FIELDS = ['id', 'createdAt', 'updatedAt',] as const
 
 export const handler = define.handlers({
   async GET(ctx,) {
@@ -24,6 +27,37 @@ export const handler = define.handlers({
     }
 
     return page({ prefix, entries, limit, },)
+  },
+  async PUT(ctx,) {
+    const { key, value, } = await ctx.req.json() as {
+      key: Array<string | number>
+      value: Record<string, unknown>
+    }
+
+    const current = await ctx.state.kv.get(key,)
+    if (current.value === null) {
+      return Response.json(
+        { error: 'Entry not found', },
+        { status: 404, },
+      )
+    }
+
+    const currentValue = current.value as Record<string, unknown>
+
+    const attributes = { ...value, }
+    for (const field of PROTECTED_FIELDS) {
+      delete attributes[field]
+    }
+
+    const updated = {
+      ...currentValue,
+      ...attributes,
+      updatedAt: getTimestamp(),
+    }
+
+    await ctx.state.kv.set(key, updated,)
+
+    return Response.json({ ok: true, },)
   },
   async DELETE(ctx,) {
     const { keys, } = await ctx.req.json() as {
