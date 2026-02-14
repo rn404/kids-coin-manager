@@ -1,0 +1,33 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  source-guard:
+    name: Source Guard
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - id: deno-version
+        run: echo "version=$(./scripts/read-mise-version.sh deno)" >> "$GITHUB_OUTPUT"
+      - uses: denoland/setup-deno@v2
+        with:
+          deno-version: ${{ steps.deno-version.outputs.version }}
+      - run: deno task source-guard
+
+  runtime-guard:
+    name: Runtime Guard
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - id: deno-version
+        run: echo "version=$(./scripts/read-mise-version.sh deno)" >> "$GITHUB_OUTPUT"
+      - uses: denoland/setup-deno@v2
+        with:
+          deno-version: ${{ steps.deno-version.outputs.version }}
+      - run: deno task runtime-guard
