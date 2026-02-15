@@ -5,12 +5,10 @@ import { makeCoinManageService, } from '../../services/CoinManageService.ts'
 import type { CoinTypeDataModel, } from '@workspace/data'
 import type { ValidationError, } from '../../services/CoinManageService.ts'
 
-const FAMILY_ID = 'default-family'
-
 const handler = define.handlers({
   async GET(ctx,) {
     const service = makeCoinManageService({ kv: ctx.state.kv, },)
-    const coinTypes = await service.listCoinTypes(FAMILY_ID,)
+    const coinTypes = await service.listCoinTypes(ctx.state.me.familyId,)
     return page({ coinTypes, errors: [] as Array<ValidationError>, },)
   },
   async POST(ctx,) {
@@ -20,14 +18,14 @@ const handler = define.handlers({
     const dailyDistribution = Number(formData.get('dailyDistribution',) ?? 0,)
 
     const service = makeCoinManageService({ kv: ctx.state.kv, },)
-    const result = await service.addCoinType(FAMILY_ID, {
+    const result = await service.addCoinType(ctx.state.me.familyId, {
       name,
       durationMinutes,
       dailyDistribution,
     },)
 
     if (result.ok === false) {
-      const coinTypes = await service.listCoinTypes(FAMILY_ID,)
+      const coinTypes = await service.listCoinTypes(ctx.state.me.familyId,)
       return page({ coinTypes, errors: result.errors, },)
     }
 

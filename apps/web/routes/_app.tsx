@@ -1,4 +1,5 @@
 import { define, } from '../main.ts'
+import TimezoneCookie from '../islands/TimezoneCookie.tsx'
 
 export default define.page(function App({ Component, },) {
   return (
@@ -9,6 +10,7 @@ export default define.page(function App({ Component, },) {
         <title>fresh-project</title>
       </head>
       <body>
+        <TimezoneCookie />
         <Component />
       </body>
     </html>
