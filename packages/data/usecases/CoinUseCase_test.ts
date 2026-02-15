@@ -36,6 +36,86 @@ afterEach(async () => {
   await cleanupTestKv(kv,)
 },)
 
+describe('CoinUseCase#listByUser', () => {
+  it('should return all coins for a user in a family', async () => {
+    const userId = 'user-1'
+    const familyId = 'family-1'
+
+    await createCoin(kv, {
+      userId,
+      familyId,
+      coinTypeId: 'cointype-1',
+      amount: 100,
+    },)
+    await createCoin(kv, {
+      userId,
+      familyId,
+      coinTypeId: 'cointype-2',
+      amount: 200,
+    },)
+    await createCoin(kv, {
+      userId,
+      familyId,
+      coinTypeId: 'cointype-3',
+      amount: 300,
+    },)
+
+    const results = await useCase.listByUser(userId, familyId,)
+
+    assertEquals(results.length, 3,)
+    assertEquals(results.map((c,) => c.amount).sort(), [100, 200, 300,],)
+  })
+
+  it('should return empty array when no coins exist', async () => {
+    const results = await useCase.listByUser('user-1', 'family-1',)
+    assertEquals(results, [],)
+  })
+
+  it('should not include coins from different userId', async () => {
+    const familyId = 'family-1'
+
+    await createCoin(kv, {
+      userId: 'user-1',
+      familyId,
+      coinTypeId: 'cointype-1',
+      amount: 100,
+    },)
+    await createCoin(kv, {
+      userId: 'user-2',
+      familyId,
+      coinTypeId: 'cointype-1',
+      amount: 200,
+    },)
+
+    const results = await useCase.listByUser('user-1', familyId,)
+
+    assertEquals(results.length, 1,)
+    assertEquals(results[0].amount, 100,)
+  })
+
+  it('should not include coins from different familyId', async () => {
+    const userId = 'user-1'
+
+    await createCoin(kv, {
+      userId,
+      familyId: 'family-1',
+      coinTypeId: 'cointype-1',
+      amount: 100,
+    },)
+    await createCoin(kv, {
+      userId,
+      familyId: 'family-2',
+      coinTypeId: 'cointype-1',
+      amount: 200,
+    },)
+
+    const results = await useCase.listByUser(userId, 'family-1',)
+
+    assertEquals(results.length, 1,)
+    assertEquals(results[0].amount, 100,)
+  })
+})
+
 describe('CoinUseCase#findById', () => {
   it('should retrieve existing coin', async () => {
     const userId = 'user-1'

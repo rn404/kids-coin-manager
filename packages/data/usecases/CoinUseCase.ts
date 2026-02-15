@@ -5,6 +5,10 @@ import type { CoinTransactionDataModel, } from '../CoinTransaction.ts'
 import { generateUuid, getTimestamp, withRetry, } from '@workspace/foundations'
 
 interface CoinUseCaseInterface {
+  listByUser(
+    userId: CoinDataModel['userId'],
+    familyId: CoinDataModel['familyId'],
+  ): Promise<Array<CoinDataModel>>
   increaseBy(
     userId: CoinDataModel['userId'],
     familyId: CoinDataModel['familyId'],
@@ -177,7 +181,24 @@ const makeCoinUseCase = (
     return result.value
   }
 
+  const listByUser = async (
+    userId: CoinDataModel['userId'],
+    familyId: CoinDataModel['familyId'],
+  ): ReturnType<CoinUseCaseInterface['listByUser']> => {
+    const coins: Array<CoinDataModel> = []
+    const entries = deps.kv.list<CoinDataModel>({
+      prefix: [COIN_PREFIX_KEY, userId, familyId,],
+    },)
+
+    for await (const entry of entries) {
+      coins.push(entry.value,)
+    }
+
+    return coins
+  }
+
   return {
+    listByUser,
     increaseBy,
     decreaseBy,
     findById,
