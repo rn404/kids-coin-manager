@@ -13,7 +13,7 @@ Fresh Routes (/routes/api/*, /routes/*)
   ↓
 Application Service Layer（ユーザー視点のユースケース）
   ↓
-Domain UseCase Layer（データ操作の単位）
+Domain UseCase Layer（データ操作の単位/atomic境界線）
   ↓
 Data Model / Deno KV
 ```
