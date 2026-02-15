@@ -50,7 +50,7 @@ Data Model / Deno KV
 
 **実装場所:**
 
-- `/packages/application/services/*` (今後作成予定)
+- `/apps/web/services/*`
 
 **例:**
 
