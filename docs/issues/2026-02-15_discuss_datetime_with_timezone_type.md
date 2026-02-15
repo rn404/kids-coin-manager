@@ -1,4 +1,4 @@
-Status: Draft
+Status: Applied
 
 # Summary
 
@@ -42,6 +42,41 @@ interface DatetimeWithTimezone {
 
 # Approach
 
+## 採用: ネイティブ `Intl.DateTimeFormat`
+
+外部ライブラリは追加せず、ネイティブ API で実装する。
+
+### 検討した選択肢
+
+1. **`date-fns` + `date-fns-tz`** — 軽量で tree-shaking 対応だが、必要な機能（UTC→ローカル日付変換、日数差分、TZ バリデーション）がネイティブ API で十分カバーできるため、依存追加のメリットが薄い
+2. **`luxon`** — `DateTime.fromISO().setZone()` が直感的だが、ランタイムサイズが大きく、本プロジェクトが現時点で外部日時ライブラリをゼロで運用していることを考えると導入コストが高い
+3. **`Temporal` API** — `Temporal.ZonedDateTime` が理想的な API 設計だが、Stage 3 提案のため Deno でも `--unstable-temporal` フラグが必要で、本番利用には時期尚早
+
+### 採用理由
+
+- Deno の V8 エンジンは完全な ICU サポートを持ち、`Intl.DateTimeFormat` のタイムゾーン変換は安定している
+- プロジェクトの外部日時ライブラリゼロの方針を維持できる
+- 必要な操作が限定的（UTC→ローカル日付、日数差分）であり、ネイティブ API で十分実装可能
+- 将来 `Temporal` が安定した際には、内部実装をファクトリ関数の中で差し替えるだけで移行可能
+
+## 実装
+
+- 型定義: `packages/types/DatetimeWithTimezone.ts`
+- ユーティリティ: `packages/foundations/datetime-with-timezone.ts`
+  - `createDatetimeWithTimezone(datetime, timezone)` — ファクトリ関数
+  - `createDatetimeWithTimezoneFromNow(timezone)` — 現在時刻からのファクトリ
+  - `diffLocalDays(from, to)` — ローカル日付間の日数差
+  - `isTimezone(value)` — IANA タイムゾーン識別子のバリデーション
+- テスト: `packages/foundations/datetime-with-timezone_test.ts`
+
 ---
 
 # Results
+
+`DatetimeWithTimezone` 型とユーティリティを実装した。
+
+- `packages/types/DatetimeWithTimezone.ts` — 型定義
+- `packages/foundations/datetime-with-timezone.ts` — ユーティリティ関数
+- `packages/foundations/datetime-with-timezone_test.ts` — テスト（4 describe / 12 steps 全 pass）
+
+`CoinDistributionUseCase` への適用は別途対応する。呼び出し元が `createDatetimeWithTimezoneFromNow('Asia/Tokyo').localDateString` を `summaryDate` として渡す形になり、UseCase 側のインターフェースは変更不要。
