@@ -1,39 +1,80 @@
 import { Head, } from 'fresh/runtime'
+import { page, } from 'fresh'
 import { define, } from '../main.ts'
 import { Button, Link, TextButton, } from '@workspace/ui'
+import { makeCoinBalanceService, } from '../services/CoinBalanceService.ts'
+import type { CoinBalance, } from '../services/CoinBalanceService.ts'
 
-export default define.page(function Home(_ctx,) {
-  return (
-    <div class='px-4 py-8 mx-auto min-h-screen'>
-      <Head>
-        <title>Kids Coin Manager</title>
-      </Head>
-      <div class='max-w-screen-md mx-auto flex flex-col items-center justify-center'>
-        <h1 class='text-4xl font-bold'>Kids Coin Manager</h1>
-        <nav class='mt-8 flex flex-col gap-4'>
-          <a
-            href='/timer'
-            class='px-6 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 text-center'
-          >
-            Timer
-          </a>
-          <a
-            href='/stamps'
-            class='px-6 py-3 bg-green-500 text-white rounded-lg hover:bg-green-600 text-center'
-          >
-            Stamps
-          </a>
-          <a
-            href='/coin-types'
-            class='px-6 py-3 bg-purple-500 text-white rounded-lg hover:bg-purple-600 text-center'
-          >
-            コイン種類管理
-          </a>
-        </nav>
-      </div>
-      <Button>ButtonExample</Button>
-      <TextButton>TextButtonExample</TextButton>
-      <Link href='/timer'>Link Sample</Link>
-    </div>
-  )
+const handler = define.handlers({
+  async GET(ctx,) {
+    const service = makeCoinBalanceService({ kv: ctx.state.kv, },)
+    const balances = await service.listBalances(
+      ctx.state.me.familyId,
+      ctx.state.me.userId,
+    )
+    return page({ balances, },)
+  },
 },)
+
+const Dashboard = define.page<typeof handler>(
+  function Dashboard({ data, },) {
+    const { balances, } = data
+
+    return (
+      <div class='px-4 py-8 mx-auto min-h-screen'>
+        <Head>
+          <title>Kids Coin Manager</title>
+        </Head>
+        <div class='max-w-screen-md mx-auto flex flex-col items-center justify-center'>
+          <h1 class='text-4xl font-bold'>Kids Coin Manager</h1>
+
+          <section class='mt-8 w-full'>
+            <h2 class='text-2xl font-bold mb-4'>コイン残高</h2>
+            {balances.length === 0
+              ? <p class='text-gray-500'>コイン種類が登録されていません</p>
+              : (
+                <ul class='flex flex-col gap-2'>
+                  {balances.map((balance: CoinBalance,) => (
+                    <li
+                      key={balance.coinTypeId}
+                      class='p-4 border border-gray-200 rounded flex justify-between items-center'
+                    >
+                      <span class='font-medium'>{balance.name}</span>
+                      <span class='text-2xl font-bold'>{balance.amount}枚</span>
+                    </li>
+                  ))}
+                </ul>
+              )}
+          </section>
+
+          <nav class='mt-8 flex flex-col gap-4 w-full'>
+            <a
+              href='/timer'
+              class='px-6 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 text-center'
+            >
+              Timer
+            </a>
+            <a
+              href='/stamps'
+              class='px-6 py-3 bg-green-500 text-white rounded-lg hover:bg-green-600 text-center'
+            >
+              Stamps
+            </a>
+            <a
+              href='/coin-types'
+              class='px-6 py-3 bg-purple-500 text-white rounded-lg hover:bg-purple-600 text-center'
+            >
+              コイン種類管理
+            </a>
+          </nav>
+        </div>
+        <Button>ButtonExample</Button>
+        <TextButton>TextButtonExample</TextButton>
+        <Link href='/timer'>Link Sample</Link>
+      </div>
+    )
+  },
+)
+
+export { handler, }
+export default Dashboard
