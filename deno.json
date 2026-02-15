@@ -8,6 +8,7 @@
     "./packages/types",
     "./packages/foundations",
     "./packages/data",
+    "./packages/icons",
     "./packages/lint-plugins"
   ],
   "tasks": {
