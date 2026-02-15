@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, it, } from '@std/testing/bdd'
-import { assertEquals, assertExists, assertRejects, } from '@std/assert'
+import { assertEquals, assertExists, } from '@std/assert'
 import { makeCoinUseCase, } from './CoinUseCase.ts'
 import { cleanupTestKv, createCoin, setupTestKv, } from '../test-helpers/mod.ts'
 import { COIN_TRANSACTION_PREFIX_KEY, } from '../CoinTransaction.ts'
@@ -167,56 +167,52 @@ describe('CoinUseCase#decreaseBy', () => {
     assertEquals(transactions.length, 3,)
   })
 
-  it('should throw error when coin does not exist', async () => {
-    await assertRejects(
-      async () => {
-        await useCase.decreaseBy(
-          'user-1',
-          'family-1',
-          'non-existent-cointype',
-          {
-            amount: 100,
-            transactionType: 'use',
-            metadata: { type: 'use', },
-          },
-        )
+  it('should create coin and go negative when coin does not exist', async () => {
+    const result = await useCase.decreaseBy(
+      'user-1',
+      'family-1',
+      'non-existent-cointype',
+      {
+        amount: 100,
+        transactionType: 'use',
+        metadata: { type: 'use', },
       },
-      Error,
-      'Coin not found',
     )
+
+    assertEquals(result.amount, -100,)
+    assertEquals(result.userId, 'user-1',)
+    assertEquals(result.familyId, 'family-1',)
+    assertEquals(result.coinTypeId, 'non-existent-cointype',)
   })
 
-  it('should throw error when insufficient balance', async () => {
+  it('should allow negative balance (borrowing)', async () => {
     const userId = 'user-1'
     const familyId = 'family-1'
     const coinTypeId = 'cointype-1'
 
     await createCoin(kv, { userId, familyId, coinTypeId, amount: 500, },)
 
-    await assertRejects(
-      async () => {
-        await useCase.decreaseBy(userId, familyId, coinTypeId, {
-          amount: 600,
-          transactionType: 'use',
-          metadata: { type: 'use', },
-        },)
+    const result = await useCase.decreaseBy(
+      userId,
+      familyId,
+      coinTypeId,
+      {
+        amount: 600,
+        transactionType: 'use',
+        metadata: { type: 'use', },
       },
-      Error,
-      'Insufficient coin balance',
     )
 
-    // 残高は変わっていないことを確認
-    const retrieved = await useCase.findById(userId, familyId, coinTypeId,)
-    assertEquals(retrieved?.amount, 500,)
+    assertEquals(result.amount, -100,)
 
-    // トランザクションも保存されていないことを確認
+    // トランザクションが保存されていることを確認
     const transactions = await listTransactions(
       kv,
       userId,
       familyId,
       coinTypeId,
     )
-    assertEquals(transactions.length, 0,)
+    assertEquals(transactions.length, 1,)
   })
 
   it('should allow decreasing exact amount to reach zero', async () => {
@@ -283,23 +279,24 @@ describe('CoinUseCase#increaseBy', () => {
     assertExists(transactions[0].updatedAt,)
   })
 
-  it('should throw error when coin does not exist', async () => {
-    await assertRejects(
-      async () => {
-        await useCase.increaseBy(
-          'user-1',
-          'family-1',
-          'non-existent-cointype',
-          {
-            amount: 100,
-            transactionType: 'daily_distribution',
-            metadata: { type: 'daily_distribution', },
-          },
-        )
+  it('should create coin when it does not exist', async () => {
+    const result = await useCase.increaseBy(
+      'user-1',
+      'family-1',
+      'new-cointype',
+      {
+        amount: 100,
+        transactionType: 'daily_distribution',
+        metadata: { type: 'daily_distribution', },
       },
-      Error,
-      'Coin not found',
     )
+
+    assertEquals(result.amount, 100,)
+    assertEquals(result.userId, 'user-1',)
+    assertEquals(result.familyId, 'family-1',)
+    assertEquals(result.coinTypeId, 'new-cointype',)
+    assertExists(result.id,)
+    assertExists(result.createdAt,)
   })
 
   it('should increase from zero balance', async () => {

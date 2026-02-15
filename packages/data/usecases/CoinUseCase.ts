@@ -2,7 +2,7 @@ import { COIN_PREFIX_KEY, } from '../Coin.ts'
 import type { CoinDataModel, } from '../Coin.ts'
 import { COIN_TRANSACTION_PREFIX_KEY, } from '../CoinTransaction.ts'
 import type { CoinTransactionDataModel, } from '../CoinTransaction.ts'
-import { getTimestamp, withRetry, } from '@workspace/foundations'
+import { generateUuid, getTimestamp, withRetry, } from '@workspace/foundations'
 
 interface CoinUseCaseInterface {
   increaseBy(
@@ -44,6 +44,7 @@ const makeCoinUseCase = (
       CoinTransactionDataModel,
       'transactionType' | 'metadata'
     >,
+    options?: { allowCreate?: boolean },
   ): Promise<CoinDataModel> => {
     return await withRetry(async () => {
       const currentEntry = await deps.kv.get<CoinDataModel>([
@@ -53,30 +54,33 @@ const makeCoinUseCase = (
         coinTypeId,
       ],)
 
-      if (currentEntry.value === null) {
+      if (currentEntry.value === null && options?.allowCreate !== true) {
         throw new Error(
           `Coin not found for userId: ${userId}, familyId: ${familyId}, coinTypeId: ${coinTypeId}`,
         )
       }
 
-      const newAmount = currentEntry.value.amount + delta
+      const now = getTimestamp()
 
-      if (newAmount < 0) {
-        throw new Error(
-          `Insufficient coin balance. Current: ${currentEntry.value.amount}, Required: ${
-            Math.abs(delta,)
-          }`,
-        )
+      const baseCoin: CoinDataModel = currentEntry.value ?? {
+        id: generateUuid(),
+        userId,
+        familyId,
+        coinTypeId,
+        amount: 0,
+        createdAt: now,
+        updatedAt: now,
       }
+
+      const newAmount = baseCoin.amount + delta
 
       const updatedCoin: CoinDataModel = {
-        ...currentEntry.value,
+        ...baseCoin,
         amount: newAmount,
-        updatedAt: getTimestamp(),
+        updatedAt: now,
       }
 
-      const timestamp = getTimestamp()
-      const transactionId = crypto.randomUUID()
+      const transactionId = generateUuid()
 
       const transaction: CoinTransactionDataModel = {
         id: transactionId,
@@ -87,8 +91,8 @@ const makeCoinUseCase = (
         balance: newAmount,
         transactionType: transactionInfo.transactionType,
         metadata: transactionInfo.metadata,
-        createdAt: timestamp,
-        updatedAt: timestamp,
+        createdAt: now,
+        updatedAt: now,
       }
 
       const res = await deps.kv.atomic()
@@ -130,6 +134,7 @@ const makeCoinUseCase = (
         transactionType: properties.transactionType,
         metadata: properties.metadata,
       },
+      { allowCreate: true, },
     )
   }
 
@@ -152,6 +157,7 @@ const makeCoinUseCase = (
         transactionType: properties.transactionType,
         metadata: properties.metadata,
       },
+      { allowCreate: true, },
     )
   }
 
