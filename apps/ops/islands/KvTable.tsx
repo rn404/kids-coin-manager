@@ -1,4 +1,59 @@
 import { useSignal, } from '@preact/signals'
+import { Icon, } from '@workspace/ui'
+
+const EditButton = ({ onClick, }: {
+  onClick?: () => void
+},) => {
+  return (
+    <button
+      type='button'
+      onClick={() => onClick()}
+      aria-label='Edit'
+      class='px-2 py-1 text-xs bg-blue-100 text-blue-700 rounded hover:bg-blue-200 cursor-pointer'
+    >
+      <Icon name='Edit' />
+    </button>
+  )
+}
+
+const DeleteModeToggle = ({ active, onClick, }: {
+  active: boolean
+  onClick?: () => void
+},) => {
+  return (
+    <button
+      type='button'
+      onClick={() => onClick()}
+      aria-label={active ? 'Cancel delete' : 'Delete'}
+      class={`px-2 py-1 text-xs rounded cursor-pointer ${
+        active
+          ? 'bg-gray-300 text-gray-700 hover:bg-gray-400'
+          : 'bg-red-100 text-red-700 hover:bg-red-200'
+      }`}
+    >
+      <Icon name={active ? 'ArrowBack' : 'TrashX'} />
+    </button>
+  )
+}
+
+const SelectToggle = ({ selected, onClick, }: {
+  selected: boolean
+  onClick?: () => void
+},) => {
+  return (
+    <button
+      type='button'
+      onClick={() => onClick()}
+      aria-label={selected ? 'Deselect' : 'Select'}
+      class='cursor-pointer'
+    >
+      <Icon
+        name={selected ? 'SquareCheck' : 'Square'}
+        class={selected ? 'text-red-600' : 'text-gray-400'}
+      />
+    </button>
+  )
+}
 
 interface KvEntry {
   key: Array<string | number>
@@ -55,6 +110,11 @@ export default function KvTable({ prefix, entries, }: KvTableProps,) {
 
   const handleDelete = async () => {
     if (selectedKeys.value.size === 0) return
+
+    const ok = globalThis.confirm(
+      `${selectedKeys.value.size}件のアイテムを削除しますか？`,
+    )
+    if (ok === false) return
 
     const keysToDelete = [...selectedKeys.value,].map(
       (i,) => entries[i].key,
@@ -132,37 +192,27 @@ export default function KvTable({ prefix, entries, }: KvTableProps,) {
             type='button'
             onClick={handleDelete}
             disabled={isDeleting.value}
-            class='px-3 py-1 text-sm bg-red-600 text-white rounded hover:bg-red-700 cursor-pointer disabled:opacity-50'
+            class='px-3 py-1 text-sm bg-red-600 text-white rounded hover:bg-red-700 cursor-pointer disabled:opacity-50 flex items-center gap-2'
           >
             {isDeleting.value
-              ? '削除中...'
-              : `${selectedKeys.value.size}件を削除`}
+              ? 'Deleting...'
+              : `Selected: ${selectedKeys.value.size} item(s)`}
+            <Icon name='TrashX' class='inline' />
           </button>
         )}
-        <button
-          type='button'
+        <DeleteModeToggle
+          active={deleteMode.value}
           onClick={toggleDeleteMode}
-          class={`px-3 py-1 text-sm rounded cursor-pointer ${
-            deleteMode.value
-              ? 'bg-gray-300 text-gray-700 hover:bg-gray-400'
-              : 'bg-red-100 text-red-700 hover:bg-red-200'
-          }`}
-        >
-          {deleteMode.value ? 'キャンセル' : '削除'}
-        </button>
+        />
       </div>
 
       <div class='overflow-x-auto'>
         <table class='w-full bg-white rounded-lg shadow text-sm'>
           <thead>
             <tr class='bg-gray-100 text-left'>
-              {deleteMode.value && <th class='px-4 py-2 w-8' />}
               <th class='px-4 py-2 font-semibold'>#</th>
               <th class='px-4 py-2 font-semibold'>Key</th>
               <th class='px-4 py-2 font-semibold'>Value</th>
-              {deleteMode.value === false && (
-                <th class='px-4 py-2 font-semibold w-16' />
-              )}
             </tr>
           </thead>
           <tbody>
@@ -173,17 +223,8 @@ export default function KvTable({ prefix, entries, }: KvTableProps,) {
                   selectedKeys.value.has(i,) ? 'bg-red-50' : ''
                 } ${editingIndex.value === i ? 'bg-blue-50' : ''}`}
               >
-                {deleteMode.value && (
-                  <td class='px-4 py-2'>
-                    <input
-                      type='checkbox'
-                      checked={selectedKeys.value.has(i,)}
-                      onChange={() => toggleSelection(i,)}
-                    />
-                  </td>
-                )}
                 <td class='px-4 py-2 text-gray-400'>{i + 1}</td>
-                <td class='px-4 py-2 font-mono text-xs whitespace-nowrap align-top'>
+                <td class='px-4 py-2 font-mono text-xs align-top'>
                   {JSON.stringify(entry.key,)}
                 </td>
                 <td class='px-4 py-2'>
@@ -191,7 +232,7 @@ export default function KvTable({ prefix, entries, }: KvTableProps,) {
                     ? (
                       <div class='flex flex-col gap-2'>
                         <textarea
-                          class='w-full font-mono text-xs border border-gray-300 rounded p-2 min-h-[120px]'
+                          class='w-full font-mono text-xs border border-gray-300 rounded p-2 min-h-30'
                           value={editValue.value}
                           onInput={(e,) =>
                             editValue.value =
@@ -209,37 +250,38 @@ export default function KvTable({ prefix, entries, }: KvTableProps,) {
                             disabled={isSaving.value}
                             class='px-3 py-1 text-sm bg-blue-600 text-white rounded hover:bg-blue-700 cursor-pointer disabled:opacity-50'
                           >
-                            {isSaving.value ? '保存中...' : '保存'}
+                            {isSaving.value ? 'Saving...' : 'Save'}
                           </button>
                           <button
                             type='button'
                             onClick={cancelEdit}
                             class='px-3 py-1 text-sm bg-gray-200 text-gray-700 rounded hover:bg-gray-300 cursor-pointer'
                           >
-                            キャンセル
+                            Cancel
                           </button>
                         </div>
                       </div>
                     )
                     : (
-                      <pre class='font-mono text-xs whitespace-pre-wrap max-w-3xl overflow-auto'>
-                        {JSON.stringify(entry.value, null, 2,)}
-                      </pre>
+                      <div class='flex gap-2'>
+                        <pre class='font-mono text-xs whitespace-pre-wrap max-w-3xl overflow-auto rounded p-1 bg-neutral-100'>
+                          {JSON.stringify(entry.value, null, 2,)}
+                        </pre>
+                        <div class='flex flex-col shrink-0 w-10 items-center'>
+                          {deleteMode.value === false &&
+                            editingIndex.value !== i && (
+                            <EditButton onClick={() => startEdit(i,)} />
+                          )}
+                          {deleteMode.value && (
+                            <SelectToggle
+                              selected={selectedKeys.value.has(i,)}
+                              onClick={() => toggleSelection(i,)}
+                            />
+                          )}
+                        </div>
+                      </div>
                     )}
                 </td>
-                {deleteMode.value === false && (
-                  <td class='px-4 py-2 align-top'>
-                    {editingIndex.value !== i && (
-                      <button
-                        type='button'
-                        onClick={() => startEdit(i,)}
-                        class='px-2 py-1 text-xs bg-blue-100 text-blue-700 rounded hover:bg-blue-200 cursor-pointer'
-                      >
-                        編集
-                      </button>
-                    )}
-                  </td>
-                )}
               </tr>
             ))}
           </tbody>

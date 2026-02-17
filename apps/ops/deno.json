@@ -5,6 +5,7 @@
     "start": "deno serve -A _fresh/server.js"
   },
   "imports": {
+    "@workspace/ui": "../../packages/ui/mod.ts",
     "@workspace/data": "../../packages/data/mod.ts",
     "@workspace/foundations": "../../packages/foundations/mod.ts",
     "fresh": "jsr:@fresh/core@^2.2.0",

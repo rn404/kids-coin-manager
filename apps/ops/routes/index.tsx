@@ -37,7 +37,9 @@ export default define.page<typeof handler>(function Index({ data, },) {
   const { counts, } = data
   return (
     <div class='max-w-2xl mx-auto'>
-      <h1 class='text-2xl font-bold mb-6'>Models</h1>
+      <h1 class='text-2xl font-bold mb-6'>
+        Models
+      </h1>
       <div class='grid gap-4'>
         {KV_PREFIXES.map(({ prefix, label, }, i,) => (
           <a
