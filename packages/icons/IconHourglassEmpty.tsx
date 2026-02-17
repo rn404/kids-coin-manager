@@ -13,7 +13,7 @@ export function IconHourglassEmpty(
       stroke-width='2'
       stroke-linecap='round'
       stroke-linejoin='round'
-      class='icon icon-tabler icons-tabler-outline icon-tabler-hourglass-empty'
+      class={props.class}
     >
       <path stroke='none' d='M0 0h24v24H0z' fill='none' />
       <path d='M6 20v-2a6 6 0 1 1 12 0v2a1 1 0 0 1 -1 1h-10a1 1 0 0 1 -1 -1' />
