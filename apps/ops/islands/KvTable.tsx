@@ -7,7 +7,7 @@ const EditButton = ({ onClick, }: {
   return (
     <button
       type='button'
-      onClick={() => onClick()}
+      onClick={() => onClick?.()}
       aria-label='Edit'
       class='px-2 py-1 text-xs bg-blue-100 text-blue-700 rounded hover:bg-blue-200 cursor-pointer'
     >
@@ -23,7 +23,7 @@ const DeleteModeToggle = ({ active, onClick, }: {
   return (
     <button
       type='button'
-      onClick={() => onClick()}
+      onClick={() => onClick?.()}
       aria-label={active ? 'Cancel delete' : 'Delete'}
       class={`px-2 py-1 text-xs rounded cursor-pointer ${
         active
@@ -43,7 +43,7 @@ const SelectToggle = ({ selected, onClick, }: {
   return (
     <button
       type='button'
-      onClick={() => onClick()}
+      onClick={() => onClick?.()}
       aria-label={selected ? 'Deselect' : 'Select'}
       class='cursor-pointer'
     >
