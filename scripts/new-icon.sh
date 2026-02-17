@@ -21,20 +21,33 @@ fi
 # PascalCase -> kebab-case (e.g. TrashX -> trash-x)
 KEBAB_NAME=$(echo "$ICON_NAME" | sed 's/\([A-Z]\)/-\1/g' | sed 's/^-//' | tr '[:upper:]' '[:lower:]')
 
-# 1. Create icon component with placeholder
+echo "Paste SVG from Tabler Icons, then press Ctrl+D:"
+echo "  https://tabler.io/icons/icon/${KEBAB_NAME}"
+echo ""
+
+# Read SVG from stdin
+SVG=$(cat)
+
+# Replace width/height with props, add class, remove fixed color
+SVG=$(echo "$SVG" \
+  | sed 's/width="[^"]*"/width={props.size}/' \
+  | sed 's/height="[^"]*"/height={props.size}/' \
+  | sed 's|/>$|class={props.class}\n/>|' \
+  | sed 's/ color="[^"]*"//')
+
+# 1. Create icon component
 cat > "$ICON_FILE" << TEMPLATE
 // Icon from Tabler Icons (MIT License) https://tabler.io/icons
 export function Icon${ICON_NAME}(
   props: { size?: number | string; class?: string },
 ) {
   return (
-    // TODO: paste <svg> here
-    // Add to <svg>: width={props.size} height={props.size} class={props.class}
+    ${SVG}
   )
 }
 TEMPLATE
 
-# 2. Update mod.ts using temporary file
+# 2. Update mod.ts
 TMP_FILE=$(mktemp)
 awk -v name="$ICON_NAME" '
   # Insert import before the empty line separating imports from const
@@ -46,9 +59,9 @@ awk -v name="$ICON_NAME" '
   /^} as const/ {
     print "  " name ": Icon" name ","
   }
-  # Add to export line
-  /^export \{/ && !/type/ {
-    sub(/export \{ /, "export { Icon" name ", ")
+  # Add to export after "icons,"
+  /icons,/ {
+    print; print "  Icon" name ","; next
   }
   { print }
 ' "$MOD_FILE" > "$TMP_FILE"
@@ -57,8 +70,6 @@ mv "$TMP_FILE" "$MOD_FILE"
 # 3. Format
 deno fmt "$ICON_FILE" "$MOD_FILE" > /dev/null 2>&1
 
+echo ""
 echo "Created: $ICON_FILE"
 echo "Updated: $MOD_FILE"
-echo ""
-echo "Next: Open the Tabler Icons page and copy the <path> elements into $ICON_FILE"
-echo "  https://tabler.io/icons/icon/${KEBAB_NAME}"
