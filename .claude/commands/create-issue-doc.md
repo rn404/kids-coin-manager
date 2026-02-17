@@ -5,57 +5,12 @@ argument-hint: '<brief summary>'
 
 Create a new issue document:
 
-1. Ask the user for additional context if the summary is too brief
-2. Generate filename: `YYYY-MM-DD_<sanitized-summary>.md`
-3. Create the file in `/docs/issues/` with this template:
-
-\`\`\`markdown
-
-# [Summary from user input]
-
-**Created**: YYYY-MM-DD
-**Status**: Draft
-
-## Problem / Goal
-
-[To be filled through conversation with user]
-
-## Context
-
-[Background information]
-
-## Acceptance Criteria
-
-[Specific requirements from user. Concrete conditions that must be met to resolve the Problem/Goal. Detail what needs to be cleared in this issue.]
-
-- ...
-- ...
-
-## References
-
-[Links to related docs, PRs, etc]
-
----
-
-## Approach
-
-[To be filled before starting work]
-
----
-
-## Work Log
-
-### YYYY-MM-DD
-
-[Daily progress notes]
-
----
-
-## Feedback
-
-[Post-completion reflection. User reviews, validity of changes, lessons learned, discussions about decisions made.]
-
-\`\`\`
-
-4. Open an interactive conversation to fill in the Problem/Goal and Context sections
-5. Present the created file when done
+1. Read `/docs/issues/_Rules.md` to understand the naming convention, status definitions, and document format
+2. Ask the user for additional context if the summary is too brief
+3. Generate filename following the naming convention in `_Rules.md`
+4. Create the file in `/docs/issues/` following the document format defined in `_Rules.md`
+   - Set Status to `Draft`
+   - Fill in Summary based on the user's input and conversation
+   - Leave other sections empty or with minimal placeholder content appropriate for Draft status
+5. Open an interactive conversation to flesh out the Summary section
+6. Present the created file when done
