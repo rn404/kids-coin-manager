@@ -28,11 +28,11 @@ echo ""
 # Read SVG from stdin
 SVG=$(cat)
 
-# Replace width/height with props, add class, remove fixed color
+# Replace width/height/class with props, remove fixed color
 SVG=$(echo "$SVG" \
   | sed 's/width="[^"]*"/width={props.size}/' \
   | sed 's/height="[^"]*"/height={props.size}/' \
-  | sed 's|/>$|class={props.class}\n/>|' \
+  | sed 's/class="[^"]*"/class={props.class}/' \
   | sed 's/ color="[^"]*"//')
 
 # 1. Create icon component
