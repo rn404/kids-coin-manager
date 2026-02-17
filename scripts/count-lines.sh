@@ -60,4 +60,7 @@ echo "| **Total** | **${total}** |" >>"$table_file"
 mv "${README}.tmp" "$README"
 rm -f "$table_file"
 
+# Format
+deno fmt $README
+
 echo "Updated $README (total: ${total} lines)"
