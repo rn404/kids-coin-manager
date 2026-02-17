@@ -5,6 +5,8 @@ Kids coin manager
 ## Tech Stack
 
 - Deno
+- Deno KV
+- Deno Deploy (tentative)
 - Fresh v2 (Web Framework)
 - Tailwind (CSS Framework)
 
@@ -22,4 +24,13 @@ This project uses a Deno workspace-based monorepo structure.
 - `/docs/reports` - Technical research reports. Research reports should be saved to here.
 - `/docs/issues` - Issue documents
 - `/apps/web` - Main application of this repository
+- `/apps/ops` - Operations / admin dashboard
 - `/packages` - Shared packages used across applications
+  - `/packages/data` - Data models and KV access
+  - `/packages/foundations` - Foundation utilities
+  - `/packages/icons` - Icon components (Tabler Icons based)
+  - `/packages/lint-plugins` - Custom lint plugins
+  - `/packages/tokens` - Design tokens
+  - `/packages/types` - Shared type definitions
+  - `/packages/ui` - Shared UI components
+  - `/packages/utils` - Shared utility functions
