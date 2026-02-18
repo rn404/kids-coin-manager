@@ -1,8 +1,5 @@
 {
   "name": "@workspace/icons",
   "version": "0.1.0",
-  "exports": "./mod.ts",
-  "imports": {
-    "preact": "npm:preact@^10.27.2"
-  }
+  "exports": "./mod.ts"
 }

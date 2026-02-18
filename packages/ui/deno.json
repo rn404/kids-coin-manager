@@ -3,7 +3,6 @@
   "version": "0.1.0",
   "exports": "./mod.ts",
   "imports": {
-    "@workspace/icons": "../../packages/icons/mod.ts",
-    "preact": "npm:preact@^10.27.2"
+    "@workspace/icons": "../../packages/icons/mod.ts"
   }
 }
