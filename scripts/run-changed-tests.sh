@@ -51,5 +51,5 @@ echo ""
 
 while IFS= read -r tf; do
   echo "--- $tf ---"
-  deno test --unstable-kv "$tf"
+  deno task test "$tf"
 done <<< "$test_files"
