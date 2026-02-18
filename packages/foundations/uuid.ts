@@ -1,5 +1,6 @@
-import type { UuidV7, } from '@workspace/types'
 import { v7, } from '@std/uuid'
+
+type UuidV7 = string
 
 const isUuid = (value: unknown,): value is UuidV7 => {
   return v7.validate(value as string,)
@@ -10,3 +11,4 @@ const generateUuid = (): UuidV7 => {
 }
 
 export { generateUuid, isUuid, }
+export type { UuidV7, }

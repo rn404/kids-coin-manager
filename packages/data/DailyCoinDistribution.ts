@@ -1,4 +1,5 @@
-import type { DataModel, ISODateString, } from '@workspace/types'
+import type { DataModel, } from './DataModel.ts'
+import type { ISODateString, } from '@workspace/foundations'
 import type { CoinTypeDataModel, } from './CoinType.ts'
 
 const DAILY_COIN_DISTRIBUTION_PREFIX_KEY = 'daily_coin_distributions'

@@ -1,3 +1,4 @@
+export type { AttributeOf, DataModel, } from './DataModel.ts'
 export { COIN_PREFIX_KEY, } from './Coin.ts'
 export type { CoinDataModel, } from './Coin.ts'
 export { COIN_TYPE_PREFIX_KEY, } from './CoinType.ts'

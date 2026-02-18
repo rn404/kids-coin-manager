@@ -5,7 +5,6 @@
     "./packages/ui",
     "./packages/utils",
     "./packages/tokens",
-    "./packages/types",
     "./packages/foundations",
     "./packages/data",
     "./packages/icons",

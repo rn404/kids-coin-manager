@@ -1,4 +1,4 @@
-import type { ISODateTimeString, } from './ISODateTimeString.ts'
+import type { ISODateTimeString, } from '@workspace/foundations'
 
 interface RequiredDataModel {
   id: string

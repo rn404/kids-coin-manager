@@ -1,8 +1,5 @@
 {
   "name": "@workspace/foundations",
   "version": "0.1.0",
-  "exports": "./mod.ts",
-  "imports": {
-    "@workspace/types": "../../packages/types/mod.ts"
-  }
+  "exports": "./mod.ts"
 }

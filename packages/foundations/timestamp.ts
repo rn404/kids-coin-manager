@@ -1,4 +1,11 @@
-import type { ISODateString, ISODateTimeString, } from '@workspace/types'
+/**
+ * ISO 8601 の日付のみの文字列型（YYYY-MM-DD, UTC）
+ *
+ * @example "2026-02-11"
+ */
+type ISODateString = string
+
+type ISODateTimeString = string
 
 const isDateOnly = (value: unknown,): value is ISODateString => {
   if (typeof value !== 'string') {
@@ -54,3 +61,4 @@ const getTimestamp = (): ISODateTimeString => {
 }
 
 export { getDateOnly, getTimestamp, isDateOnly, isTimestamp, }
+export type { ISODateString, ISODateTimeString, }

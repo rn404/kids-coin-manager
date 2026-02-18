@@ -1,4 +1,4 @@
-import type { DataModel, } from '@workspace/types'
+import type { DataModel, } from './DataModel.ts'
 
 const COIN_PREFIX_KEY = 'coins'
 

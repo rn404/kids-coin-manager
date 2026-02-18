@@ -7,7 +7,7 @@ import type { CoinTypeDataModel, } from '../CoinType.ts'
 import { DAILY_COIN_DISTRIBUTION_PREFIX_KEY, } from '../DailyCoinDistribution.ts'
 import type { DailyCoinDistributionDataModel, } from '../DailyCoinDistribution.ts'
 import { generateUuid, getTimestamp, withRetry, } from '@workspace/foundations'
-import type { DatetimeWithTimezone, } from '@workspace/types'
+import type { DatetimeWithTimezone, } from '@workspace/foundations'
 
 interface CoinDistributionUseCaseInterface {
   findById(
