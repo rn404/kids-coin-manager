@@ -8,7 +8,8 @@
     "@workspace/ui": "../../packages/ui/mod.ts",
     "@workspace/data": "../../packages/data/mod.ts",
     "@workspace/foundations": "../../packages/foundations/mod.ts",
-    "@workspace/tokens": "../../packages/tokens/mod.ts"
+    "@workspace/tokens": "../../packages/tokens/mod.ts",
+    "@workspace/services": "../../packages/services/mod.ts"
   },
   "compilerOptions": {
     "lib": [

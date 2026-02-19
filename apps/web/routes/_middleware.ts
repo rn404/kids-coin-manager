@@ -1,6 +1,6 @@
 import { define, } from '../main.ts'
 import type { Me, } from '../main.ts'
-import { makeCoinDistributionService, } from '../services/CoinDistributionService.ts'
+import { makeCoinDistributionService, } from '@workspace/services'
 
 // TODO: 認証処理から取得する
 const DEFAULT_TIMEZONE = 'Asia/Tokyo'

@@ -1,0 +1,9 @@
+{
+  "name": "@workspace/services",
+  "version": "0.1.0",
+  "exports": "./mod.ts",
+  "imports": {
+    "@workspace/data": "../../packages/data/mod.ts",
+    "@workspace/foundations": "../../packages/foundations/mod.ts"
+  }
+}

@@ -2,8 +2,8 @@ import { Head, } from 'fresh/runtime'
 import { page, } from 'fresh'
 import { define, } from '../main.ts'
 import { Button, Link, TextButton, } from '@workspace/ui'
-import { makeCoinBalanceService, } from '../services/CoinBalanceService.ts'
-import type { CoinBalance, } from '../services/CoinBalanceService.ts'
+import { makeCoinBalanceService, } from '@workspace/services'
+import type { CoinBalance, } from '@workspace/services'
 
 const handler = define.handlers({
   async GET(ctx,) {
