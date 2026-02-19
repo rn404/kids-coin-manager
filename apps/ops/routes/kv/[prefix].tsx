@@ -74,6 +74,7 @@ export const handler = define.handlers({
   },
 },)
 
+// deno-lint-ignore internal/no-default-export
 export default define.page<typeof handler>(function PrefixPage({ data, },) {
   const { prefix, entries, limit, } = data
   return (

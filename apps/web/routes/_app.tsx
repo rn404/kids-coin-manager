@@ -1,6 +1,7 @@
 import { define, } from '../main.ts'
 import TimezoneCookie from '../islands/TimezoneCookie.tsx'
 
+// deno-lint-ignore internal/no-default-export
 export default define.page(function App({ Component, },) {
   return (
     <html>

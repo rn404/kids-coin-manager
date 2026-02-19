@@ -77,4 +77,5 @@ const Dashboard = define.page<typeof handler>(
 )
 
 export { handler, }
+// deno-lint-ignore internal/no-default-export
 export default Dashboard

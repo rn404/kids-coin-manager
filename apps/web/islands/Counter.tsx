@@ -5,6 +5,7 @@ interface CounterProps {
   count: Signal<number>
 }
 
+// deno-lint-ignore internal/no-default-export
 export default function Counter(props: CounterProps,) {
   return (
     <div class='flex gap-8 py-6'>

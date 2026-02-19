@@ -1,6 +1,7 @@
 import { Head, } from 'fresh/runtime'
 import { define, } from '../main.ts'
 
+// deno-lint-ignore internal/no-default-export
 export default define.page(function Stamps(_ctx,) {
   return (
     <div class='px-4 py-8 mx-auto min-h-screen'>

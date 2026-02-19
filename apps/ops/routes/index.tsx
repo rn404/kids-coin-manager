@@ -23,6 +23,7 @@ export const handler = define.handlers({
   },
 },)
 
+// deno-lint-ignore internal/no-default-export
 export default define.page<typeof handler>(function Index() {
   return (
     <div class='max-w-2xl mx-auto'>

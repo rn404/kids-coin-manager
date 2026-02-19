@@ -81,6 +81,7 @@ const stripProtectedFields = (
   return result
 }
 
+// deno-lint-ignore internal/no-default-export
 export default function KvTable({ prefix, entries, }: KvTableProps,) {
   const deleteMode = useSignal(false,)
   const selectedKeys = useSignal<Set<number>>(new Set(),)
