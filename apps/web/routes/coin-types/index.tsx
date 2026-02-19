@@ -37,7 +37,7 @@ const handler = define.handlers({
 },)
 
 const CoinTypesPage = define.page<typeof handler>(
-  function CoinTypesPage({ data, },) {
+  ({ data, },) => {
     const { coinTypes, errors, } = data
 
     return (

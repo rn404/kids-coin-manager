@@ -5,8 +5,7 @@ interface CounterProps {
   count: Signal<number>
 }
 
-// deno-lint-ignore internal/no-default-export
-export default function Counter(props: CounterProps,) {
+const Counter = (props: CounterProps,) => {
   return (
     <div class='flex gap-8 py-6'>
       <Button id='decrement' onClick={() => props.count.value -= 1}>-1</Button>
@@ -15,3 +14,6 @@ export default function Counter(props: CounterProps,) {
     </div>
   )
 }
+
+// deno-lint-ignore internal/no-default-export
+export default Counter

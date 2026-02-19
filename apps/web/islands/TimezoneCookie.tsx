@@ -1,7 +1,6 @@
 import { useEffect, } from 'preact/hooks'
 
-// deno-lint-ignore internal/no-default-export
-export default function TimezoneCookie() {
+const TimezoneCookie = () => {
   useEffect(() => {
     if (document.cookie.includes('tz=',) === false) {
       const tz = Intl.DateTimeFormat().resolvedOptions().timeZone
@@ -11,3 +10,6 @@ export default function TimezoneCookie() {
 
   return null
 }
+
+// deno-lint-ignore internal/no-default-export
+export default TimezoneCookie

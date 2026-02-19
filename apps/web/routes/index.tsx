@@ -17,7 +17,7 @@ const handler = define.handlers({
 },)
 
 const Dashboard = define.page<typeof handler>(
-  function Dashboard({ data, },) {
+  ({ data, },) => {
     const { balances, } = data
 
     return (

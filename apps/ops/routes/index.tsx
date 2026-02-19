@@ -23,8 +23,7 @@ export const handler = define.handlers({
   },
 },)
 
-// deno-lint-ignore internal/no-default-export
-export default define.page<typeof handler>(function Index() {
+const Index = define.page<typeof handler>(() => {
   return (
     <div class='max-w-2xl mx-auto'>
       <h1 class='text-2xl font-bold mb-6'>
@@ -47,3 +46,6 @@ export default define.page<typeof handler>(function Index() {
     </div>
   )
 },)
+
+// deno-lint-ignore internal/no-default-export
+export default Index
