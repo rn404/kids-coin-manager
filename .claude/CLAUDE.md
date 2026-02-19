@@ -10,6 +10,10 @@ Kids coin manager
 - Fresh v2 (Web Framework)
 - Tailwind (CSS Framework)
 
+## Style Guide
+
+See `docs/styleguide.md` for coding style conventions not enforced by lint rules.
+
 ## Tools
 
 - For GitHub operations, use `gh` CLI (not direct API calls)
