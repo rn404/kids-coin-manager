@@ -1,9 +1,9 @@
 import { Head, } from 'fresh/runtime'
 import { define, } from '../../main.ts'
 import { page, } from 'fresh'
-import { makeCoinManageService, } from '../../services/CoinManageService.ts'
+import { makeCoinManageService, } from '@workspace/services'
 import type { CoinTypeDataModel, } from '@workspace/data'
-import type { ValidationError, } from '../../services/CoinManageService.ts'
+import type { ValidationError, } from '@workspace/services'
 
 const handler = define.handlers({
   async GET(ctx,) {
