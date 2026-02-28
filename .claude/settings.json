@@ -26,5 +26,8 @@
         ]
       }
     ]
-  }
+  },
+  "enableAllProjectMcpServers": false,
+  "enabledMcpjsonServers": [],
+  "env": {}
 }
