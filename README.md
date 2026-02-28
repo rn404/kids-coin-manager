@@ -6,16 +6,17 @@
 
 | Package                 |    Lines |
 | ----------------------- | -------: |
-| `apps/ops`              |      538 |
-| `apps/web`              |      618 |
-| `packages/data`         |     2088 |
+| `apps/ops`              |      560 |
+| `apps/web`              |      504 |
+| `packages/data`         |     2112 |
 | `packages/foundations`  |      819 |
-| `packages/icons`        |      321 |
-| `packages/lint-plugins` |      143 |
+| `packages/icons`        |      372 |
+| `packages/lint-plugins` |      221 |
+| `packages/services`     |      382 |
 | `packages/tokens`       |       30 |
-| `packages/ui`           |       67 |
+| `packages/ui`           |      176 |
 | `packages/utils`        |        5 |
-| **Total**               | **4629** |
+| **Total**               | **5181** |
 
 <!-- loc-end -->
 
