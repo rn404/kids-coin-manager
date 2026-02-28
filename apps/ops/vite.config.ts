@@ -6,7 +6,12 @@ const port = Number(Deno.env.get('PORT',),) || undefined
 
 // deno-lint-ignore internal/no-default-export
 export default defineConfig({
-  server: { port, },
+  server: {
+    port,
+    watch: {
+      ignored: ['!**/packages/**',],
+    },
+  },
   plugins: [
     fresh(),
     tailwindcss(),
