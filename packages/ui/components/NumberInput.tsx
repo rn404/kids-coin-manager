@@ -80,7 +80,7 @@ export const NumberInput = ({
         placeholder={placeholder}
         disabled={disabled}
         onInput={handleInputChange}
-        class='w-full px-2 py-1 pr-22 text-right bg-transparent disabled:cursor-not-allowed [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none'
+        class='w-full p-2 pr-22 text-right bg-transparent disabled:cursor-not-allowed [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none'
         aria-label='数値入力'
       />
       <div class='flex top-0 right-0 absolute h-full'>
