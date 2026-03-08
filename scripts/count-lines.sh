@@ -64,3 +64,9 @@ rm -f "$table_file"
 deno fmt $README
 
 echo "Updated $README (total: ${total} lines)"
+
+# Commit the updated README
+git add "$README"
+git diff --cached --quiet && echo "No changes to commit" && exit 0
+git commit -m "chore(loc): update lines of code in README"
+echo "Committed $README"
