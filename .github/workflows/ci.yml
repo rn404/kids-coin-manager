@@ -10,6 +10,7 @@ on:
       - 'deno.lock'
       - 'scripts/**'
       - '.github/workflows/**'
+      - 'mise.toml'
   pull_request:
     branches: [main]
     paths:
@@ -19,6 +20,7 @@ on:
       - 'deno.lock'
       - 'scripts/**'
       - '.github/workflows/**'
+      - 'mise.toml'
 
 permissions:
   contents: read
