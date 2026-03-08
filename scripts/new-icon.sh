@@ -12,6 +12,7 @@ fi
 ICON_NAME="${1#Icon}"
 ICON_FILE="packages/icons/Icon${ICON_NAME}.tsx"
 MOD_FILE="packages/icons/mod.ts"
+EXAMPLE_FILE="packages/ui/examples/Icon.tsx"
 
 if [ -f "$ICON_FILE" ]; then
   echo "Error: $ICON_FILE already exists"
@@ -67,9 +68,20 @@ awk -v name="$ICON_NAME" '
 ' "$MOD_FILE" > "$TMP_FILE"
 mv "$TMP_FILE" "$MOD_FILE"
 
-# 3. Format
-deno fmt "$ICON_FILE" "$MOD_FILE" > /dev/null 2>&1
+# 3. Update Icon example
+TMP_FILE=$(mktemp)
+awk -v name="$ICON_NAME" '
+  /^]$/ {
+    print "  '"'"'" name "'"'"',"
+  }
+  { print }
+' "$EXAMPLE_FILE" > "$TMP_FILE"
+mv "$TMP_FILE" "$EXAMPLE_FILE"
+
+# 4. Format
+deno fmt "$ICON_FILE" "$MOD_FILE" "$EXAMPLE_FILE" > /dev/null 2>&1
 
 echo ""
 echo "Created: $ICON_FILE"
 echo "Updated: $MOD_FILE"
+echo "Updated: $EXAMPLE_FILE"
