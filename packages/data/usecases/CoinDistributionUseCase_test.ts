@@ -271,6 +271,69 @@ describe('CoinDistributionUseCase#ensure', () => {
     assertEquals(coin!.amount, 12,)
   })
 
+  it('should skip CoinTypes with dailyDistribution of 0', async () => {
+    const ct = await createCoinType(kv, {
+      familyId: 'family-1',
+      name: 'ゼロ配布コイン',
+      dailyDistribution: 0,
+    },)
+
+    await useCase.ensure(
+      'family-1',
+      'user-1',
+      createDatetimeWithTimezone('2026-02-14T00:00:00.000Z', 'Asia/Tokyo',),
+    )
+
+    // distributions には記録されない
+    const result = await useCase.findById(
+      'family-1',
+      'user-1',
+      '2026-02-14',
+    )
+    assertEquals(result, {},)
+
+    // Coin も作成されない
+    const coinUseCase = makeCoinUseCase({ kv, },)
+    const coin = await coinUseCase.findById('user-1', 'family-1', ct.id,)
+    assertEquals(coin, null,)
+  })
+
+  it('should only distribute CoinTypes with dailyDistribution > 0 when mixed', async () => {
+    const ctPositive = await createCoinType(kv, {
+      familyId: 'family-1',
+      name: 'テレビコイン',
+      dailyDistribution: 3,
+    },)
+    const ctZero = await createCoinType(kv, {
+      familyId: 'family-1',
+      name: 'ゼロ配布コイン',
+      dailyDistribution: 0,
+    },)
+
+    await useCase.ensure(
+      'family-1',
+      'user-1',
+      createDatetimeWithTimezone('2026-02-14T00:00:00.000Z', 'Asia/Tokyo',),
+    )
+
+    const result = await useCase.findById(
+      'family-1',
+      'user-1',
+      '2026-02-14',
+    )
+    assertEquals(Object.keys(result!,).length, 1,)
+    assertEquals(result![ctPositive.id].amount, 3,)
+
+    // 0 配布のコインは Coin 未作成
+    const coinUseCase = makeCoinUseCase({ kv, },)
+    const coinZero = await coinUseCase.findById(
+      'user-1',
+      'family-1',
+      ctZero.id,
+    )
+    assertEquals(coinZero, null,)
+  })
+
   it('should not distribute when summaryDate is before latest distribution', async () => {
     await createCoinType(kv, {
       familyId: 'family-1',

@@ -159,6 +159,9 @@ const makeCoinDistributionUseCase = (
         }
 
         const amount = coinType.dailyDistribution * days
+
+        if (amount === 0) continue
+
         const newAmount = baseCoin.amount + amount
 
         distributions[coinType.id] = { amount, }
