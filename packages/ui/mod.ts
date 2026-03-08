@@ -7,3 +7,4 @@ export * from './components/NumberInput.tsx'
 // Examples
 export * from './examples/Icon.tsx'
 export * from './examples/NumberInput.tsx'
+export * from './examples/Link.tsx'
