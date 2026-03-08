@@ -10,6 +10,15 @@ on:
       - 'deno.lock'
       - 'scripts/**'
       - '.github/workflows/**'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'apps/**'
+      - 'packages/**'
+      - 'deno.json'
+      - 'deno.lock'
+      - 'scripts/**'
+      - '.github/workflows/**'
 
 permissions:
   contents: read
