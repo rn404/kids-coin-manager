@@ -1,16 +1,25 @@
 import { icons, } from '@workspace/icons'
 import type { IconName, } from '@workspace/icons'
 
-export interface IconProps {
-  size?: number | string
-  class?: string
-}
-
-interface Props extends IconProps {
+function Icon({ name, size = 24, ...rest }: {
+  /**
+   * IconName
+   */
   name: IconName
-}
 
-export function Icon({ name, size = 24, ...rest }: Props,) {
+  /**
+   * Icon size
+   * @default 24
+   */
+  size?: number | string
+
+  /**
+   * Component class
+   */
+  class?: string
+},) {
   const Component = icons[name]
   return <Component size={size} {...rest} />
 }
+
+export { Icon, }
