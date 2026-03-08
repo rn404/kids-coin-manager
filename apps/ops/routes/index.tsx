@@ -30,6 +30,13 @@ const Index = define.page<typeof handler>(() => {
         Models
       </h1>
       <div class='grid gap-4'>
+        <a
+          href='/showcases'
+          class='block bg-white rounded-lg shadow p-4 hover:shadow-md transition-shadow'
+        >
+          <div class='font-semibold text-lg'>Showcases</div>
+          <div class='text-sm text-gray-500'>UI Components</div>
+        </a>
         {KV_PREFIXES.map(({ prefix, label, },) => (
           <a
             key={prefix}
