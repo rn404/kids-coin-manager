@@ -1,5 +1,4 @@
 {
-  "unstable": ["kv"],
   "tasks": {
     "dev": "deno run -A --unstable-kv --env-file npm:vite",
     "build": "vite build",
