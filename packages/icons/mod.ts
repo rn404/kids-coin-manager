@@ -11,6 +11,7 @@ import { IconSquare, } from './IconSquare.tsx'
 import { IconSquareCheck, } from './IconSquareCheck.tsx'
 import { IconPlus, } from './IconPlus.tsx'
 import { IconMinus, } from './IconMinus.tsx'
+import { IconExternalLink, } from './IconExternalLink.tsx'
 
 const icons = {
   Coin: IconCoin,
@@ -26,6 +27,7 @@ const icons = {
   SquareCheck: IconSquareCheck,
   Plus: IconPlus,
   Minus: IconMinus,
+  ExternalLink: IconExternalLink,
 } as const
 
 type IconName = keyof typeof icons
@@ -36,6 +38,7 @@ export {
   IconCircle,
   IconCoin,
   IconEdit,
+  IconExternalLink,
   IconHourglassEmpty,
   IconMinus,
   IconPlus,
