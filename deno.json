@@ -1,5 +1,7 @@
 {
-  "unstable": ["kv"],
+  "unstable": [
+    "kv"
+  ],
   "workspace": [
     "./apps/web",
     "./apps/ops",
@@ -15,7 +17,7 @@
   "tasks": {
     "autofix": "deno fmt && deno lint",
     "test": "deno test --unstable-kv",
-    "precommit": "deno task autofix && deno check && ./scripts/run-changed-tests.sh",
+    "precommit": "deno task autofix && deno check -q && ./scripts/run-changed-tests.sh",
     "serve:web": "cd apps/web && deno task dev",
     "serve:ops": "cd apps/ops && deno task dev",
     "build": "cd apps/web && deno task build",

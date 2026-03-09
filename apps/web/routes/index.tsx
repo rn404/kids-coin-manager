@@ -1,7 +1,6 @@
 import { Head, } from 'fresh/runtime'
 import { page, } from 'fresh'
 import { define, } from '../main.ts'
-import { Button, Link, TextButton, } from '@workspace/ui'
 import { makeCoinBalanceService, } from '@workspace/services'
 import type { CoinBalance, } from '@workspace/services'
 
@@ -68,14 +67,12 @@ const Dashboard = define.page<typeof handler>(
             </a>
           </nav>
         </div>
-        <Button>ButtonExample</Button>
-        <TextButton>TextButtonExample</TextButton>
-        <Link href='/timer'>Link Sample</Link>
       </div>
     )
   },
 )
 
 export { handler, }
+
 // deno-lint-ignore internal/no-default-export
 export default Dashboard
