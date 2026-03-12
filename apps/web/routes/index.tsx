@@ -3,6 +3,7 @@ import { page, } from 'fresh'
 import { define, } from '../main.ts'
 import { makeCoinBalanceService, } from '@workspace/services'
 import type { CoinBalance, } from '@workspace/services'
+import CoinUseForm from '../islands/CoinUseForm.tsx'
 
 const handler = define.handlers({
   async GET(ctx,) {
@@ -34,13 +35,12 @@ const Dashboard = define.page<typeof handler>(
               : (
                 <ul class='flex flex-col gap-2'>
                   {balances.map((balance: CoinBalance,) => (
-                    <li
+                    <CoinUseForm
                       key={balance.coinTypeId}
-                      class='p-4 border border-gray-200 rounded flex justify-between items-center'
-                    >
-                      <span class='font-medium'>{balance.name}</span>
-                      <span class='text-2xl font-bold'>{balance.amount}枚</span>
-                    </li>
+                      coinTypeId={balance.coinTypeId}
+                      name={balance.name}
+                      initialAmount={balance.amount}
+                    />
                   ))}
                 </ul>
               )}
