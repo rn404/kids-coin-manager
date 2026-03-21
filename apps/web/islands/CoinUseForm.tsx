@@ -65,6 +65,7 @@ const CoinUseForm = (
             <Button
               onClick={handleSubmit}
               disabled={isLoading.value}
+              variant='primary'
             >
               使う
             </Button>

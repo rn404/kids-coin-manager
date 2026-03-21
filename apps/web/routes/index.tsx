@@ -3,6 +3,7 @@ import { page, } from 'fresh'
 import { define, } from '../main.ts'
 import { makeCoinBalanceService, } from '@workspace/services'
 import type { CoinBalance, } from '@workspace/services'
+import { Button, Icon, } from '@workspace/ui'
 import CoinUseForm from '../islands/CoinUseForm.tsx'
 
 const handler = define.handlers({
@@ -16,6 +17,18 @@ const handler = define.handlers({
   },
 },)
 
+const AdminButton = () => {
+  return (
+    <Button
+      as='link'
+      href='/coin-types'
+      aria-label='管理画面へ'
+    >
+      <Icon name='Settings' />
+    </Button>
+  )
+}
+
 const Dashboard = define.page<typeof handler>(
   ({ data, },) => {
     const { balances, } = data
@@ -25,6 +38,9 @@ const Dashboard = define.page<typeof handler>(
         <Head>
           <title>Kids Coin Manager</title>
         </Head>
+        <div class='absolute top-0 right-0 pt-3 pr-3'>
+          <AdminButton />
+        </div>
         <div class='max-w-screen-md mx-auto flex flex-col items-center justify-center'>
           <h1 class='text-4xl font-bold'>Kids Coin Manager</h1>
 
@@ -44,27 +60,6 @@ const Dashboard = define.page<typeof handler>(
                 </ul>
               )}
           </section>
-
-          <nav class='mt-8 flex flex-col gap-4 w-full'>
-            <a
-              href='/timer'
-              class='px-6 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 text-center'
-            >
-              Timer
-            </a>
-            <a
-              href='/stamps'
-              class='px-6 py-3 bg-green-500 text-white rounded-lg hover:bg-green-600 text-center'
-            >
-              Stamps
-            </a>
-            <a
-              href='/coin-types'
-              class='px-6 py-3 bg-purple-500 text-white rounded-lg hover:bg-purple-600 text-center'
-            >
-              コイン種類管理
-            </a>
-          </nav>
         </div>
       </div>
     )

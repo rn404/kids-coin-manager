@@ -17,22 +17,39 @@ export interface ButtonProps {
   disabled?: boolean
   variant?: keyof typeof variantClass
   class?: string
+  as?: 'button' | 'link'
+  href?: string
+  'aria-label'?: string
 }
 
 export const Button = ({
   variant = 'default',
   class: className,
+  as = 'button',
+  href,
   ...props
 }: ButtonProps,) => {
+  const classes = twMerge(
+    'inline-flex items-center justify-center px-3 py-1 transition-colors cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed',
+    variantClass[variant],
+    className,
+  )
+
+  if (as === 'link') {
+    return (
+      <a
+        {...props}
+        href={href}
+        class={classes}
+      />
+    )
+  }
+
   return (
     <button
       {...props}
       type='button'
-      class={twMerge(
-        'px-3 py-1 transition-colors cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed',
-        variantClass[variant],
-        className,
-      )}
+      class={classes}
     />
   )
 }
