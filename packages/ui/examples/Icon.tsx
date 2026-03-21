@@ -8,6 +8,7 @@ const iconNames: Array<IconName> = [
   'Check',
   'Circle',
   'Coin',
+  'CoinStar',
   'Edit',
   'HourglassEmpty',
   'Minus',

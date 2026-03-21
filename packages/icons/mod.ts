@@ -1,4 +1,5 @@
 import { IconCoin, } from './IconCoin.tsx'
+import { IconCoinStar, } from './IconCoinStar.tsx'
 import { IconEdit, } from './IconEdit.tsx'
 import { IconArrowBack, } from './IconArrowBack.tsx'
 import { IconCheck, } from './IconCheck.tsx'
@@ -16,6 +17,7 @@ import { IconPalette, } from './IconPalette.tsx'
 
 const icons = {
   Coin: IconCoin,
+  CoinStar: IconCoinStar,
   Edit: IconEdit,
   ArrowBack: IconArrowBack,
   Check: IconCheck,
@@ -39,6 +41,7 @@ export {
   IconCheck,
   IconCircle,
   IconCoin,
+  IconCoinStar,
   IconEdit,
   IconExternalLink,
   IconHourglassEmpty,
