@@ -3,8 +3,8 @@ import { page, } from 'fresh'
 import { define, } from '../main.ts'
 import { makeCoinBalanceService, } from '@workspace/services'
 import type { CoinBalance, } from '@workspace/services'
-import { Button, Icon, } from '@workspace/ui'
 import CoinUseForm from '../islands/CoinUseForm.tsx'
+import AdminButton from '../islands/AdminButton.tsx'
 
 const handler = define.handlers({
   async GET(ctx,) {
@@ -16,18 +16,6 @@ const handler = define.handlers({
     return page({ balances, },)
   },
 },)
-
-const AdminButton = () => {
-  return (
-    <Button
-      as='link'
-      href='/coin-types'
-      aria-label='管理画面へ'
-    >
-      <Icon name='Settings' />
-    </Button>
-  )
-}
 
 const Dashboard = define.page<typeof handler>(
   ({ data, },) => {
