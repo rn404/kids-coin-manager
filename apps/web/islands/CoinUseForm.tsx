@@ -1,5 +1,5 @@
 import { useSignal, } from '@preact/signals'
-import { Button, NumberInput, } from '@workspace/ui'
+import { Button, Icon, NumberInput, } from '@workspace/ui'
 
 interface CoinUseFormProps {
   coinTypeId: string
@@ -49,30 +49,33 @@ const CoinUseForm = (
         <span class='font-medium'>{name}</span>
         <div class='flex items-center gap-4'>
           <span class='text-2xl font-bold'>{currentAmount}枚</span>
-          <Button
-            onClick={() => (isOpen.value = true)}
-            disabled={isOpen.value}
-          >
-            使う
-          </Button>
         </div>
       </div>
-      {isOpen.value && (
-        <div class='px-4 pb-4 flex items-center gap-2'>
-          <NumberInput value={amount} min={1} max={currentAmount.value} />
-          <Button
-            onClick={handleSubmit}
-            disabled={isLoading.value}
-          >
-            使う
-          </Button>
-          <Button onClick={() => (isOpen.value = false)}>
-            キャンセル
-          </Button>
-          {error.value !== null && (
-            <span class='text-red-500 text-sm'>{error.value}</span>
-          )}
-        </div>
+      <div class='p-4 pt-0 flex items-center gap-2 h-[42px]'>
+        <Button
+          onClick={() => (isOpen.value = true)}
+          disabled={isOpen.value}
+          aria-label='コインを使う'
+        >
+          <Icon name='CoinStar' />
+        </Button>
+        {isOpen.value && (
+          <div class='shrink-0 flex items-center gap-2'>
+            <NumberInput value={amount} min={1} max={currentAmount.value} />
+            <Button
+              onClick={handleSubmit}
+              disabled={isLoading.value}
+            >
+              使う
+            </Button>
+            <Button onClick={() => (isOpen.value = false)} aria-label='やめる'>
+              <Icon name='ArrowBack' />
+            </Button>
+          </div>
+        )}
+      </div>
+      {error.value !== null && (
+        <span class='text-red-500 text-sm'>{error.value}</span>
       )}
     </li>
   )
