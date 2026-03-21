@@ -29,9 +29,8 @@ const Dashboard = define.page<typeof handler>(
           <h1 class='text-4xl font-bold'>Kids Coin Manager</h1>
 
           <section class='mt-8 w-full'>
-            <h2 class='text-2xl font-bold mb-4'>コイン残高</h2>
             {balances.length === 0
-              ? <p class='text-gray-500'>コイン種類が登録されていません</p>
+              ? <p class='text-gray-500'>コインがありません</p>
               : (
                 <ul class='flex flex-col gap-2'>
                   {balances.map((balance: CoinBalance,) => (

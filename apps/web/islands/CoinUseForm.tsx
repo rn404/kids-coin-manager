@@ -48,7 +48,7 @@ const CoinUseForm = (
       <div class='p-4 flex justify-between items-center'>
         <span class='font-medium'>{name}</span>
         <div class='flex items-center gap-4'>
-          <span class='text-2xl font-bold'>{currentAmount}枚</span>
+          <span class='text-2xl font-bold'>{currentAmount} まい</span>
         </div>
       </div>
       <div class='p-4 pt-0 flex items-center gap-2 h-[42px]'>
