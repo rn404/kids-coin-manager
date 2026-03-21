@@ -62,6 +62,15 @@ type CoinTransactionDataModel = DataModel<
         stampCardId: string
       }
     }
+    | {
+      /**
+       * 管理画面からの付与
+       */
+      transactionType: 'manage_grant'
+      metadata: {
+        type: 'manage_grant'
+      }
+    }
   )
 >
 

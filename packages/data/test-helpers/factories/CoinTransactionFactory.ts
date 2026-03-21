@@ -30,6 +30,7 @@ const defaultMetadataByType = {
     type: 'stamp_reward' as const,
     stampCardId: 'stamp-card-1',
   },
+  manage_grant: { type: 'manage_grant' as const, },
 } satisfies Record<
   CoinTransactionDataModel['transactionType'],
   CoinTransactionDataModel['metadata']

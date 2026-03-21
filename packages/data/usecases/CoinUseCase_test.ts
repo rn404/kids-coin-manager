@@ -394,6 +394,34 @@ describe('CoinUseCase#increaseBy', () => {
 
     assertEquals(result.amount, 500,)
   })
+
+  it('should increase coins with manage_grant transactionType', async () => {
+    const userId = 'user-1'
+    const familyId = 'family-1'
+    const coinTypeId = 'cointype-1'
+
+    await createCoin(kv, { userId, familyId, coinTypeId, amount: 100, },)
+
+    const result = await useCase.increaseBy(userId, familyId, coinTypeId, {
+      amount: 50,
+      transactionType: 'manage_grant',
+      metadata: { type: 'manage_grant', },
+    },)
+
+    assertEquals(result.amount, 150,)
+
+    const transactions = await listTransactions(
+      kv,
+      userId,
+      familyId,
+      coinTypeId,
+    )
+    assertEquals(transactions.length, 1,)
+    assertEquals(transactions[0].amount, 50,)
+    assertEquals(transactions[0].balance, 150,)
+    assertEquals(transactions[0].transactionType, 'manage_grant',)
+    assertEquals(transactions[0].metadata, { type: 'manage_grant', },)
+  })
 })
 
 describe('CoinUseCase#concurrent operations', () => {
