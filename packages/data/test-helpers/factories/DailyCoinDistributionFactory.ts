@@ -2,22 +2,18 @@
  * DailyCoinDistribution のテストデータ作成 Factory
  */
 
-import {
-  generateUuid,
-  getDateOnly,
-  getTimestamp,
-} from '@workspace/foundations'
-import { DAILY_COIN_DISTRIBUTION_PREFIX_KEY, } from '../../DailyCoinDistribution.ts'
-import type { DailyCoinDistributionDataModel, } from '../../DailyCoinDistribution.ts'
-import type { CoinTypeDataModel, } from '../../CoinType.ts'
+import { generateUuid, getDateOnly, getTimestamp } from '@workspace/foundations'
+import { DAILY_COIN_DISTRIBUTION_PREFIX_KEY } from '../../DailyCoinDistribution.ts'
+import type { DailyCoinDistributionDataModel } from '../../DailyCoinDistribution.ts'
+import type { CoinTypeDataModel } from '../../CoinType.ts'
 
 /**
  * DailyCoinDistribution のデフォルト値
  */
 const defaultDailyCoinDistributionAttributes = {
   metadata: {
-    timezone: 'Asia/Tokyo',
-  },
+    timezone: 'Asia/Tokyo'
+  }
 }
 
 /**
@@ -46,7 +42,7 @@ type CreateDailyCoinDistributionParams = {
  * ```
  */
 export function buildDailyCoinDistribution(
-  params: CreateDailyCoinDistributionParams,
+  params: CreateDailyCoinDistributionParams
 ): DailyCoinDistributionDataModel {
   const now = getTimestamp()
   return {
@@ -55,7 +51,7 @@ export function buildDailyCoinDistribution(
     ...params,
     summaryDate: params.summaryDate ?? getDateOnly(),
     createdAt: now,
-    updatedAt: now,
+    updatedAt: now
   }
 }
 
@@ -77,17 +73,17 @@ export function buildDailyCoinDistribution(
  */
 export async function createDailyCoinDistribution(
   kv: Deno.Kv,
-  params: CreateDailyCoinDistributionParams,
+  params: CreateDailyCoinDistributionParams
 ): Promise<DailyCoinDistributionDataModel> {
-  const distribution = buildDailyCoinDistribution(params,)
+  const distribution = buildDailyCoinDistribution(params)
   await kv.set(
     [
       DAILY_COIN_DISTRIBUTION_PREFIX_KEY,
       distribution.familyId,
       distribution.userId,
-      distribution.summaryDate,
+      distribution.summaryDate
     ],
-    distribution,
+    distribution
   )
   return distribution
 }

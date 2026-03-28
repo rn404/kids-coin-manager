@@ -85,14 +85,14 @@ TimeSession {
 
 ```typescript
 // 1. CoinTransaction作成（コイン消費）
-await createCoinTransaction({ amount: -1, type: 'use', },)
+await createCoinTransaction({ amount: -1, type: 'use' })
 
 // 2. ActiveTimer作成
 await createActiveTimer({
   userId,
   coinTypeId,
-  startedAt: new Date().toISOString(),
-},)
+  startedAt: new Date().toISOString()
+})
 ```
 
 ### 2. タイマー停止
@@ -101,8 +101,8 @@ await createActiveTimer({
 
 ```typescript
 // 1. ActiveTimerから経過時間を計算
-const elapsed = Date.now() - new Date(activeTimer.startedAt,).getTime()
-const elapsedSeconds = Math.floor(elapsed / 1000,)
+const elapsed = Date.now() - new Date(activeTimer.startedAt).getTime()
+const elapsedSeconds = Math.floor(elapsed / 1000)
 
 // 2. 割り当て時間を取得（CoinTypeから）
 const allocatedSeconds = coinType.durationMinutes * 60
@@ -114,13 +114,13 @@ const remainingSeconds = allocatedSeconds - elapsedSeconds
 await createTimeSession({
   userId,
   coinTypeId,
-  remainingDuration: { seconds: remainingSeconds, },
+  remainingDuration: { seconds: remainingSeconds },
   startedAt: activeTimer.startedAt,
-  stoppedAt: new Date().toISOString(),
-},)
+  stoppedAt: new Date().toISOString()
+})
 
 // 5. ActiveTimer削除
-await deleteActiveTimer(activeTimer.id,)
+await deleteActiveTimer(activeTimer.id)
 ```
 
 ### 3. デフラグ（複数TimeSessionの統合）
@@ -128,21 +128,21 @@ await deleteActiveTimer(activeTimer.id,)
 ユーザーが複数のTimeSessionを1つにまとめる操作。
 
 ```typescript
-const sessions = [session1, session2, session3,]
+const sessions = [session1, session2, session3]
 const totalSeconds = sessions.reduce(
-  (sum, s,) => sum + s.remainingDuration.seconds,
-  0,
+  (sum, s) => sum + s.remainingDuration.seconds,
+  0
 )
 
 // Atomic操作で統合
 const res = await kv.atomic()
-  .check(session1,).check(session2,).check(session3,)
-  .delete(session1.key,).delete(session2.key,).delete(session3.key,)
+  .check(session1).check(session2).check(session3)
+  .delete(session1.key).delete(session2.key).delete(session3.key)
   .set(newSessionKey, {
-    remainingDuration: { seconds: totalSeconds, },
+    remainingDuration: { seconds: totalSeconds },
     startedAt: new Date().toISOString(),
-    stoppedAt: new Date().toISOString(),
-  },)
+    stoppedAt: new Date().toISOString()
+  })
   .commit()
 
 if (!res.ok) {
@@ -157,21 +157,21 @@ if (!res.ok) {
 ```typescript
 // 15分以上あれば変換可能
 if (timeSession.remainingDuration.seconds >= 900) {
-  const coins = Math.floor(timeSession.remainingDuration.seconds / 900,)
+  const coins = Math.floor(timeSession.remainingDuration.seconds / 900)
   const remainingSeconds = timeSession.remainingDuration.seconds % 900
 
   // コイン追加
-  await updateCoin({ amount: coins, },)
-  await createCoinTransaction({ amount: coins, type: 'exchange', },)
+  await updateCoin({ amount: coins })
+  await createCoinTransaction({ amount: coins, type: 'exchange' })
 
   // TimeSession更新（余りを残す）
   if (remainingSeconds > 0) {
     await updateTimeSession({
-      remainingDuration: { seconds: remainingSeconds, },
-    },)
+      remainingDuration: { seconds: remainingSeconds }
+    })
   } else {
     // 余りがなければ削除
-    await deleteTimeSession(timeSession.id,)
+    await deleteTimeSession(timeSession.id)
   }
 }
 ```

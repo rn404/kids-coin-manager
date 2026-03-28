@@ -31,12 +31,12 @@ CREATE TABLE coins (
 
 ```typescript
 // ❌ Deno KVにはFOREIGN KEY制約がない
-await kv.set(['coins', familyId, userId, coinId,], {
-  userId: 'non-existent-user', // 存在しないuserIdでも保存できてしまう
-},)
+await kv.set(['coins', familyId, userId, coinId], {
+  userId: 'non-existent-user' // 存在しないuserIdでも保存できてしまう
+})
 
 // ❌ CASCADE DELETE も自動実行されない
-await kv.delete(['users', userId,],)
+await kv.delete(['users', userId])
 // 関連するcoinsは残ったまま（孤児データ）
 ```
 
@@ -51,30 +51,30 @@ await kv.delete(['users', userId,],)
 async function addCoin(
   userId: string,
   familyId: string,
-  coin: CoinInput,
+  coin: CoinInput
 ) {
   const kv = await getKv()
 
   // 外部キー制約の代わり：ユーザーの存在確認
-  const user = await kv.get(['users', userId,],)
+  const user = await kv.get(['users', userId])
   if (!user.value) {
-    throw new Error(`User not found: ${userId}`,)
+    throw new Error(`User not found: ${userId}`)
   }
 
   // Familyの存在確認
-  const family = await kv.get(['families', familyId,],)
+  const family = await kv.get(['families', familyId])
   if (!family.value) {
-    throw new Error(`Family not found: ${familyId}`,)
+    throw new Error(`Family not found: ${familyId}`)
   }
 
   // データを保存
   const coinId = v7.generate()
-  await kv.set(['coins', familyId, userId, coinId,], {
+  await kv.set(['coins', familyId, userId, coinId], {
     ...coin,
     id: coinId,
     userId,
-    createdAt: new Date().toISOString(),
-  },)
+    createdAt: new Date().toISOString()
+  })
 
   return coinId
 }
@@ -97,39 +97,39 @@ async function addCoin(
 async function addCoinAtomic(
   userId: string,
   familyId: string,
-  coin: CoinInput,
+  coin: CoinInput
 ) {
   const kv = await getKv()
 
   // ユーザーとFamilyを取得
-  const [user, family,] = await kv.getMany([
-    ['users', userId,],
-    ['families', familyId,],
-  ],)
+  const [user, family] = await kv.getMany([
+    ['users', userId],
+    ['families', familyId]
+  ])
 
   if (!user.value) {
-    throw new Error(`User not found: ${userId}`,)
+    throw new Error(`User not found: ${userId}`)
   }
 
   if (!family.value) {
-    throw new Error(`Family not found: ${familyId}`,)
+    throw new Error(`Family not found: ${familyId}`)
   }
 
   // Atomic操作で整合性を保証
   const coinId = v7.generate()
   const res = await kv.atomic()
-    .check(user,) // ユーザーが削除されていないか確認
-    .check(family,) // Familyが削除されていないか確認
-    .set(['coins', familyId, userId, coinId,], {
+    .check(user) // ユーザーが削除されていないか確認
+    .check(family) // Familyが削除されていないか確認
+    .set(['coins', familyId, userId, coinId], {
       ...coin,
       id: coinId,
       userId,
-      createdAt: new Date().toISOString(),
-    },)
+      createdAt: new Date().toISOString()
+    })
     .commit()
 
   if (!res.ok) {
-    throw new Error('User or Family was modified, please retry',)
+    throw new Error('User or Family was modified, please retry')
   }
 
   return coinId
@@ -144,28 +144,28 @@ async function addCoinAtomic(
 
 ```typescript
 // ユーザー削除時に関連データも削除
-async function deleteUser(userId: string, familyId: string,) {
+async function deleteUser(userId: string, familyId: string) {
   const kv = await getKv()
 
   // 1. 関連するコインを全て取得
   const coinKeys: Deno.KvKey[] = []
   for await (
     const entry of kv.list({
-      prefix: ['coins', familyId, userId,],
-    },)
+      prefix: ['coins', familyId, userId]
+    })
   ) {
-    coinKeys.push(entry.key,)
+    coinKeys.push(entry.key)
   }
 
   // 2. Atomic操作で全て削除
   const atomic = kv.atomic()
 
   // ユーザーを削除
-  atomic.delete(['users', userId,],)
+  atomic.delete(['users', userId])
 
   // 関連するコインも削除
   for (const coinKey of coinKeys) {
-    atomic.delete(coinKey,)
+    atomic.delete(coinKey)
   }
 
   await atomic.commit()
@@ -176,36 +176,36 @@ async function deleteUser(userId: string, familyId: string,) {
 
 ```typescript
 // Familyを削除する際、関連する全データを削除
-async function deleteFamily(familyId: string,) {
+async function deleteFamily(familyId: string) {
   const kv = await getKv()
 
   // 1. Family配下の全データを収集
   const keysToDelete: Deno.KvKey[] = []
 
   // Familyに属するユーザー
-  for await (const entry of kv.list({ prefix: ['users', familyId,], },)) {
-    keysToDelete.push(entry.key,)
+  for await (const entry of kv.list({ prefix: ['users', familyId] })) {
+    keysToDelete.push(entry.key)
   }
 
   // Familyに属するコイン
-  for await (const entry of kv.list({ prefix: ['coins', familyId,], },)) {
-    keysToDelete.push(entry.key,)
+  for await (const entry of kv.list({ prefix: ['coins', familyId] })) {
+    keysToDelete.push(entry.key)
   }
 
   // Familyに属するスタンプカード
   for await (
-    const entry of kv.list({ prefix: ['stamp_cards', familyId,], },)
+    const entry of kv.list({ prefix: ['stamp_cards', familyId] })
   ) {
-    keysToDelete.push(entry.key,)
+    keysToDelete.push(entry.key)
   }
 
   // 2. Atomic操作で一括削除
   const atomic = kv.atomic()
 
-  atomic.delete(['families', familyId,],)
+  atomic.delete(['families', familyId])
 
   for (const key of keysToDelete) {
-    atomic.delete(key,)
+    atomic.delete(key)
   }
 
   await atomic.commit()
@@ -216,7 +216,7 @@ async function deleteFamily(familyId: string,) {
 
 ```typescript
 // 大量のデータがある場合はバッチ化
-async function deleteFamilyWithBatch(familyId: string,) {
+async function deleteFamilyWithBatch(familyId: string) {
   const kv = await getKv()
   const batchSize = 100
 
@@ -224,25 +224,25 @@ async function deleteFamilyWithBatch(familyId: string,) {
   const allKeys: Deno.KvKey[] = []
 
   for await (
-    const entry of kv.list({ prefix: ['coins', familyId,], },)
+    const entry of kv.list({ prefix: ['coins', familyId] })
   ) {
-    allKeys.push(entry.key,)
+    allKeys.push(entry.key)
   }
 
   // バッチごとに削除
   for (let i = 0; i < allKeys.length; i += batchSize) {
-    const batch = allKeys.slice(i, i + batchSize,)
+    const batch = allKeys.slice(i, i + batchSize)
     const atomic = kv.atomic()
 
     for (const key of batch) {
-      atomic.delete(key,)
+      atomic.delete(key)
     }
 
     await atomic.commit()
   }
 
   // 最後にFamilyを削除
-  await kv.delete(['families', familyId,],)
+  await kv.delete(['families', familyId])
 }
 ```
 
@@ -254,7 +254,7 @@ async function deleteFamilyWithBatch(familyId: string,) {
 
 ```typescript
 // キー構造自体で関係性を表現
-;['coins', familyId, userId, coinId,]
+;['coins', familyId, userId, coinId]
 //        ^^^^^^^^  ^^^^^^
 //        親エンティティを含める
 
@@ -268,7 +268,7 @@ async function deleteFamilyWithBatch(familyId: string,) {
 
 ```typescript
 // ユーザーのコインを全て取得（Familyスコープ内）
-async function getUserCoins(userId: string, familyId: string,) {
+async function getUserCoins(userId: string, familyId: string) {
   const kv = await getKv()
 
   // familyIdとuserIdの両方を指定することで、
@@ -276,38 +276,38 @@ async function getUserCoins(userId: string, familyId: string,) {
   const coins = []
   for await (
     const entry of kv.list({
-      prefix: ['coins', familyId, userId,],
-    },)
+      prefix: ['coins', familyId, userId]
+    })
   ) {
-    coins.push(entry.value,)
+    coins.push(entry.value)
   }
 
   return coins
 }
 
 // ユーザー削除時は、プレフィックスで簡単に関連データを削除
-async function deleteUserSimple(userId: string, familyId: string,) {
+async function deleteUserSimple(userId: string, familyId: string) {
   const kv = await getKv()
   const atomic = kv.atomic()
 
   // ユーザーを削除
-  atomic.delete(['users', userId,],)
+  atomic.delete(['users', userId])
 
   // プレフィックスで関連データを全て削除
   for await (
     const entry of kv.list({
-      prefix: ['coins', familyId, userId,],
-    },)
+      prefix: ['coins', familyId, userId]
+    })
   ) {
-    atomic.delete(entry.key,)
+    atomic.delete(entry.key)
   }
 
   for await (
     const entry of kv.list({
-      prefix: ['stamp_cards', familyId, userId,],
-    },)
+      prefix: ['stamp_cards', familyId, userId]
+    })
   ) {
-    atomic.delete(entry.key,)
+    atomic.delete(entry.key)
   }
 
   await atomic.commit()
@@ -324,16 +324,16 @@ async function deleteUserSimple(userId: string, familyId: string,) {
 // Userが削除できるか確認（関連データがあるか）
 async function canDeleteUser(
   userId: string,
-  familyId: string,
+  familyId: string
 ): Promise<boolean> {
   const kv = await getKv()
 
   // コインが存在するかチェック
   for await (
     const _ of kv.list({
-      prefix: ['coins', familyId, userId,],
-      limit: 1, // 1件でもあればNG
-    },)
+      prefix: ['coins', familyId, userId],
+      limit: 1 // 1件でもあればNG
+    })
   ) {
     return false // 関連データがある
   }
@@ -341,9 +341,9 @@ async function canDeleteUser(
   // スタンプカードが存在するかチェック
   for await (
     const _ of kv.list({
-      prefix: ['stamp_cards', familyId, userId,],
-      limit: 1,
-    },)
+      prefix: ['stamp_cards', familyId, userId],
+      limit: 1
+    })
   ) {
     return false
   }
@@ -352,16 +352,16 @@ async function canDeleteUser(
 }
 
 // 削除前に確認
-async function safeDeleteUser(userId: string, familyId: string,) {
-  const canDelete = await canDeleteUser(userId, familyId,)
+async function safeDeleteUser(userId: string, familyId: string) {
+  const canDelete = await canDeleteUser(userId, familyId)
 
   if (!canDelete) {
     throw new Error(
-      'Cannot delete user: related data exists. Please delete related data first.',
+      'Cannot delete user: related data exists. Please delete related data first.'
     )
   }
 
-  await kv.delete(['users', userId,],)
+  await kv.delete(['users', userId])
 }
 ```
 
@@ -379,41 +379,41 @@ interface UserStats {
 async function addCoinWithCounter(
   userId: string,
   familyId: string,
-  coin: CoinInput,
+  coin: CoinInput
 ) {
   const kv = await getKv()
 
-  const statsKey = ['user_stats', familyId, userId,]
-  const stats = await kv.get<UserStats>(statsKey,)
+  const statsKey = ['user_stats', familyId, userId]
+  const stats = await kv.get<UserStats>(statsKey)
 
   const coinId = v7.generate()
   const res = await kv.atomic()
-    .check(stats,)
-    .set(['coins', familyId, userId, coinId,], {
+    .check(stats)
+    .set(['coins', familyId, userId, coinId], {
       ...coin,
       id: coinId,
       userId,
-      createdAt: new Date().toISOString(),
-    },)
+      createdAt: new Date().toISOString()
+    })
     .set(statsKey, {
       coinCount: (stats.value?.coinCount || 0) + 1,
       stampCardCount: stats.value?.stampCardCount || 0,
-      updatedAt: new Date().toISOString(),
-    },)
+      updatedAt: new Date().toISOString()
+    })
     .commit()
 
   if (!res.ok) {
-    throw new Error('Conflict detected, please retry',)
+    throw new Error('Conflict detected, please retry')
   }
 }
 
 // 削除前にカウントをチェック
 async function canDeleteUserByStats(
   userId: string,
-  familyId: string,
+  familyId: string
 ): Promise<boolean> {
   const kv = await getKv()
-  const stats = await kv.get<UserStats>(['user_stats', familyId, userId,],)
+  const stats = await kv.get<UserStats>(['user_stats', familyId, userId])
 
   if (!stats.value) return true
 
@@ -437,24 +437,24 @@ interface User {
 }
 
 // 削除（論理）
-async function softDeleteUser(userId: string,) {
+async function softDeleteUser(userId: string) {
   const kv = await getKv()
-  const user = await kv.get<User>(['users', userId,],)
+  const user = await kv.get<User>(['users', userId])
 
   if (!user.value) {
-    throw new Error('User not found',)
+    throw new Error('User not found')
   }
 
-  await kv.set(['users', userId,], {
+  await kv.set(['users', userId], {
     ...user.value,
-    deletedAt: new Date().toISOString(),
-  },)
+    deletedAt: new Date().toISOString()
+  })
 }
 
 // 取得時に削除済みを除外
-async function getActiveUser(userId: string,): Promise<User | null> {
+async function getActiveUser(userId: string): Promise<User | null> {
   const kv = await getKv()
-  const user = await kv.get<User>(['users', userId,],)
+  const user = await kv.get<User>(['users', userId])
 
   if (!user.value || user.value.deletedAt) {
     return null // 削除済みまたは存在しない
@@ -467,23 +467,23 @@ async function getActiveUser(userId: string,): Promise<User | null> {
 async function addCoinWithSoftDeleteCheck(
   userId: string,
   familyId: string,
-  coin: CoinInput,
+  coin: CoinInput
 ) {
   const kv = await getKv()
 
-  const user = await getActiveUser(userId,)
+  const user = await getActiveUser(userId)
   if (!user) {
-    throw new Error('User not found or deleted',)
+    throw new Error('User not found or deleted')
   }
 
   // コインを追加
   const coinId = v7.generate()
-  await kv.set(['coins', familyId, userId, coinId,], {
+  await kv.set(['coins', familyId, userId, coinId], {
     ...coin,
     id: coinId,
     userId,
-    createdAt: new Date().toISOString(),
-  },)
+    createdAt: new Date().toISOString()
+  })
 }
 ```
 
@@ -509,7 +509,7 @@ async function addCoinWithSoftDeleteCheck(
 async function addCoin(
   userId: string,
   familyId: string,
-  coin: CoinInput,
+  coin: CoinInput
 ) {
   const kv = await getKv()
 
@@ -523,12 +523,12 @@ async function addCoin(
   */
 
   const coinId = v7.generate()
-  await kv.set(['coins', familyId, userId, coinId,], {
+  await kv.set(['coins', familyId, userId, coinId], {
     ...coin,
     id: coinId,
     userId,
-    createdAt: new Date().toISOString(),
-  },)
+    createdAt: new Date().toISOString()
+  })
 }
 ```
 
@@ -536,27 +536,27 @@ async function addCoin(
 
 ```typescript
 // 削除時は必ず関連データも削除
-async function deleteUser(userId: string, familyId: string,) {
+async function deleteUser(userId: string, familyId: string) {
   const kv = await getKv()
   const atomic = kv.atomic()
 
-  atomic.delete(['users', userId,],)
+  atomic.delete(['users', userId])
 
   // 関連データを削除
   for await (
     const entry of kv.list({
-      prefix: ['coins', familyId, userId,],
-    },)
+      prefix: ['coins', familyId, userId]
+    })
   ) {
-    atomic.delete(entry.key,)
+    atomic.delete(entry.key)
   }
 
   for await (
     const entry of kv.list({
-      prefix: ['stamp_cards', familyId, userId,],
-    },)
+      prefix: ['stamp_cards', familyId, userId]
+    })
   ) {
-    atomic.delete(entry.key,)
+    atomic.delete(entry.key)
   }
 
   await atomic.commit()
@@ -570,14 +570,14 @@ async function deleteUser(userId: string, familyId: string,) {
 async function addCoin(
   userId: string,
   familyId: string,
-  coin: CoinInput,
+  coin: CoinInput
 ) {
   const kv = await getKv()
 
   // 参照チェックを追加
-  const user = await kv.get(['users', userId,],)
+  const user = await kv.get(['users', userId])
   if (!user.value) {
-    throw new Error('User not found',)
+    throw new Error('User not found')
   }
 
   // ... コインを追加
@@ -592,7 +592,7 @@ async function addCoin(
 
 ```typescript
 // ✅ 良い例：親エンティティを含める
-;['coins', familyId, userId, coinId,] // ❌ 悪い例：フラットな構造
+;['coins', familyId, userId, coinId] // ❌ 悪い例：フラットな構造
   ['coins', coinId]
 ```
 
@@ -600,32 +600,32 @@ async function addCoin(
 
 ```typescript
 // ✅ 良い例：関連データも削除
-async function deleteUser(userId: string, familyId: string,) {
+async function deleteUser(userId: string, familyId: string) {
   const atomic = kv.atomic()
-  atomic.delete(['users', userId,],)
+  atomic.delete(['users', userId])
   // 関連データも削除
   for await (
-    const entry of kv.list({ prefix: ['coins', familyId, userId,], },)
+    const entry of kv.list({ prefix: ['coins', familyId, userId] })
   ) {
-    atomic.delete(entry.key,)
+    atomic.delete(entry.key)
   }
   await atomic.commit()
 }
 
 // ❌ 悪い例：ユーザーだけ削除（孤児データが残る）
-await kv.delete(['users', userId,],)
+await kv.delete(['users', userId])
 ```
 
 ### 3. 作成時の参照チェックは状況次第
 
 ```typescript
 // シンプルなアプリ：参照チェックなしでもOK
-await kv.set(['coins', familyId, userId, coinId,], coin,)
+await kv.set(['coins', familyId, userId, coinId], coin)
 
 // 複雑なアプリ：参照チェックを追加
-const user = await kv.get(['users', userId,],)
-if (!user.value) throw new Error('User not found',)
-await kv.set(['coins', familyId, userId, coinId,], coin,)
+const user = await kv.get(['users', userId])
+if (!user.value) throw new Error('User not found')
+await kv.set(['coins', familyId, userId, coinId], coin)
 ```
 
 ### 4. 大量データの削除はバッチ化
@@ -634,10 +634,10 @@ await kv.set(['coins', familyId, userId, coinId,], coin,)
 // 100件以上のデータを削除する場合
 const batchSize = 100
 for (let i = 0; i < keys.length; i += batchSize) {
-  const batch = keys.slice(i, i + batchSize,)
+  const batch = keys.slice(i, i + batchSize)
   const atomic = kv.atomic()
   for (const key of batch) {
-    atomic.delete(key,)
+    atomic.delete(key)
   }
   await atomic.commit()
 }

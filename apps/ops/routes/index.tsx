@@ -1,28 +1,28 @@
-import { page, } from 'fresh'
-import { define, } from '../main.ts'
+import { page } from 'fresh'
+import { define } from '../main.ts'
 import {
   COIN_PREFIX_KEY,
   COIN_TRANSACTION_PREFIX_KEY,
   COIN_TYPE_PREFIX_KEY,
-  DAILY_COIN_DISTRIBUTION_PREFIX_KEY,
+  DAILY_COIN_DISTRIBUTION_PREFIX_KEY
 } from '@workspace/data'
-import { Icon, } from '@workspace/ui'
+import { Icon } from '@workspace/ui'
 
 const KV_PREFIXES = [
-  { prefix: COIN_TYPE_PREFIX_KEY, label: 'CoinType', },
-  { prefix: COIN_PREFIX_KEY, label: 'Coin', },
-  { prefix: COIN_TRANSACTION_PREFIX_KEY, label: 'CoinTransaction', },
+  { prefix: COIN_TYPE_PREFIX_KEY, label: 'CoinType' },
+  { prefix: COIN_PREFIX_KEY, label: 'Coin' },
+  { prefix: COIN_TRANSACTION_PREFIX_KEY, label: 'CoinTransaction' },
   {
     prefix: DAILY_COIN_DISTRIBUTION_PREFIX_KEY,
-    label: 'DailyCoinDistribution',
-  },
+    label: 'DailyCoinDistribution'
+  }
 ] as const
 
 export const handler = define.handlers({
-  GET(_ctx,) {
-    return page({},)
-  },
-},)
+  GET(_ctx) {
+    return page({})
+  }
+})
 
 const Index = define.page<typeof handler>(() => {
   return (
@@ -40,7 +40,7 @@ const Index = define.page<typeof handler>(() => {
         Models
       </h1>
       <div class='grid gap-4'>
-        {KV_PREFIXES.map(({ prefix, label, },) => (
+        {KV_PREFIXES.map(({ prefix, label }) => (
           <a
             key={prefix}
             href={`/kv/${prefix}`}
@@ -55,7 +55,7 @@ const Index = define.page<typeof handler>(() => {
       </div>
     </div>
   )
-},)
+})
 
 // deno-lint-ignore internal/no-default-export
 export default Index

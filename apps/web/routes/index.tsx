@@ -1,25 +1,25 @@
-import { Head, } from 'fresh/runtime'
-import { page, } from 'fresh'
-import { define, } from '../main.ts'
-import { makeCoinBalanceService, } from '@workspace/services'
-import type { CoinBalance, } from '@workspace/services'
+import { Head } from 'fresh/runtime'
+import { page } from 'fresh'
+import { define } from '../main.ts'
+import { makeCoinBalanceService } from '@workspace/services'
+import type { CoinBalance } from '@workspace/services'
 import CoinUseForm from '../islands/CoinUseForm.tsx'
 import AdminButton from '../islands/AdminButton.tsx'
 
 const handler = define.handlers({
-  async GET(ctx,) {
-    const service = makeCoinBalanceService({ kv: ctx.state.kv, },)
+  async GET(ctx) {
+    const service = makeCoinBalanceService({ kv: ctx.state.kv })
     const balances = await service.listBalances(
       ctx.state.me.familyId,
-      ctx.state.me.userId,
+      ctx.state.me.userId
     )
-    return page({ balances, },)
-  },
-},)
+    return page({ balances })
+  }
+})
 
 const Dashboard = define.page<typeof handler>(
-  ({ data, },) => {
-    const { balances, } = data
+  ({ data }) => {
+    const { balances } = data
 
     return (
       <div class='px-4 py-8 mx-auto min-h-screen'>
@@ -37,7 +37,7 @@ const Dashboard = define.page<typeof handler>(
               ? <p class='text-gray-500'>コインがありません</p>
               : (
                 <ul class='flex flex-col gap-2'>
-                  {balances.map((balance: CoinBalance,) => (
+                  {balances.map((balance: CoinBalance) => (
                     <CoinUseForm
                       key={balance.coinTypeId}
                       coinTypeId={balance.coinTypeId}
@@ -51,10 +51,10 @@ const Dashboard = define.page<typeof handler>(
         </div>
       </div>
     )
-  },
+  }
 )
 
-export { handler, }
+export { handler }
 
 // deno-lint-ignore internal/no-default-export
 export default Dashboard

@@ -1,6 +1,6 @@
-import { icons, } from '@workspace/icons'
-import type { IconName, } from '@workspace/icons'
-import { twMerge, } from 'tailwind-merge'
+import { icons } from '@workspace/icons'
+import type { IconName } from '@workspace/icons'
+import { twMerge } from 'tailwind-merge'
 
 function Icon({ name, size = 24, class: className, ...rest }: {
   /**
@@ -18,11 +18,11 @@ function Icon({ name, size = 24, class: className, ...rest }: {
    * Component class
    */
   class?: string
-},) {
+}) {
   const Component = icons[name]
   return (
     <i
-      class={twMerge('inline-flex items-center align-middle', className,)}
+      class={twMerge('inline-flex items-center align-middle', className)}
       {...rest}
     >
       <Component size={size} class='block' />
@@ -30,4 +30,4 @@ function Icon({ name, size = 24, class: className, ...rest }: {
   )
 }
 
-export { Icon, }
+export { Icon }

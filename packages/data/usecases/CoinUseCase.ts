@@ -1,13 +1,13 @@
-import { COIN_PREFIX_KEY, } from '../Coin.ts'
-import type { CoinDataModel, } from '../Coin.ts'
-import { COIN_TRANSACTION_PREFIX_KEY, } from '../CoinTransaction.ts'
-import type { CoinTransactionDataModel, } from '../CoinTransaction.ts'
-import { generateUuid, getTimestamp, withRetry, } from '@workspace/foundations'
+import { COIN_PREFIX_KEY } from '../Coin.ts'
+import type { CoinDataModel } from '../Coin.ts'
+import { COIN_TRANSACTION_PREFIX_KEY } from '../CoinTransaction.ts'
+import type { CoinTransactionDataModel } from '../CoinTransaction.ts'
+import { generateUuid, getTimestamp, withRetry } from '@workspace/foundations'
 
 interface CoinUseCaseInterface {
   listByUser(
     userId: CoinDataModel['userId'],
-    familyId: CoinDataModel['familyId'],
+    familyId: CoinDataModel['familyId']
   ): Promise<Array<CoinDataModel>>
   increaseBy(
     userId: CoinDataModel['userId'],
@@ -17,7 +17,7 @@ interface CoinUseCaseInterface {
       amount: number
       transactionType: CoinTransactionDataModel['transactionType']
       metadata: CoinTransactionDataModel['metadata']
-    },
+    }
   ): Promise<CoinDataModel>
   decreaseBy(
     userId: CoinDataModel['userId'],
@@ -27,17 +27,17 @@ interface CoinUseCaseInterface {
       amount: number
       transactionType: CoinTransactionDataModel['transactionType']
       metadata: CoinTransactionDataModel['metadata']
-    },
+    }
   ): Promise<CoinDataModel>
   findById(
     userId: CoinDataModel['userId'],
     familyId: CoinDataModel['familyId'],
-    coinTypeId: CoinDataModel['coinTypeId'],
+    coinTypeId: CoinDataModel['coinTypeId']
   ): Promise<CoinDataModel | null>
 }
 
 const makeCoinUseCase = (
-  deps: { kv: Deno.Kv },
+  deps: { kv: Deno.Kv }
 ): CoinUseCaseInterface => {
   const updateAmount = async (
     userId: CoinDataModel['userId'],
@@ -48,19 +48,19 @@ const makeCoinUseCase = (
       CoinTransactionDataModel,
       'transactionType' | 'metadata'
     >,
-    options?: { allowCreate?: boolean },
+    options?: { allowCreate?: boolean }
   ): Promise<CoinDataModel> => {
     return await withRetry(async () => {
       const currentEntry = await deps.kv.get<CoinDataModel>([
         COIN_PREFIX_KEY,
         userId,
         familyId,
-        coinTypeId,
-      ],)
+        coinTypeId
+      ])
 
       if (currentEntry.value === null && options?.allowCreate !== true) {
         throw new Error(
-          `Coin not found for userId: ${userId}, familyId: ${familyId}, coinTypeId: ${coinTypeId}`,
+          `Coin not found for userId: ${userId}, familyId: ${familyId}, coinTypeId: ${coinTypeId}`
         )
       }
 
@@ -73,7 +73,7 @@ const makeCoinUseCase = (
         coinTypeId,
         amount: 0,
         createdAt: now,
-        updatedAt: now,
+        updatedAt: now
       }
 
       const newAmount = baseCoin.amount + delta
@@ -81,7 +81,7 @@ const makeCoinUseCase = (
       const updatedCoin: CoinDataModel = {
         ...baseCoin,
         amount: newAmount,
-        updatedAt: now,
+        updatedAt: now
       }
 
       const transactionId = generateUuid()
@@ -96,27 +96,27 @@ const makeCoinUseCase = (
         transactionType: transactionInfo.transactionType,
         metadata: transactionInfo.metadata,
         createdAt: now,
-        updatedAt: now,
+        updatedAt: now
       }
 
       const res = await deps.kv.atomic()
-        .check(currentEntry,)
-        .set([COIN_PREFIX_KEY, userId, familyId, coinTypeId,], updatedCoin,)
+        .check(currentEntry)
+        .set([COIN_PREFIX_KEY, userId, familyId, coinTypeId], updatedCoin)
         .set([
           COIN_TRANSACTION_PREFIX_KEY,
           userId,
           familyId,
           coinTypeId,
-          transactionId,
-        ], transaction,)
+          transactionId
+        ], transaction)
         .commit()
 
       if (res.ok === false) {
-        throw new Error('Conflict detected',)
+        throw new Error('Conflict detected')
       }
 
       return updatedCoin
-    },)
+    })
   }
 
   const increaseBy = async (
@@ -127,18 +127,18 @@ const makeCoinUseCase = (
       amount: number
       transactionType: CoinTransactionDataModel['transactionType']
       metadata: CoinTransactionDataModel['metadata']
-    },
+    }
   ): ReturnType<CoinUseCaseInterface['increaseBy']> => {
     return await updateAmount(
       userId,
       familyId,
       coinTypeId,
-      Math.abs(properties.amount,),
+      Math.abs(properties.amount),
       {
         transactionType: properties.transactionType,
-        metadata: properties.metadata,
+        metadata: properties.metadata
       },
-      { allowCreate: true, },
+      { allowCreate: true }
     )
   }
 
@@ -150,25 +150,25 @@ const makeCoinUseCase = (
       amount: number
       transactionType: CoinTransactionDataModel['transactionType']
       metadata: CoinTransactionDataModel['metadata']
-    },
+    }
   ): ReturnType<CoinUseCaseInterface['decreaseBy']> => {
     return await updateAmount(
       userId,
       familyId,
       coinTypeId,
-      -Math.abs(properties.amount,),
+      -Math.abs(properties.amount),
       {
         transactionType: properties.transactionType,
-        metadata: properties.metadata,
+        metadata: properties.metadata
       },
-      { allowCreate: true, },
+      { allowCreate: true }
     )
   }
 
   const findById = async (
     userId: CoinDataModel['userId'],
     familyId: CoinDataModel['familyId'],
-    coinTypeId: CoinDataModel['coinTypeId'],
+    coinTypeId: CoinDataModel['coinTypeId']
   ): ReturnType<
     CoinUseCaseInterface['findById']
   > => {
@@ -176,22 +176,22 @@ const makeCoinUseCase = (
       COIN_PREFIX_KEY,
       userId,
       familyId,
-      coinTypeId,
-    ],)
+      coinTypeId
+    ])
     return result.value
   }
 
   const listByUser = async (
     userId: CoinDataModel['userId'],
-    familyId: CoinDataModel['familyId'],
+    familyId: CoinDataModel['familyId']
   ): ReturnType<CoinUseCaseInterface['listByUser']> => {
     const coins: Array<CoinDataModel> = []
     const entries = deps.kv.list<CoinDataModel>({
-      prefix: [COIN_PREFIX_KEY, userId, familyId,],
-    },)
+      prefix: [COIN_PREFIX_KEY, userId, familyId]
+    })
 
     for await (const entry of entries) {
-      coins.push(entry.value,)
+      coins.push(entry.value)
     }
 
     return coins
@@ -201,8 +201,8 @@ const makeCoinUseCase = (
     listByUser,
     increaseBy,
     decreaseBy,
-    findById,
+    findById
   }
 }
 
-export { makeCoinUseCase, }
+export { makeCoinUseCase }

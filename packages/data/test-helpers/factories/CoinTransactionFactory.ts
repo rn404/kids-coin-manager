@@ -2,35 +2,35 @@
  * CoinTransaction のテストデータ作成 Factory
  */
 
-import { generateUuid, getTimestamp, } from '@workspace/foundations'
-import { COIN_TRANSACTION_PREFIX_KEY, } from '../../CoinTransaction.ts'
-import type { CoinTransactionDataModel, } from '../../CoinTransaction.ts'
+import { generateUuid, getTimestamp } from '@workspace/foundations'
+import { COIN_TRANSACTION_PREFIX_KEY } from '../../CoinTransaction.ts'
+import type { CoinTransactionDataModel } from '../../CoinTransaction.ts'
 
 /**
  * CoinTransaction のデフォルト値
  */
 const defaultCoinTransactionAttributes = {
   amount: 100,
-  balance: 900,
+  balance: 900
 }
 
 /**
  * transactionType ごとのデフォルト metadata
  */
 const defaultMetadataByType = {
-  daily_distribution: { type: 'daily_distribution' as const, },
-  use: { type: 'use' as const, },
+  daily_distribution: { type: 'daily_distribution' as const },
+  use: { type: 'use' as const },
   exchange: {
     type: 'exchange' as const,
     fromCoinTypeId: 'from-cointype-1',
     toCoinTypeId: 'to-cointype-1',
-    rate: 5,
+    rate: 5
   },
   stamp_reward: {
     type: 'stamp_reward' as const,
-    stampCardId: 'stamp-card-1',
+    stampCardId: 'stamp-card-1'
   },
-  manage_grant: { type: 'manage_grant' as const, },
+  manage_grant: { type: 'manage_grant' as const }
 } satisfies Record<
   CoinTransactionDataModel['transactionType'],
   CoinTransactionDataModel['metadata']
@@ -66,7 +66,7 @@ type CreateCoinTransactionParams = {
  * ```
  */
 export function buildCoinTransaction(
-  params: CreateCoinTransactionParams,
+  params: CreateCoinTransactionParams
 ): CoinTransactionDataModel {
   const now = getTimestamp()
   return {
@@ -76,7 +76,7 @@ export function buildCoinTransaction(
     metadata: params.metadata ??
       defaultMetadataByType[params.transactionType],
     createdAt: now,
-    updatedAt: now,
+    updatedAt: now
   } as CoinTransactionDataModel
 }
 
@@ -99,18 +99,18 @@ export function buildCoinTransaction(
  */
 export async function createCoinTransaction(
   kv: Deno.Kv,
-  params: CreateCoinTransactionParams,
+  params: CreateCoinTransactionParams
 ): Promise<CoinTransactionDataModel> {
-  const transaction = buildCoinTransaction(params,)
+  const transaction = buildCoinTransaction(params)
   await kv.set(
     [
       COIN_TRANSACTION_PREFIX_KEY,
       params.userId,
       params.familyId,
       params.coinTypeId,
-      transaction.id,
+      transaction.id
     ],
-    transaction,
+    transaction
   )
   return transaction
 }

@@ -1,6 +1,6 @@
-import type { DataModel, } from './DataModel.ts'
-import type { ISODateString, } from '@workspace/foundations'
-import type { CoinTypeDataModel, } from './CoinType.ts'
+import type { DataModel } from './DataModel.ts'
+import type { ISODateString } from '@workspace/foundations'
+import type { CoinTypeDataModel } from './CoinType.ts'
 
 const DAILY_COIN_DISTRIBUTION_PREFIX_KEY = 'daily_coin_distributions'
 
@@ -39,5 +39,5 @@ type DailyCoinDistributionDataModel = DataModel<{
   }
 }>
 
-export { DAILY_COIN_DISTRIBUTION_PREFIX_KEY, }
-export type { DailyCoinDistributionDataModel, }
+export { DAILY_COIN_DISTRIBUTION_PREFIX_KEY }
+export type { DailyCoinDistributionDataModel }

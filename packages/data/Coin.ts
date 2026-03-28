@@ -1,4 +1,4 @@
-import type { DataModel, } from './DataModel.ts'
+import type { DataModel } from './DataModel.ts'
 
 const COIN_PREFIX_KEY = 'coins'
 
@@ -9,5 +9,5 @@ type CoinDataModel = DataModel<{
   amount: number
 }>
 
-export { COIN_PREFIX_KEY, }
-export type { CoinDataModel, }
+export { COIN_PREFIX_KEY }
+export type { CoinDataModel }

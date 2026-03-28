@@ -1,8 +1,8 @@
-import { Button, Icon, } from '@workspace/ui'
+import { Button, Icon } from '@workspace/ui'
 
 const AdminButton = () => {
   const handleClick = () => {
-    const input = globalThis.prompt('パスワードをいれてね',)
+    const input = globalThis.prompt('パスワードをいれてね')
     if (input === 'okane') {
       globalThis.location.href = '/coin-types'
     }

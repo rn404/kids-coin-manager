@@ -1,50 +1,50 @@
-import { page, } from 'fresh'
-import { define, } from '../../main.ts'
-import { getTimestamp, } from '@workspace/foundations'
+import { page } from 'fresh'
+import { define } from '../../main.ts'
+import { getTimestamp } from '@workspace/foundations'
 import KvTable from '../../islands/KvTable.tsx'
 
 const DEFAULT_LIMIT = 100
 
-const PROTECTED_FIELDS = ['id', 'createdAt', 'updatedAt',] as const
+const PROTECTED_FIELDS = ['id', 'createdAt', 'updatedAt'] as const
 
 export const handler = define.handlers({
-  async GET(ctx,) {
+  async GET(ctx) {
     const prefix = ctx.params.prefix
-    const url = new URL(ctx.req.url,)
-    const limit = Number(url.searchParams.get('limit',),) || DEFAULT_LIMIT
+    const url = new URL(ctx.req.url)
+    const limit = Number(url.searchParams.get('limit')) || DEFAULT_LIMIT
 
     const entries: Array<{ key: Array<string | number>; value: unknown }> = []
     for await (
       const entry of ctx.state.kv.list(
-        { prefix: [prefix,], },
-        { limit, reverse: true, },
+        { prefix: [prefix] },
+        { limit, reverse: true }
       )
     ) {
       entries.push({
         key: entry.key as Array<string | number>,
-        value: entry.value,
-      },)
+        value: entry.value
+      })
     }
 
-    return page({ prefix, entries, limit, },)
+    return page({ prefix, entries, limit })
   },
-  async PUT(ctx,) {
-    const { key, value, } = await ctx.req.json() as {
+  async PUT(ctx) {
+    const { key, value } = await ctx.req.json() as {
       key: Array<string | number>
       value: Record<string, unknown>
     }
 
-    const current = await ctx.state.kv.get(key,)
+    const current = await ctx.state.kv.get(key)
     if (current.value === null) {
       return Response.json(
-        { error: 'Entry not found', },
-        { status: 404, },
+        { error: 'Entry not found' },
+        { status: 404 }
       )
     }
 
     const currentValue = current.value as Record<string, unknown>
 
-    const attributes = { ...value, }
+    const attributes = { ...value }
     for (const field of PROTECTED_FIELDS) {
       delete attributes[field]
     }
@@ -52,30 +52,30 @@ export const handler = define.handlers({
     const updated = {
       ...currentValue,
       ...attributes,
-      updatedAt: getTimestamp(),
+      updatedAt: getTimestamp()
     }
 
-    await ctx.state.kv.set(key, updated,)
+    await ctx.state.kv.set(key, updated)
 
-    return Response.json({ ok: true, },)
+    return Response.json({ ok: true })
   },
-  async DELETE(ctx,) {
-    const { keys, } = await ctx.req.json() as {
+  async DELETE(ctx) {
+    const { keys } = await ctx.req.json() as {
       keys: Array<Array<string | number>>
     }
 
     const atomic = ctx.state.kv.atomic()
     for (const key of keys) {
-      atomic.delete(key,)
+      atomic.delete(key)
     }
     await atomic.commit()
 
-    return new Response(null, { status: 204, },)
-  },
-},)
+    return new Response(null, { status: 204 })
+  }
+})
 
-const PrefixPage = define.page<typeof handler>(({ data, },) => {
-  const { prefix, entries, limit, } = data
+const PrefixPage = define.page<typeof handler>(({ data }) => {
+  const { prefix, entries, limit } = data
   return (
     <div class='max-w-5xl mx-auto'>
       <div class='flex items-center gap-4 mb-6'>
@@ -93,7 +93,7 @@ const PrefixPage = define.page<typeof handler>(({ data, },) => {
         : <KvTable prefix={prefix} entries={entries} />}
     </div>
   )
-},)
+})
 
 // deno-lint-ignore internal/no-default-export
 export default PrefixPage

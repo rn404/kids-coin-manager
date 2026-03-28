@@ -17,10 +17,10 @@
  */
 const explicitBooleanComparison = {
   // deno-lint-ignore no-explicit-any
-  create(context: any,) {
+  create(context: any) {
     return {
       // deno-lint-ignore no-explicit-any
-      UnaryExpression(node: any,) {
+      UnaryExpression(node: any) {
         if (node.operator === '!') {
           // Check if this is the inner ! of a !! pattern
           // If the parent is also a UnaryExpression with !, skip reporting
@@ -47,13 +47,13 @@ const explicitBooleanComparison = {
 
           context.report({
             node,
-            message,
-          },)
+            message
+          })
         }
-      },
+      }
     }
   },
-  defaultSeverity: 'error',
+  defaultSeverity: 'error'
 }
 
-export { explicitBooleanComparison, }
+export { explicitBooleanComparison }

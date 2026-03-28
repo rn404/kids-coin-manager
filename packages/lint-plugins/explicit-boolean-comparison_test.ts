@@ -1,4 +1,4 @@
-import { assertEquals, } from '@std/assert'
+import { assertEquals } from '@std/assert'
 
 /**
  * Test the explicit-boolean-comparison lint rule
@@ -19,12 +19,12 @@ Deno.test(
     // In a real lint plugin test, we would run the linter and check for violations
     // For now, we verify the rule structure exists
     const ruleModule = await import('./explicit-boolean-comparison.ts')
-    assertEquals(typeof ruleModule.explicitBooleanComparison, 'object',)
+    assertEquals(typeof ruleModule.explicitBooleanComparison, 'object')
     assertEquals(
       typeof ruleModule.explicitBooleanComparison.create,
-      'function',
+      'function'
     )
-  },
+  }
 )
 
 Deno.test(
@@ -38,8 +38,8 @@ Deno.test(
     // This should trigger 2 violations (two ! operators)
     // In practice, when run through deno lint, it detects both
     const ruleModule = await import('./explicit-boolean-comparison.ts')
-    assertEquals(typeof ruleModule.explicitBooleanComparison, 'object',)
-  },
+    assertEquals(typeof ruleModule.explicitBooleanComparison, 'object')
+  }
 )
 
 Deno.test(
@@ -55,9 +55,9 @@ Deno.test(
     const ruleModule = await import('./explicit-boolean-comparison.ts')
     assertEquals(
       typeof ruleModule.explicitBooleanComparison.create,
-      'function',
+      'function'
     )
-  },
+  }
 )
 
 Deno.test(
@@ -76,6 +76,6 @@ Deno.test(
 
     // This code uses explicit comparisons and should not trigger the rule
     const ruleModule = await import('./explicit-boolean-comparison.ts')
-    assertEquals(typeof ruleModule.explicitBooleanComparison, 'object',)
-  },
+    assertEquals(typeof ruleModule.explicitBooleanComparison, 'object')
+  }
 )

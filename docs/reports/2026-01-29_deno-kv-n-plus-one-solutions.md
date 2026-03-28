@@ -98,20 +98,20 @@ async getFamilyCoinsWithUsers(familyId: string) {
 ```typescript
 // getMany()は最大10個まで
 const results = await kv.getMany([
-  ['key1',],
-  ['key2',],
+  ['key1'],
+  ['key2']
   // ... 最大10個
-],)
+])
 
 // 10個以上の場合は分割する
-async function getManyBatch<T,>(keys: Deno.KvKey[],): Promise<T[]> {
+async function getManyBatch<T>(keys: Deno.KvKey[]): Promise<T[]> {
   const batchSize = 10
   const results: T[] = []
 
   for (let i = 0; i < keys.length; i += batchSize) {
-    const batch = keys.slice(i, i + batchSize,)
-    const batchResults = await kv.getMany<T>(batch,)
-    results.push(...batchResults.map((r,) => r.value),)
+    const batch = keys.slice(i, i + batchSize)
+    const batchResults = await kv.getMany<T>(batch)
+    results.push(...batchResults.map((r) => r.value))
   }
 
   return results
@@ -140,12 +140,12 @@ interface Coin {
 async function addCoin(
   userId: string,
   familyId: string,
-  coin: CoinInput,
+  coin: CoinInput
 ) {
   const kv = await getKv()
 
   // ユーザー情報を取得
-  const user = await kv.get(['users', userId,],)
+  const user = await kv.get(['users', userId])
 
   const coinId = v7.generate()
   const newCoin: Coin = {
@@ -153,20 +153,20 @@ async function addCoin(
     id: coinId,
     userId,
     userName: user.value.name, // ← ユーザー名を埋め込む
-    createdAt: new Date().toISOString(),
+    createdAt: new Date().toISOString()
   }
 
-  await kv.set(['coins', familyId, userId, coinId,], newCoin,)
+  await kv.set(['coins', familyId, userId, coinId], newCoin)
   return newCoin
 }
 
 // 取得時は追加クエリ不要
-async function getFamilyCoins(familyId: string,) {
+async function getFamilyCoins(familyId: string) {
   const kv = await getKv()
   const coins = []
 
-  for await (const entry of kv.list({ prefix: ['coins', familyId,], },)) {
-    coins.push(entry.value,)
+  for await (const entry of kv.list({ prefix: ['coins', familyId] })) {
+    coins.push(entry.value)
   }
 
   return coins // userNameが既に含まれている！
@@ -191,39 +191,39 @@ async function getFamilyCoins(familyId: string,) {
 async function updateUserName(
   userId: string,
   familyId: string,
-  newName: string,
+  newName: string
 ) {
   const kv = await getKv()
 
   // 1. ユーザー情報を更新
-  const user = await kv.get(['users', userId,],)
-  await kv.set(['users', userId,], {
+  const user = await kv.get(['users', userId])
+  await kv.set(['users', userId], {
     ...user.value,
-    name: newName,
-  },)
+    name: newName
+  })
 
   // 2. 関連するコインも更新（バックグラウンドで実行）
-  updateCoinUserNames(userId, familyId, newName,)
-    .catch((err,) => console.error('Failed to update coin user names:', err,))
+  updateCoinUserNames(userId, familyId, newName)
+    .catch((err) => console.error('Failed to update coin user names:', err))
 }
 
 async function updateCoinUserNames(
   userId: string,
   familyId: string,
-  newName: string,
+  newName: string
 ) {
   const kv = await getKv()
 
   // ユーザーの全コインを取得
   for await (
     const entry of kv.list({
-      prefix: ['coins', familyId, userId,],
-    },)
+      prefix: ['coins', familyId, userId]
+    })
   ) {
     await kv.set(entry.key, {
       ...entry.value,
-      userName: newName,
-    },)
+      userName: newName
+    })
   }
 }
 ```
@@ -250,36 +250,36 @@ async function updateCoinUserNames(
 
 ```typescript
 // ユーザーごとにコインをグループ化
-;['coins', familyId, userId, coinId,]
+;['coins', familyId, userId, coinId]
 //                  ^^^^^^
 //                  既にユーザーでグループ化されている
 
 // この構造により、ユーザーのコインを効率的に取得可能
 async function getUserCoinsWithInfo(
   userId: string,
-  familyId: string,
+  familyId: string
 ) {
   const kv = await getKv()
 
   // 並列に実行
-  const [user, coins,] = await Promise.all([
-    kv.get(['users', userId,],),
+  const [user, coins] = await Promise.all([
+    kv.get(['users', userId]),
     (async () => {
       const result = []
       for await (
         const entry of kv.list({
-          prefix: ['coins', familyId, userId,],
-        },)
+          prefix: ['coins', familyId, userId]
+        })
       ) {
-        result.push(entry.value,)
+        result.push(entry.value)
       }
       return result
-    })(),
-  ],)
+    })()
+  ])
 
   return {
     user: user.value,
-    coins,
+    coins
   }
 }
 ```
@@ -307,38 +307,38 @@ interface FamilyIndex {
 async function addUserToFamily(
   userId: string,
   familyId: string,
-  userData: User,
+  userData: User
 ) {
   const kv = await getKv()
 
-  const indexKey = ['family_users', familyId,]
-  const index = await kv.get<FamilyIndex>(indexKey,)
+  const indexKey = ['family_users', familyId]
+  const index = await kv.get<FamilyIndex>(indexKey)
 
   await kv.atomic()
-    .check(index,)
-    .set(['users', userId,], userData,)
+    .check(index)
+    .set(['users', userId], userData)
     .set(indexKey, {
-      userIds: [...(index.value?.userIds || []), userId,],
-      updatedAt: new Date().toISOString(),
-    },)
+      userIds: [...(index.value?.userIds || []), userId],
+      updatedAt: new Date().toISOString()
+    })
     .commit()
 }
 
 // Family内の全ユーザーを一括取得
-async function getFamilyUsers(familyId: string,) {
+async function getFamilyUsers(familyId: string) {
   const kv = await getKv()
 
-  const index = await kv.get<FamilyIndex>(['family_users', familyId,],)
+  const index = await kv.get<FamilyIndex>(['family_users', familyId])
 
   if (!index.value) {
     return []
   }
 
   // 一括取得
-  const userKeys = index.value.userIds.map((id,) => ['users', id,])
-  const users = await kv.getMany(userKeys,)
+  const userKeys = index.value.userIds.map((id) => ['users', id])
+  const users = await kv.getMany(userKeys)
 
-  return users.map((u,) => u.value)
+  return users.map((u) => u.value)
 }
 ```
 
@@ -364,56 +364,56 @@ class UserLoader {
   private queue: string[] = []
   private batchTimeout: number | null = null
 
-  constructor(private kv: Deno.Kv,) {}
+  constructor(private kv: Deno.Kv) {}
 
-  async load(userId: string,): Promise<User | null> {
+  async load(userId: string): Promise<User | null> {
     // キャッシュチェック
-    if (this.cache.has(userId,)) {
-      return this.cache.get(userId,)!
+    if (this.cache.has(userId)) {
+      return this.cache.get(userId)!
     }
 
     // バッチに追加
-    this.queue.push(userId,)
+    this.queue.push(userId)
 
     // プロミスを作成してキャッシュ
-    const promise = new Promise<User | null>((resolve,) => {
+    const promise = new Promise<User | null>((resolve) => {
       // タイムアウトをセット（次のイベントループでバッチ実行）
       if (this.batchTimeout === null) {
-        this.batchTimeout = setTimeout(() => this.executeBatch(), 0,)
+        this.batchTimeout = setTimeout(() => this.executeBatch(), 0)
       }
-    },)
+    })
 
-    this.cache.set(userId, promise,)
+    this.cache.set(userId, promise)
     return promise
   }
 
   private async executeBatch() {
-    const userIds = [...this.queue,]
+    const userIds = [...this.queue]
     this.queue = []
     this.batchTimeout = null
 
     // 一括取得
-    const userKeys = userIds.map((id,) => ['users', id,])
-    const users = await this.kv.getMany<User>(userKeys,)
+    const userKeys = userIds.map((id) => ['users', id])
+    const users = await this.kv.getMany<User>(userKeys)
 
     // 結果を解決
-    users.forEach((user, i,) => {
+    users.forEach((user, i) => {
       const userId = userIds[i]
-      const promise = this.cache.get(userId,)
+      const promise = this.cache.get(userId)
       // プロミスを解決（実装は簡略化）
-    },)
+    })
   }
 }
 
 // 使用例
-const loader = new UserLoader(kv,)
+const loader = new UserLoader(kv)
 
 const coins = await getCoins()
 const coinsWithUsers = await Promise.all(
-  coins.map(async (coin,) => ({
+  coins.map(async (coin) => ({
     coin,
-    user: await loader.load(coin.userId,), // バッチ化される
-  })),
+    user: await loader.load(coin.userId) // バッチ化される
+  }))
 )
 ```
 
@@ -435,23 +435,23 @@ const coinsWithUsers = await Promise.all(
 
 ```typescript
 // 基本的にはgetMany()で十分
-async function getCoinsWithUsers(coinIds: string[],) {
+async function getCoinsWithUsers(coinIds: string[]) {
   const kv = await getKv()
 
   // コインを取得
-  const coins = await kv.getMany(coinIds.map((id,) => ['coins', id,]),)
+  const coins = await kv.getMany(coinIds.map((id) => ['coins', id]))
 
   // ユーザーIDを収集
-  const userIds = [...new Set(coins.map((c,) => c.value.userId),),]
+  const userIds = [...new Set(coins.map((c) => c.value.userId))]
 
   // ユーザーを一括取得
-  const users = await kv.getMany(userIds.map((id,) => ['users', id,]),)
-  const userMap = new Map(users.map((u,) => [u.value.id, u.value,]),)
+  const users = await kv.getMany(userIds.map((id) => ['users', id]))
+  const userMap = new Map(users.map((u) => [u.value.id, u.value]))
 
   // 結合
-  return coins.map((c,) => ({
+  return coins.map((c) => ({
     coin: c.value,
-    user: userMap.get(c.value.userId,),
+    user: userMap.get(c.value.userId)
   }))
 }
 ```
@@ -497,7 +497,7 @@ interface Coin {
 
 ```typescript
 // デフォルトの選択肢
-const items = await kv.getMany(keys,)
+const items = await kv.getMany(keys)
 ```
 
 ### 2. 頻繁に使う名前は非正規化
@@ -515,11 +515,11 @@ interface Coin {
 ```typescript
 // 開発環境でログ出力
 let queryCount = 0
-const originalGet = kv.get.bind(kv,)
+const originalGet = kv.get.bind(kv)
 kv.get = async (...args) => {
   queryCount++
-  console.log(`Query #${queryCount}:`, args[0],)
-  return originalGet(...args,)
+  console.log(`Query #${queryCount}:`, args[0])
+  return originalGet(...args)
 }
 ```
 

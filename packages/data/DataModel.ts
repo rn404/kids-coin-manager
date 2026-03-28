@@ -1,4 +1,4 @@
-import type { ISODateTimeString, } from '@workspace/foundations'
+import type { ISODateTimeString } from '@workspace/foundations'
 
 interface RequiredDataModel {
   id: string
@@ -6,7 +6,7 @@ interface RequiredDataModel {
   updatedAt: ISODateTimeString
 }
 
-type DataModel<T extends object,> =
+type DataModel<T extends object> =
   & RequiredDataModel
   & Omit<T, keyof RequiredDataModel>
 
@@ -19,6 +19,6 @@ type DataModel<T extends object,> =
  * // => { userId: string, familyId: string, coinTypeId: string, amount: number }
  * ```
  */
-type AttributeOf<T,> = T extends DataModel<infer U> ? U : never
+type AttributeOf<T> = T extends DataModel<infer U> ? U : never
 
-export type { AttributeOf, DataModel, }
+export type { AttributeOf, DataModel }

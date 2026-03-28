@@ -1,26 +1,26 @@
-import { Head, } from 'fresh/runtime'
-import { define, } from '../../main.ts'
-import { page, } from 'fresh'
-import { makeCoinManageService, } from '@workspace/services'
-import { makeCoinUseCase, } from '@workspace/data'
-import type { CoinTypeDataModel, } from '@workspace/data'
-import type { ValidationError, } from '@workspace/services'
+import { Head } from 'fresh/runtime'
+import { define } from '../../main.ts'
+import { page } from 'fresh'
+import { makeCoinManageService } from '@workspace/services'
+import { makeCoinUseCase } from '@workspace/data'
+import type { CoinTypeDataModel } from '@workspace/data'
+import type { ValidationError } from '@workspace/services'
 
 const handler = define.handlers({
-  async GET(ctx,) {
-    const service = makeCoinManageService({ kv: ctx.state.kv, },)
-    const coinTypes = await service.listCoinTypes(ctx.state.me.familyId,)
-    return page({ coinTypes, errors: [] as Array<ValidationError>, },)
+  async GET(ctx) {
+    const service = makeCoinManageService({ kv: ctx.state.kv })
+    const coinTypes = await service.listCoinTypes(ctx.state.me.familyId)
+    return page({ coinTypes, errors: [] as Array<ValidationError> })
   },
-  async POST(ctx,) {
+  async POST(ctx) {
     const formData = await ctx.req.formData()
-    const action = formData.get('_action',)?.toString()
+    const action = formData.get('_action')?.toString()
 
     if (action === 'grant') {
-      const coinTypeId = formData.get('coinTypeId',)?.toString() ?? ''
-      const amount = Number(formData.get('amount',) ?? 0,)
+      const coinTypeId = formData.get('coinTypeId')?.toString() ?? ''
+      const amount = Number(formData.get('amount') ?? 0)
 
-      const coinUseCase = makeCoinUseCase({ kv: ctx.state.kv, },)
+      const coinUseCase = makeCoinUseCase({ kv: ctx.state.kv })
       await coinUseCase.increaseBy(
         ctx.state.me.userId,
         ctx.state.me.familyId,
@@ -28,42 +28,42 @@ const handler = define.handlers({
         {
           amount,
           transactionType: 'manage_grant',
-          metadata: { type: 'manage_grant', },
-        },
+          metadata: { type: 'manage_grant' }
+        }
       )
 
       return new Response(null, {
         status: 303,
-        headers: { Location: '/coin-types', },
-      },)
+        headers: { Location: '/coin-types' }
+      })
     }
 
-    const name = formData.get('name',)?.toString() ?? ''
-    const durationMinutes = Number(formData.get('durationMinutes',) ?? 0,)
-    const dailyDistribution = Number(formData.get('dailyDistribution',) ?? 0,)
+    const name = formData.get('name')?.toString() ?? ''
+    const durationMinutes = Number(formData.get('durationMinutes') ?? 0)
+    const dailyDistribution = Number(formData.get('dailyDistribution') ?? 0)
 
-    const service = makeCoinManageService({ kv: ctx.state.kv, },)
+    const service = makeCoinManageService({ kv: ctx.state.kv })
     const result = await service.addCoinType(ctx.state.me.familyId, {
       name,
       durationMinutes,
-      dailyDistribution,
-    },)
+      dailyDistribution
+    })
 
     if (result.ok === false) {
-      const coinTypes = await service.listCoinTypes(ctx.state.me.familyId,)
-      return page({ coinTypes, errors: result.errors, },)
+      const coinTypes = await service.listCoinTypes(ctx.state.me.familyId)
+      return page({ coinTypes, errors: result.errors })
     }
 
     return new Response(null, {
       status: 303,
-      headers: { Location: '/coin-types', },
-    },)
-  },
-},)
+      headers: { Location: '/coin-types' }
+    })
+  }
+})
 
 const CoinTypesPage = define.page<typeof handler>(
-  ({ data, },) => {
-    const { coinTypes, errors, } = data
+  ({ data }) => {
+    const { coinTypes, errors } = data
 
     return (
       <div class='px-4 py-8 mx-auto min-h-screen'>
@@ -78,7 +78,7 @@ const CoinTypesPage = define.page<typeof handler>(
             {errors.length > 0 && (
               <div class='mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded'>
                 <ul>
-                  {errors.map((error,) => (
+                  {errors.map((error) => (
                     <li key={error.field}>{error.message}</li>
                   ))}
                 </ul>
@@ -149,7 +149,7 @@ const CoinTypesPage = define.page<typeof handler>(
                   name='coinTypeId'
                   class='w-full px-3 py-2 border border-gray-300 rounded'
                 >
-                  {coinTypes.map((coinType: CoinTypeDataModel,) => (
+                  {coinTypes.map((coinType: CoinTypeDataModel) => (
                     <option key={coinType.id} value={coinType.id}>
                       {coinType.name}
                     </option>
@@ -183,7 +183,7 @@ const CoinTypesPage = define.page<typeof handler>(
               ? <p class='text-gray-500'>まだコイン種類が登録されていません</p>
               : (
                 <ul class='flex flex-col gap-2'>
-                  {coinTypes.map((coinType: CoinTypeDataModel,) => (
+                  {coinTypes.map((coinType: CoinTypeDataModel) => (
                     <li
                       key={coinType.id}
                       class='p-3 border border-gray-200 rounded'
@@ -202,9 +202,9 @@ const CoinTypesPage = define.page<typeof handler>(
         </div>
       </div>
     )
-  },
+  }
 )
 
-export { handler, }
+export { handler }
 // deno-lint-ignore internal/no-default-export
 export default CoinTypesPage

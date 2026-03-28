@@ -1,10 +1,10 @@
-import type { ComponentChildren, } from 'preact'
+import type { ComponentChildren } from 'preact'
 
-function ExamplePage({ title, description, children, }: {
+function ExamplePage({ title, description, children }: {
   title: string
   children: ComponentChildren
   description?: string
-},) {
+}) {
   return (
     <div>
       <div class='p-4 bg-neutral-200 rounded mb-6 flex flex-col gap-2'>
@@ -18,4 +18,4 @@ function ExamplePage({ title, description, children, }: {
   )
 }
 
-export { ExamplePage, }
+export { ExamplePage }

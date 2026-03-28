@@ -1,4 +1,4 @@
-import type { ISODateString, ISODateTimeString, } from './timestamp.ts'
+import type { ISODateString, ISODateTimeString } from './timestamp.ts'
 
 /**
  * UTC の datetime にタイムゾーン情報を付与し、
@@ -20,9 +20,9 @@ interface DatetimeWithTimezone {
 /**
  * IANA タイムゾーン識別子として有効かどうかを判定する。
  */
-const isTimezone = (value: string,): boolean => {
+const isTimezone = (value: string): boolean => {
   try {
-    Intl.DateTimeFormat(undefined, { timeZone: value, },)
+    Intl.DateTimeFormat(undefined, { timeZone: value })
     return true
   } catch {
     return false
@@ -35,33 +35,33 @@ const isTimezone = (value: string,): boolean => {
  */
 const toLocalDateString = (
   date: Date,
-  timezone: string,
+  timezone: string
 ): ISODateString => {
   return Intl.DateTimeFormat('en-CA', {
     timeZone: timezone,
     year: 'numeric',
     month: '2-digit',
-    day: '2-digit',
-  },).format(date,)
+    day: '2-digit'
+  }).format(date)
 }
 
 /**
  * `'GMT+9:00'` や `'GMT-5:00'` のような timeZoneName を `'+09:00'` / `'-05:00'` に変換する。
  * `'GMT'`（オフセット 0）は `'+00:00'` を返す。
  */
-const parseOffset = (gmtString: string,): string => {
+const parseOffset = (gmtString: string): string => {
   if (gmtString === 'GMT') {
     return '+00:00'
   }
 
-  const match = gmtString.match(/^GMT([+-])(\d{1,2}):?(\d{2})?$/,)
+  const match = gmtString.match(/^GMT([+-])(\d{1,2}):?(\d{2})?$/)
   if (match === null) {
     return '+00:00'
   }
 
   const sign = match[1]
-  const hours = match[2].padStart(2, '0',)
-  const minutes = (match[3] ?? '00').padStart(2, '0',)
+  const hours = match[2].padStart(2, '0')
+  const minutes = (match[3] ?? '00').padStart(2, '0')
   return `${sign}${hours}:${minutes}`
 }
 
@@ -71,7 +71,7 @@ const parseOffset = (gmtString: string,): string => {
  */
 const toLocalDatetime = (
   date: Date,
-  timezone: string,
+  timezone: string
 ): string => {
   const formatter = Intl.DateTimeFormat('en-US', {
     timeZone: timezone,
@@ -82,21 +82,21 @@ const toLocalDatetime = (
     minute: '2-digit',
     second: '2-digit',
     hour12: false,
-    timeZoneName: 'shortOffset',
-  },)
+    timeZoneName: 'shortOffset'
+  })
 
-  const parts = formatter.formatToParts(date,)
-  const get = (type: Intl.DateTimeFormatPartTypes,): string =>
-    parts.find((p,) => p.type === type)?.value ?? ''
+  const parts = formatter.formatToParts(date)
+  const get = (type: Intl.DateTimeFormatPartTypes): string =>
+    parts.find((p) => p.type === type)?.value ?? ''
 
-  const year = get('year',)
-  const month = get('month',)
-  const day = get('day',)
-  const hour = get('hour',) === '24' ? '00' : get('hour',)
-  const minute = get('minute',)
-  const second = get('second',)
-  const ms = String(date.getMilliseconds(),).padStart(3, '0',)
-  const offset = parseOffset(get('timeZoneName',),)
+  const year = get('year')
+  const month = get('month')
+  const day = get('day')
+  const hour = get('hour') === '24' ? '00' : get('hour')
+  const minute = get('minute')
+  const second = get('second')
+  const ms = String(date.getMilliseconds()).padStart(3, '0')
+  const offset = parseOffset(get('timeZoneName'))
 
   return `${year}-${month}-${day}T${hour}:${minute}:${second}.${ms}${offset}`
 }
@@ -106,22 +106,22 @@ const toLocalDatetime = (
  */
 const createDatetimeWithTimezone = (
   datetime: ISODateTimeString,
-  timezone: string,
+  timezone: string
 ): DatetimeWithTimezone => {
-  if (isTimezone(timezone,) === false) {
-    throw new Error(`Invalid timezone: ${timezone}`,)
+  if (isTimezone(timezone) === false) {
+    throw new Error(`Invalid timezone: ${timezone}`)
   }
 
-  const date = new Date(datetime,)
-  if (isNaN(date.getTime(),)) {
-    throw new Error(`Invalid datetime: ${datetime}`,)
+  const date = new Date(datetime)
+  if (isNaN(date.getTime())) {
+    throw new Error(`Invalid datetime: ${datetime}`)
   }
 
   return {
     datetime,
     timezone,
-    localDatetime: toLocalDatetime(date, timezone,),
-    localDateString: toLocalDateString(date, timezone,),
+    localDatetime: toLocalDatetime(date, timezone),
+    localDateString: toLocalDateString(date, timezone)
   }
 }
 
@@ -129,9 +129,9 @@ const createDatetimeWithTimezone = (
  * 現在時刻から `DatetimeWithTimezone` を生成する。
  */
 const createDatetimeWithTimezoneFromNow = (
-  timezone: string,
+  timezone: string
 ): DatetimeWithTimezone => {
-  return createDatetimeWithTimezone(new Date().toISOString(), timezone,)
+  return createDatetimeWithTimezone(new Date().toISOString(), timezone)
 }
 
 /**
@@ -140,18 +140,18 @@ const createDatetimeWithTimezoneFromNow = (
  */
 const diffLocalDays = (
   from: DatetimeWithTimezone,
-  to: DatetimeWithTimezone,
+  to: DatetimeWithTimezone
 ): number => {
   const msPerDay = 86_400_000
-  const fromMs = new Date(from.localDateString,).getTime()
-  const toMs = new Date(to.localDateString,).getTime()
-  return Math.round((toMs - fromMs) / msPerDay,)
+  const fromMs = new Date(from.localDateString).getTime()
+  const toMs = new Date(to.localDateString).getTime()
+  return Math.round((toMs - fromMs) / msPerDay)
 }
 
 export {
   createDatetimeWithTimezone,
   createDatetimeWithTimezoneFromNow,
   diffLocalDays,
-  isTimezone,
+  isTimezone
 }
-export type { DatetimeWithTimezone, }
+export type { DatetimeWithTimezone }

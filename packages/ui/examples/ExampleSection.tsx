@@ -1,10 +1,10 @@
-import type { ComponentChildren, } from 'preact'
+import type { ComponentChildren } from 'preact'
 
-function ExampleSection({ title, description, children, }: {
+function ExampleSection({ title, description, children }: {
   title: string
   children: ComponentChildren
   description?: string
-},) {
+}) {
   return (
     <div class='mb-4 flex flex-col gap-2'>
       <div class='font-bold text-2xl'>{title}</div>
@@ -16,4 +16,4 @@ function ExampleSection({ title, description, children, }: {
   )
 }
 
-export { ExampleSection, }
+export { ExampleSection }

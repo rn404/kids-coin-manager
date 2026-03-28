@@ -1,67 +1,67 @@
-import { COIN_PREFIX_KEY, } from '../Coin.ts'
-import type { CoinDataModel, } from '../Coin.ts'
-import { COIN_TRANSACTION_PREFIX_KEY, } from '../CoinTransaction.ts'
-import type { CoinTransactionDataModel, } from '../CoinTransaction.ts'
-import { COIN_TYPE_PREFIX_KEY, } from '../CoinType.ts'
-import type { CoinTypeDataModel, } from '../CoinType.ts'
-import { DAILY_COIN_DISTRIBUTION_PREFIX_KEY, } from '../DailyCoinDistribution.ts'
-import type { DailyCoinDistributionDataModel, } from '../DailyCoinDistribution.ts'
-import { generateUuid, getTimestamp, withRetry, } from '@workspace/foundations'
-import type { DatetimeWithTimezone, } from '@workspace/foundations'
+import { COIN_PREFIX_KEY } from '../Coin.ts'
+import type { CoinDataModel } from '../Coin.ts'
+import { COIN_TRANSACTION_PREFIX_KEY } from '../CoinTransaction.ts'
+import type { CoinTransactionDataModel } from '../CoinTransaction.ts'
+import { COIN_TYPE_PREFIX_KEY } from '../CoinType.ts'
+import type { CoinTypeDataModel } from '../CoinType.ts'
+import { DAILY_COIN_DISTRIBUTION_PREFIX_KEY } from '../DailyCoinDistribution.ts'
+import type { DailyCoinDistributionDataModel } from '../DailyCoinDistribution.ts'
+import { generateUuid, getTimestamp, withRetry } from '@workspace/foundations'
+import type { DatetimeWithTimezone } from '@workspace/foundations'
 
 interface CoinDistributionUseCaseInterface {
   findById(
     familyId: DailyCoinDistributionDataModel['familyId'],
     userId: DailyCoinDistributionDataModel['userId'],
-    summaryDate: DailyCoinDistributionDataModel['summaryDate'],
+    summaryDate: DailyCoinDistributionDataModel['summaryDate']
   ): Promise<DailyCoinDistributionDataModel['distributions'] | null>
   ensure(
     familyId: DailyCoinDistributionDataModel['familyId'],
     userId: DailyCoinDistributionDataModel['userId'],
-    currentDate: DatetimeWithTimezone,
+    currentDate: DatetimeWithTimezone
   ): Promise<void>
 }
 
 const diffDays = (
   from: string,
-  to: string,
+  to: string
 ): number => {
   const msPerDay = 24 * 60 * 60 * 1000
-  const fromDate = new Date(from,)
-  const toDate = new Date(to,)
+  const fromDate = new Date(from)
+  const toDate = new Date(to)
   return Math.floor(
-    (toDate.getTime() - fromDate.getTime()) / msPerDay,
+    (toDate.getTime() - fromDate.getTime()) / msPerDay
   )
 }
 
 const makeCoinDistributionUseCase = (
-  deps: { kv: Deno.Kv },
+  deps: { kv: Deno.Kv }
 ): CoinDistributionUseCaseInterface => {
   const findEntry = async (
     familyId: DailyCoinDistributionDataModel['familyId'],
     userId: DailyCoinDistributionDataModel['userId'],
-    summaryDate: DailyCoinDistributionDataModel['summaryDate'],
+    summaryDate: DailyCoinDistributionDataModel['summaryDate']
   ) => {
     return await deps.kv.get<DailyCoinDistributionDataModel>([
       DAILY_COIN_DISTRIBUTION_PREFIX_KEY,
       familyId,
       userId,
-      summaryDate,
-    ],)
+      summaryDate
+    ])
   }
 
   const findLatestDistribution = async (
     familyId: DailyCoinDistributionDataModel['familyId'],
-    userId: DailyCoinDistributionDataModel['userId'],
+    userId: DailyCoinDistributionDataModel['userId']
   ): Promise<DailyCoinDistributionDataModel | null> => {
     let latest: DailyCoinDistributionDataModel | null = null
     const entries = deps.kv.list<DailyCoinDistributionDataModel>({
       prefix: [
         DAILY_COIN_DISTRIBUTION_PREFIX_KEY,
         familyId,
-        userId,
-      ],
-    },)
+        userId
+      ]
+    })
 
     for await (const entry of entries) {
       if (
@@ -78,23 +78,23 @@ const makeCoinDistributionUseCase = (
   const findById = async (
     familyId: DailyCoinDistributionDataModel['familyId'],
     userId: DailyCoinDistributionDataModel['userId'],
-    summaryDate: DailyCoinDistributionDataModel['summaryDate'],
+    summaryDate: DailyCoinDistributionDataModel['summaryDate']
   ): ReturnType<CoinDistributionUseCaseInterface['findById']> => {
-    const entry = await findEntry(familyId, userId, summaryDate,)
+    const entry = await findEntry(familyId, userId, summaryDate)
     return entry.value?.distributions ?? null
   }
 
   const ensure = async (
     familyId: DailyCoinDistributionDataModel['familyId'],
     userId: DailyCoinDistributionDataModel['userId'],
-    currentDate: DatetimeWithTimezone,
+    currentDate: DatetimeWithTimezone
   ): ReturnType<CoinDistributionUseCaseInterface['ensure']> => {
     const summaryDate = currentDate.localDateString
     await withRetry(async () => {
       const distributionEntry = await findEntry(
         familyId,
         userId,
-        summaryDate,
+        summaryDate
       )
 
       if (distributionEntry.value !== null) {
@@ -103,23 +103,23 @@ const makeCoinDistributionUseCase = (
 
       const coinTypes: Array<CoinTypeDataModel> = []
       const entries = deps.kv.list<CoinTypeDataModel>({
-        prefix: [COIN_TYPE_PREFIX_KEY, familyId,],
-      },)
+        prefix: [COIN_TYPE_PREFIX_KEY, familyId]
+      })
 
       for await (const entry of entries) {
         if (entry.value.active) {
-          coinTypes.push(entry.value,)
+          coinTypes.push(entry.value)
         }
       }
 
       // 前回の配布日から経過日数を算出（初回は 1 日分）
       const latestDistribution = await findLatestDistribution(
         familyId,
-        userId,
+        userId
       )
       const days = latestDistribution === null
         ? 1
-        : diffDays(latestDistribution.summaryDate, summaryDate,)
+        : diffDays(latestDistribution.summaryDate, summaryDate)
 
       if (days <= 0) {
         return
@@ -131,9 +131,9 @@ const makeCoinDistributionUseCase = (
           COIN_PREFIX_KEY,
           userId,
           familyId,
-          coinType.id,
-        ],)
-        coinEntries.push(coinEntry,)
+          coinType.id
+        ])
+        coinEntries.push(coinEntry)
       }
 
       const now = getTimestamp()
@@ -142,7 +142,7 @@ const makeCoinDistributionUseCase = (
       let atomic = deps.kv.atomic()
 
       // 配布記録の楽観的ロック（二重配布防止）
-      atomic = atomic.check(distributionEntry,)
+      atomic = atomic.check(distributionEntry)
 
       for (let i = 0; i < coinTypes.length; i++) {
         const coinType = coinTypes[i]
@@ -155,7 +155,7 @@ const makeCoinDistributionUseCase = (
           coinTypeId: coinType.id,
           amount: 0,
           createdAt: now,
-          updatedAt: now,
+          updatedAt: now
         }
 
         const amount = coinType.dailyDistribution * days
@@ -164,20 +164,20 @@ const makeCoinDistributionUseCase = (
 
         const newAmount = baseCoin.amount + amount
 
-        distributions[coinType.id] = { amount, }
+        distributions[coinType.id] = { amount }
 
         // Coin 更新（存在しない場合は新規作成）
         const updatedCoin: CoinDataModel = {
           ...baseCoin,
           amount: newAmount,
-          updatedAt: now,
+          updatedAt: now
         }
 
         atomic = atomic
-          .check(coinEntry,)
+          .check(coinEntry)
           .set(
-            [COIN_PREFIX_KEY, userId, familyId, coinType.id,],
-            updatedCoin,
+            [COIN_PREFIX_KEY, userId, familyId, coinType.id],
+            updatedCoin
           )
 
         // CoinTransaction 作成
@@ -190,9 +190,9 @@ const makeCoinDistributionUseCase = (
           amount,
           balance: newAmount,
           transactionType: 'daily_distribution',
-          metadata: { type: 'daily_distribution', },
+          metadata: { type: 'daily_distribution' },
           createdAt: now,
-          updatedAt: now,
+          updatedAt: now
         }
 
         atomic = atomic.set(
@@ -201,9 +201,9 @@ const makeCoinDistributionUseCase = (
             userId,
             familyId,
             coinType.id,
-            transactionId,
+            transactionId
           ],
-          transaction,
+          transaction
         )
       }
 
@@ -215,9 +215,9 @@ const makeCoinDistributionUseCase = (
         userId,
         summaryDate,
         distributions,
-        metadata: { timezone: currentDate.timezone, },
+        metadata: { timezone: currentDate.timezone },
         createdAt: now,
-        updatedAt: now,
+        updatedAt: now
       }
 
       atomic = atomic.set(
@@ -225,23 +225,23 @@ const makeCoinDistributionUseCase = (
           DAILY_COIN_DISTRIBUTION_PREFIX_KEY,
           familyId,
           userId,
-          summaryDate,
+          summaryDate
         ],
-        distribution,
+        distribution
       )
 
       const res = await atomic.commit()
 
       if (res.ok === false) {
-        throw new Error('Conflict detected',)
+        throw new Error('Conflict detected')
       }
-    },)
+    })
   }
 
   return {
     findById,
-    ensure,
+    ensure
   }
 }
 
-export { makeCoinDistributionUseCase, }
+export { makeCoinDistributionUseCase }

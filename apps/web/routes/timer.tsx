@@ -1,7 +1,7 @@
-import { Head, } from 'fresh/runtime'
-import { define, } from '../main.ts'
+import { Head } from 'fresh/runtime'
+import { define } from '../main.ts'
 
-const Timer = define.page((_ctx,) => {
+const Timer = define.page((_ctx) => {
   return (
     <div class='px-4 py-8 mx-auto min-h-screen'>
       <Head>
@@ -12,7 +12,7 @@ const Timer = define.page((_ctx,) => {
       </div>
     </div>
   )
-},)
+})
 
 // deno-lint-ignore internal/no-default-export
 export default Timer

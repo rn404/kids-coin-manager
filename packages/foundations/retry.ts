@@ -20,11 +20,11 @@ interface RetryOptions {
  *
  * @see retry_test.ts 使用例はテストコードを参照
  */
-export const withRetry = async <T,>(
+export const withRetry = async <T>(
   operation: () => Promise<T>,
-  options: RetryOptions = {},
+  options: RetryOptions = {}
 ): Promise<T> => {
-  const { maxRetries = 3, backoffMultiplier = 100, } = options
+  const { maxRetries = 3, backoffMultiplier = 100 } = options
 
   let lastError: Error | null = null
 
@@ -35,14 +35,14 @@ export const withRetry = async <T,>(
       lastError = error as Error
 
       if (attempt < maxRetries) {
-        await new Promise((resolve,) =>
-          setTimeout(resolve, Math.pow(2, attempt + 1,) * backoffMultiplier,)
+        await new Promise((resolve) =>
+          setTimeout(resolve, Math.pow(2, attempt + 1) * backoffMultiplier)
         )
       }
     }
   }
 
   throw new Error(
-    `Failed after ${maxRetries} retries: ${lastError?.message}`,
+    `Failed after ${maxRetries} retries: ${lastError?.message}`
   )
 }

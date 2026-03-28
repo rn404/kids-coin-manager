@@ -67,7 +67,7 @@ UUID v7は時系列でソート可能な次世代のUUID仕様（RFC 9562）で�
 ### 基本的な使い方
 
 ```typescript
-import { v7, } from '@std/uuid'
+import { v7 } from '@std/uuid'
 
 // UUID v7の生成
 const id = v7.generate()
@@ -77,7 +77,7 @@ const id = v7.generate()
 const ids = [
   v7.generate(), // 古い
   v7.generate(), // 中間
-  v7.generate(), // 新しい
+  v7.generate() // 新しい
 ]
 // ids.sort() で時系列順になる
 ```
@@ -85,12 +85,12 @@ const ids = [
 ### Deno KVでの活用例
 
 ```typescript
-import { v7, } from '@std/uuid'
+import { v7 } from '@std/uuid'
 
 async function addCoin(
   userId: string,
   familyId: string,
-  coin: CoinInput,
+  coin: CoinInput
 ) {
   const kv = await getKv()
   const coinId = v7.generate() // UUID v7を生成
@@ -99,27 +99,27 @@ async function addCoin(
     ...coin,
     id: coinId,
     userId,
-    createdAt: new Date().toISOString(),
+    createdAt: new Date().toISOString()
   }
 
-  await kv.set(['coins', familyId, userId, coinId,], newCoin,)
+  await kv.set(['coins', familyId, userId, coinId], newCoin)
   return newCoin
 }
 
 // 取得時は自動的に時系列順
-async function getUserCoins(userId: string, familyId: string,) {
+async function getUserCoins(userId: string, familyId: string) {
   const kv = await getKv()
   const entries = kv.list<Coin>({
-    prefix: ['coins', familyId, userId,],
-  },)
+    prefix: ['coins', familyId, userId]
+  })
 
   const coins: Coin[] = []
   for await (const entry of entries) {
-    coins.push(entry.value,)
+    coins.push(entry.value)
   }
 
   // UUID v7なので、IDでソートすれば時系列順になる
-  return coins.sort((a, b,) => a.id.localeCompare(b.id,))
+  return coins.sort((a, b) => a.id.localeCompare(b.id))
 }
 ```
 
@@ -136,7 +136,7 @@ async function getUserCoins(userId: string, familyId: string,) {
 const id = crypto.randomUUID() // ランダム、ソート不可
 
 // 新: UUID v7
-import { v7, } from '@std/uuid'
+import { v7 } from '@std/uuid'
 const id = v7.generate() // 時系列ソート可能
 ```
 
@@ -177,13 +177,13 @@ export interface Coin {
 }
 
 // packages/data/repositories/CoinRepository.ts
-import { v7, } from '@std/uuid'
+import { v7 } from '@std/uuid'
 
 export class CoinRepository {
   async addCoin(
     userId: string,
     familyId: string,
-    coin: Omit<Coin, 'id' | 'userId' | 'createdAt'>,
+    coin: Omit<Coin, 'id' | 'userId' | 'createdAt'>
   ) {
     const kv = await getKv()
     const id = v7.generate() // UUID v7を使用
@@ -193,10 +193,10 @@ export class CoinRepository {
       _version: 1,
       id,
       userId,
-      createdAt: new Date().toISOString(),
+      createdAt: new Date().toISOString()
     }
 
-    await kv.set(['coins', familyId, userId, id,], newCoin,)
+    await kv.set(['coins', familyId, userId, id], newCoin)
     return newCoin
   }
 }

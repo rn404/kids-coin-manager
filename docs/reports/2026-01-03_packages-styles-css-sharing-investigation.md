@@ -181,19 +181,19 @@ packages/styles の目的：
 1. `apps/web/vite.config.ts` を修正：
 
 ```typescript
-import { defineConfig, } from 'vite'
-import { fresh, } from '@fresh/plugin-vite'
+import { defineConfig } from 'vite'
+import { fresh } from '@fresh/plugin-vite'
 import tailwindcss from '@tailwindcss/vite'
 import path from 'node:path'
 
 export default defineConfig({
-  plugins: [fresh(), tailwindcss(),],
+  plugins: [fresh(), tailwindcss()],
   resolve: {
     alias: {
-      '@workspace/styles': path.resolve(__dirname, '../../packages/styles',),
-    },
-  },
-},)
+      '@workspace/styles': path.resolve(__dirname, '../../packages/styles')
+    }
+  }
+})
 ```
 
 2. `apps/web/client.ts` を修正：
@@ -244,10 +244,10 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        primary: '#3b82f6',
-      },
-    },
-  },
+        primary: '#3b82f6'
+      }
+    }
+  }
 }
 ```
 
@@ -497,7 +497,7 @@ module.exports = {
    - 削除する、または以下のように更新：
    ```typescript
    // CSS ファイルのパスを提供（必要に応じて）
-   export const stylesPath = new URL('./styles.css', import.meta.url,).pathname
+   export const stylesPath = new URL('./styles.css', import.meta.url).pathname
    ```
 
 ### ステップ2: apps/web の更新

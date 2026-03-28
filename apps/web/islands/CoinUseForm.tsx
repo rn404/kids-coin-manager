@@ -1,5 +1,5 @@
-import { useSignal, } from '@preact/signals'
-import { Button, Icon, NumberInput, } from '@workspace/ui'
+import { useSignal } from '@preact/signals'
+import { Button, Icon, NumberInput } from '@workspace/ui'
 
 interface CoinUseFormProps {
   coinTypeId: string
@@ -8,13 +8,13 @@ interface CoinUseFormProps {
 }
 
 const CoinUseForm = (
-  { coinTypeId, name, initialAmount, }: CoinUseFormProps,
+  { coinTypeId, name, initialAmount }: CoinUseFormProps
 ) => {
-  const isOpen = useSignal(false,)
-  const amount = useSignal(1,)
-  const currentAmount = useSignal(initialAmount,)
-  const isLoading = useSignal(false,)
-  const error = useSignal<string | null>(null,)
+  const isOpen = useSignal(false)
+  const amount = useSignal(1)
+  const currentAmount = useSignal(initialAmount)
+  const isLoading = useSignal(false)
+  const error = useSignal<string | null>(null)
 
   const handleSubmit = async () => {
     isLoading.value = true
@@ -23,9 +23,9 @@ const CoinUseForm = (
     try {
       const res = await fetch('/api/coins/use', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json', },
-        body: JSON.stringify({ coinTypeId, amount: amount.value, },),
-      },)
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ coinTypeId, amount: amount.value })
+      })
 
       if (res.ok === false) {
         error.value = 'コインの使用に失敗しました'

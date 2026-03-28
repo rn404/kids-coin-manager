@@ -1,6 +1,6 @@
-import { ExamplePage, } from './ExamplePage.tsx'
-import { ExampleSection, } from './ExampleSection.tsx'
-import { Link, } from '../components/Link.tsx'
+import { ExamplePage } from './ExamplePage.tsx'
+import { ExampleSection } from './ExampleSection.tsx'
+import { Link } from '../components/Link.tsx'
 
 const LinkExamplePage = () => {
   return (
@@ -15,4 +15,4 @@ const LinkExamplePage = () => {
   )
 }
 
-export { LinkExamplePage, }
+export { LinkExamplePage }

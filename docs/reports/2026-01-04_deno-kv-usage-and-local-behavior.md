@@ -37,10 +37,10 @@ Deno KV は Deno ランタイムに組み込まれたキーバリューデータ
 const kv = await Deno.openKv()
 
 // パスを明示的に指定
-const kv = await Deno.openKv('./my-database.sqlite',)
+const kv = await Deno.openKv('./my-database.sqlite')
 
 // メモリ内データベース（テスト用、永続化されない）
-const kv = await Deno.openKv(':memory:',)
+const kv = await Deno.openKv(':memory:')
 ```
 
 ### 基本操作
@@ -49,49 +49,49 @@ const kv = await Deno.openKv(':memory:',)
 
 ```typescript
 // キーは配列形式で階層的に定義
-await kv.set(['players', 'alice',], {
+await kv.set(['players', 'alice'], {
   username: 'alice',
   score: 100,
-  level: 5,
-},)
+  level: 5
+})
 
 // より深い階層も可能
-await kv.set(['games', 'game1', 'players', 'alice',], playerData,)
+await kv.set(['games', 'game1', 'players', 'alice'], playerData)
 ```
 
 #### Get 操作（単一データ取得）
 
 ```typescript
-const record = await kv.get(['players', 'alice',],)
-console.log(record.value,) // { username: "alice", score: 100, level: 5 }
-console.log(record.versionstamp,) // バージョン情報（Atomic操作で使用）
+const record = await kv.get(['players', 'alice'])
+console.log(record.value) // { username: "alice", score: 100, level: 5 }
+console.log(record.versionstamp) // バージョン情報（Atomic操作で使用）
 ```
 
 #### GetMany 操作（複数データ一括取得）
 
 ```typescript
-const [record1, record2,] = await kv.getMany([
-  ['players', 'carlos',],
-  ['players', 'briana',],
-],)
+const [record1, record2] = await kv.getMany([
+  ['players', 'carlos'],
+  ['players', 'briana']
+])
 ```
 
 #### List 操作（プレフィックス検索）
 
 ```typescript
 // "players" プレフィックスを持つすべてのキーを取得
-const records = kv.list({ prefix: ['players',], },)
+const records = kv.list({ prefix: ['players'] })
 
 for await (const entry of records) {
-  console.log(entry.key,) // ["players", "alice"]
-  console.log(entry.value,) // { username: "alice", ... }
+  console.log(entry.key) // ["players", "alice"]
+  console.log(entry.value) // { username: "alice", ... }
 }
 ```
 
 #### Delete 操作（データ削除）
 
 ```typescript
-await kv.delete(['players', 'carlos',],)
+await kv.delete(['players', 'carlos'])
 ```
 
 ### 高度な機能
@@ -102,18 +102,18 @@ await kv.delete(['players', 'carlos',],)
 
 ```typescript
 // スコアを更新する例
-const aliceRecord = await kv.get(['players', 'alice',],)
+const aliceRecord = await kv.get(['players', 'alice'])
 
 const res = await kv.atomic()
-  .check(aliceRecord,) // バージョンが変更されていないか確認
-  .set(['players', 'alice',], {
+  .check(aliceRecord) // バージョンが変更されていないか確認
+  .set(['players', 'alice'], {
     ...aliceRecord.value,
-    score: aliceRecord.value.score + 10,
-  },)
+    score: aliceRecord.value.score + 10
+  })
   .commit()
 
 if (!res.ok) {
-  console.log('競合が発生しました。再試行してください。',)
+  console.log('競合が発生しました。再試行してください。')
 }
 ```
 
@@ -125,9 +125,9 @@ if (!res.ok) {
 const res = await kv.atomic()
   .mutate({
     type: 'sum',
-    key: ['scores', 'alice',],
-    value: new Deno.KvU64(10n,),
-  },)
+    key: ['scores', 'alice'],
+    value: new Deno.KvU64(10n)
+  })
   .commit()
 ```
 
@@ -136,10 +136,10 @@ const res = await kv.atomic()
 キーの変更をリアルタイムで検知：
 
 ```typescript
-const stream = kv.watch([['players', 'alice',],],)
+const stream = kv.watch([['players', 'alice']])
 
 for await (const entries of stream) {
-  console.log('データが変更されました:', entries,)
+  console.log('データが変更されました:', entries)
 }
 ```
 
@@ -162,12 +162,12 @@ for await (const entries of stream) {
 
 2. **明示的なパス指定**
    ```typescript
-   const kv = await Deno.openKv('./data/my-database.sqlite',)
+   const kv = await Deno.openKv('./data/my-database.sqlite')
    ```
 
 3. **メモリ内データベース**
    ```typescript
-   const kv = await Deno.openKv(':memory:',)
+   const kv = await Deno.openKv(':memory:')
    ```
    - データは永続化されない
    - テスト環境に最適
@@ -182,8 +182,8 @@ for await (const entries of stream) {
 const kv = await Deno.openKv()
 
 // 以降のコードは環境に依存せず動作
-await kv.set(['key',], 'value',)
-const result = await kv.get(['key',],)
+await kv.set(['key'], 'value')
+const result = await kv.get(['key'])
 ```
 
 ---
@@ -198,7 +198,7 @@ const result = await kv.get(['key',],)
 // 良い例：階層的で意味のある構造
 ;[
   'users',
-  userId,
+  userId
 ]['users', userId, 'profile']['users', userId, 'settings']['posts', postId][
   'posts', postId, 'comments', commentId
 ] // 使用可能な型
@@ -217,20 +217,20 @@ const result = await kv.get(['key',],)
 
 ```typescript
 // オブジェクト
-await kv.set(['user', 'alice',], {
+await kv.set(['user', 'alice'], {
   name: 'Alice',
   age: 30,
-  tags: ['admin', 'premium',],
-},)
+  tags: ['admin', 'premium']
+})
 
 // 配列
-await kv.set(['scores',], [100, 200, 300,],)
+await kv.set(['scores'], [100, 200, 300])
 
 // Date
-await kv.set(['timestamp',], new Date(),)
+await kv.set(['timestamp'], new Date())
 
 // BigInt
-await kv.set(['count',], 12345678901234567890n,)
+await kv.set(['count'], 12345678901234567890n)
 ```
 
 ---
@@ -288,64 +288,64 @@ await kv.set(['count',], 12345678901234567890n,)
 ```typescript
 // ユーザー管理の例
 class UserRepository {
-  constructor(private kv: Deno.Kv,) {}
+  constructor(private kv: Deno.Kv) {}
 
-  async createUser(userId: string, data: UserData,) {
-    await this.kv.set(['users', userId,], data,)
+  async createUser(userId: string, data: UserData) {
+    await this.kv.set(['users', userId], data)
     // セカンダリインデックス（emailで検索用）
-    await this.kv.set(['users_by_email', data.email,], userId,)
+    await this.kv.set(['users_by_email', data.email], userId)
   }
 
-  async getUserById(userId: string,) {
-    const result = await this.kv.get(['users', userId,],)
+  async getUserById(userId: string) {
+    const result = await this.kv.get(['users', userId])
     return result.value
   }
 
-  async getUserByEmail(email: string,) {
-    const userIdRecord = await this.kv.get(['users_by_email', email,],)
+  async getUserByEmail(email: string) {
+    const userIdRecord = await this.kv.get(['users_by_email', email])
     if (!userIdRecord.value) return null
-    return this.getUserById(userIdRecord.value as string,)
+    return this.getUserById(userIdRecord.value as string)
   }
 
   async listAllUsers() {
     const users = []
-    const entries = this.kv.list({ prefix: ['users',], },)
+    const entries = this.kv.list({ prefix: ['users'] })
     for await (const entry of entries) {
       // "users_by_email" を除外
       if (entry.key.length === 2 && entry.key[0] === 'users') {
-        users.push(entry.value,)
+        users.push(entry.value)
       }
     }
     return users
   }
 
-  async updateUserScore(userId: string, increment: number,) {
-    const user = await this.kv.get(['users', userId,],)
-    if (!user.value) throw new Error('User not found',)
+  async updateUserScore(userId: string, increment: number) {
+    const user = await this.kv.get(['users', userId])
+    if (!user.value) throw new Error('User not found')
 
     const result = await this.kv.atomic()
-      .check(user,)
-      .set(['users', userId,], {
+      .check(user)
+      .set(['users', userId], {
         ...user.value,
-        score: user.value.score + increment,
-      },)
+        score: user.value.score + increment
+      })
       .commit()
 
     if (!result.ok) {
-      throw new Error('Conflict detected, please retry',)
+      throw new Error('Conflict detected, please retry')
     }
   }
 }
 
 // 使用例
 const kv = await Deno.openKv()
-const userRepo = new UserRepository(kv,)
+const userRepo = new UserRepository(kv)
 
 await userRepo.createUser('alice', {
   email: 'alice@example.com',
   name: 'Alice',
-  score: 0,
-},)
+  score: 0
+})
 ```
 
 ---
@@ -377,23 +377,23 @@ async function migrateTimestampFormat() {
   const kv = await Deno.openKv()
 
   // 古い形式のデータを取得
-  const entries = kv.list({ prefix: ['users',], },)
+  const entries = kv.list({ prefix: ['users'] })
 
   for await (const entry of entries) {
     const oldData = entry.value
 
     // Atomic操作で安全に更新
     const result = await kv.atomic()
-      .check(entry,) // versionstampで変更検知
+      .check(entry) // versionstampで変更検知
       .set(entry.key, {
         ...oldData,
         // UNIXタイムスタンプ → ISO文字列に変換
-        createdAt: new Date(oldData.timestamp,).toISOString(),
-      },)
+        createdAt: new Date(oldData.timestamp).toISOString()
+      })
       .commit()
 
     if (!result.ok) {
-      console.log(`競合発生: ${entry.key}`,)
+      console.log(`競合発生: ${entry.key}`)
       // リトライロジックを実装
     }
   }
@@ -421,8 +421,8 @@ interface UserV2 {
 type User = UserV1 | UserV2
 
 // 読み取り時に自動マイグレーション（Lazy Migration）
-async function getUser(userId: string,): Promise<UserV2 | null> {
-  const result = await kv.get(['users', userId,],)
+async function getUser(userId: string): Promise<UserV2 | null> {
+  const result = await kv.get(['users', userId])
   const data = result.value as User | null
 
   if (!data) return null
@@ -432,15 +432,15 @@ async function getUser(userId: string,): Promise<UserV2 | null> {
     const migrated: UserV2 = {
       _version: 2,
       name: data.name,
-      createdAt: new Date(data.timestamp,).toISOString(),
+      createdAt: new Date(data.timestamp).toISOString()
     }
 
     // 次回用に保存（Fire-and-forget）
     kv.atomic()
-      .check(result,)
-      .set(['users', userId,], migrated,)
+      .check(result)
+      .set(['users', userId], migrated)
       .commit()
-      .catch((err,) => console.error('Migration save failed:', err,))
+      .catch((err) => console.error('Migration save failed:', err))
 
     return migrated
   }
@@ -462,12 +462,12 @@ interface MigrationRecord {
 }
 
 // マイグレーション実行前にチェック
-async function runMigration(name: string, migrationFn: () => Promise<number>,) {
-  const migrationKey = ['_migrations', name,]
-  const existing = await kv.get(migrationKey,)
+async function runMigration(name: string, migrationFn: () => Promise<number>) {
+  const migrationKey = ['_migrations', name]
+  const existing = await kv.get(migrationKey)
 
   if (existing.value) {
-    console.log(`マイグレーション "${name}" は既に実行済みです`,)
+    console.log(`マイグレーション "${name}" は既に実行済みです`)
     return
   }
 
@@ -475,8 +475,8 @@ async function runMigration(name: string, migrationFn: () => Promise<number>,) {
   await kv.set(migrationKey, {
     name,
     executedAt: new Date().toISOString(),
-    status: 'running',
-  } as MigrationRecord,)
+    status: 'running'
+  } as MigrationRecord)
 
   try {
     const recordsAffected = await migrationFn()
@@ -486,18 +486,18 @@ async function runMigration(name: string, migrationFn: () => Promise<number>,) {
       name,
       executedAt: new Date().toISOString(),
       status: 'completed',
-      recordsAffected,
-    } as MigrationRecord,)
+      recordsAffected
+    } as MigrationRecord)
 
-    console.log(`マイグレーション完了: ${recordsAffected} 件`,)
+    console.log(`マイグレーション完了: ${recordsAffected} 件`)
   } catch (error) {
     // 失敗ステータスを記録
     await kv.set(migrationKey, {
       name,
       executedAt: new Date().toISOString(),
       status: 'failed',
-      error: error.message,
-    } as MigrationRecord,)
+      error: error.message
+    } as MigrationRecord)
 
     throw error
   }
@@ -506,7 +506,7 @@ async function runMigration(name: string, migrationFn: () => Promise<number>,) {
 // 使用例
 await runMigration('2026-01-04-timestamp-to-iso', async () => {
   let count = 0
-  const entries = kv.list({ prefix: ['users',], },)
+  const entries = kv.list({ prefix: ['users'] })
 
   for await (const entry of entries) {
     // マイグレーション処理
@@ -514,7 +514,7 @@ await runMigration('2026-01-04-timestamp-to-iso', async () => {
   }
 
   return count
-},)
+})
 ```
 
 ### ロールバック戦略
@@ -546,39 +546,39 @@ denokv serve --read-only
 
 ```typescript
 // エクスポート（バックアップ）
-async function exportDatabase(outputPath: string,) {
+async function exportDatabase(outputPath: string) {
   const kv = await Deno.openKv()
-  const entries = kv.list({ prefix: [], },)
+  const entries = kv.list({ prefix: [] })
   const backup = []
 
   for await (const entry of entries) {
     backup.push({
       key: entry.key,
       value: entry.value,
-      versionstamp: entry.versionstamp,
-    },)
+      versionstamp: entry.versionstamp
+    })
   }
 
-  await Deno.writeTextFile(outputPath, JSON.stringify(backup, null, 2,),)
-  console.log(`${backup.length} 件のエントリをエクスポートしました`,)
+  await Deno.writeTextFile(outputPath, JSON.stringify(backup, null, 2))
+  console.log(`${backup.length} 件のエントリをエクスポートしました`)
 }
 
 // インポート（復元）
-async function importDatabase(inputPath: string,) {
+async function importDatabase(inputPath: string) {
   const kv = await Deno.openKv()
-  const backup = JSON.parse(await Deno.readTextFile(inputPath,),)
+  const backup = JSON.parse(await Deno.readTextFile(inputPath))
 
   for (const item of backup) {
-    await kv.set(item.key, item.value,)
+    await kv.set(item.key, item.value)
   }
 
-  console.log(`${backup.length} 件のエントリをインポートしました`,)
+  console.log(`${backup.length} 件のエントリをインポートしました`)
 }
 
 // 使用例
-await exportDatabase('./backup-2026-01-04.json',)
+await exportDatabase('./backup-2026-01-04.json')
 // 問題があれば復元
-await importDatabase('./backup-2026-01-04.json',)
+await importDatabase('./backup-2026-01-04.json')
 ```
 
 #### 3. Versionstamp ベースの楽観的ロック
@@ -587,7 +587,7 @@ Atomic 操作により、マイグレーション中の整合性を保証：
 
 ```typescript
 async function safeMigration() {
-  const entries = kv.list({ prefix: ['users',], },)
+  const entries = kv.list({ prefix: ['users'] })
 
   for await (const entry of entries) {
     let success = false
@@ -596,24 +596,24 @@ async function safeMigration() {
 
     while (!success && retries < maxRetries) {
       const result = await kv.atomic()
-        .check(entry,) // データが変更されていないか確認
-        .set(entry.key, migrateData(entry.value,),)
+        .check(entry) // データが変更されていないか確認
+        .set(entry.key, migrateData(entry.value))
         .commit()
 
       if (result.ok) {
         success = true
       } else {
         retries++
-        console.log(`リトライ ${retries}/${maxRetries}: ${entry.key}`,)
+        console.log(`リトライ ${retries}/${maxRetries}: ${entry.key}`)
         // 最新データを再取得
-        const latestEntry = await kv.get(entry.key,)
+        const latestEntry = await kv.get(entry.key)
         entry.versionstamp = latestEntry.versionstamp
         entry.value = latestEntry.value
       }
     }
 
     if (!success) {
-      throw new Error(`マイグレーション失敗: ${entry.key}`,)
+      throw new Error(`マイグレーション失敗: ${entry.key}`)
     }
   }
 }
@@ -659,10 +659,10 @@ interface User extends BaseEntity {
 
 ```typescript
 // マイグレーション実行前
-await exportDatabase(`./backup-before-migration-${Date.now()}.json`,)
+await exportDatabase(`./backup-before-migration-${Date.now()}.json`)
 
 // マイグレーション実行
-await runMigration('my-migration', migrationFn,)
+await runMigration('my-migration', migrationFn)
 ```
 
 #### 4. Atomic 操作で整合性を保証
@@ -676,7 +676,7 @@ await runMigration('my-migration', migrationFn,)
 ```typescript
 // 同じマイグレーションを複数回実行しても安全
 async function idempotentMigration() {
-  const entries = kv.list({ prefix: ['users',], },)
+  const entries = kv.list({ prefix: ['users'] })
 
   for await (const entry of entries) {
     const data = entry.value
@@ -687,7 +687,7 @@ async function idempotentMigration() {
     }
 
     // マイグレーション実行
-    await kv.set(entry.key, migrateToV2(data,),)
+    await kv.set(entry.key, migrateToV2(data))
   }
 }
 ```
@@ -706,8 +706,8 @@ async function idempotentMigration() {
 - セカンダリインデックスの自動管理
 
 ```typescript
-import { collection, kvdex, model, } from 'kvdex'
-import { z, } from 'zod'
+import { collection, kvdex, model } from 'kvdex'
+import { z } from 'zod'
 
 const db = kvdex({
   users: collection(
@@ -715,18 +715,18 @@ const db = kvdex({
       z.object({
         name: z.string(),
         email: z.string().email(),
-        createdAt: z.string(),
-      },),
-    ),
-  ),
-},)
+        createdAt: z.string()
+      })
+    )
+  )
+})
 
 // スキーマに基づく型安全な操作
 await db.users.add({
   name: 'Alice',
   email: 'alice@example.com',
-  createdAt: new Date().toISOString(),
-},)
+  createdAt: new Date().toISOString()
+})
 ```
 
 ---

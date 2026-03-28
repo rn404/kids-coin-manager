@@ -2,15 +2,15 @@
  * Coin のテストデータ作成 Factory
  */
 
-import { generateUuid, getTimestamp, } from '@workspace/foundations'
-import { COIN_PREFIX_KEY, } from '../../Coin.ts'
-import type { CoinDataModel, } from '../../Coin.ts'
+import { generateUuid, getTimestamp } from '@workspace/foundations'
+import { COIN_PREFIX_KEY } from '../../Coin.ts'
+import type { CoinDataModel } from '../../Coin.ts'
 
 /**
  * Coin のデフォルト値
  */
 const defaultCoinAttributes = {
-  amount: 1000,
+  amount: 1000
 }
 
 /**
@@ -34,14 +34,14 @@ type CreateCoinParams = {
  * const coin = buildCoin({ userId: 'user-1', familyId: 'family-1', coinTypeId: 'cointype-1', amount: 500 })
  * ```
  */
-export function buildCoin(params: CreateCoinParams,): CoinDataModel {
+export function buildCoin(params: CreateCoinParams): CoinDataModel {
   const now = getTimestamp()
   return {
     id: generateUuid(),
     ...defaultCoinAttributes,
     ...params,
     createdAt: now,
-    updatedAt: now,
+    updatedAt: now
   }
 }
 
@@ -59,12 +59,12 @@ export function buildCoin(params: CreateCoinParams,): CoinDataModel {
  */
 export async function createCoin(
   kv: Deno.Kv,
-  params: CreateCoinParams,
+  params: CreateCoinParams
 ): Promise<CoinDataModel> {
-  const coin = buildCoin(params,)
+  const coin = buildCoin(params)
   await kv.set(
-    [COIN_PREFIX_KEY, params.userId, params.familyId, params.coinTypeId,],
-    coin,
+    [COIN_PREFIX_KEY, params.userId, params.familyId, params.coinTypeId],
+    coin
   )
   return coin
 }

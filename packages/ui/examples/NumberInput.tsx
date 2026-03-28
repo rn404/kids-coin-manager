@@ -1,10 +1,10 @@
-import { useSignal, } from '@preact/signals'
-import { ExamplePage, } from './ExamplePage.tsx'
-import { ExampleSection, } from './ExampleSection.tsx'
-import { NumberInput, } from '../components/NumberInput.tsx'
+import { useSignal } from '@preact/signals'
+import { ExamplePage } from './ExamplePage.tsx'
+import { ExampleSection } from './ExampleSection.tsx'
+import { NumberInput } from '../components/NumberInput.tsx'
 
 function NumberInputExamplePage() {
-  const controlled = useSignal(10,)
+  const controlled = useSignal(10)
 
   return (
     <ExamplePage
@@ -42,4 +42,4 @@ function NumberInputExamplePage() {
   )
 }
 
-export { NumberInputExamplePage, }
+export { NumberInputExamplePage }

@@ -34,7 +34,7 @@
     "indentWidth": 2,
     "singleQuote": true,
     "proseWrap": "preserve",
-    "trailingCommas": "always"
+    "trailingCommas": "never"
   },
   "lint": {
     "plugins": [

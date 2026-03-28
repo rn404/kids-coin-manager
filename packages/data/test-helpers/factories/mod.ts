@@ -2,13 +2,13 @@
  * Factory ヘルパー関数のエクスポート
  */
 
-export { buildCoin, createCoin, } from './CoinFactory.ts'
-export { buildCoinType, createCoinType, } from './CoinTypeFactory.ts'
+export { buildCoin, createCoin } from './CoinFactory.ts'
+export { buildCoinType, createCoinType } from './CoinTypeFactory.ts'
 export {
   buildCoinTransaction,
-  createCoinTransaction,
+  createCoinTransaction
 } from './CoinTransactionFactory.ts'
 export {
   buildDailyCoinDistribution,
-  createDailyCoinDistribution,
+  createDailyCoinDistribution
 } from './DailyCoinDistributionFactory.ts'

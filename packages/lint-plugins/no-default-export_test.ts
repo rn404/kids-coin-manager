@@ -1,4 +1,4 @@
-import { assertEquals, } from '@std/assert'
+import { assertEquals } from '@std/assert'
 
 Deno.test(
   'no-default-export rule - should detect default export of function',
@@ -8,9 +8,9 @@ Deno.test(
   `
 
     const ruleModule = await import('./no-default-export.ts')
-    assertEquals(typeof ruleModule.noDefaultExport, 'object',)
-    assertEquals(typeof ruleModule.noDefaultExport.create, 'function',)
-  },
+    assertEquals(typeof ruleModule.noDefaultExport, 'object')
+    assertEquals(typeof ruleModule.noDefaultExport.create, 'function')
+  }
 )
 
 Deno.test(
@@ -22,8 +22,8 @@ Deno.test(
   `
 
     const ruleModule = await import('./no-default-export.ts')
-    assertEquals(typeof ruleModule.noDefaultExport, 'object',)
-  },
+    assertEquals(typeof ruleModule.noDefaultExport, 'object')
+  }
 )
 
 Deno.test(
@@ -34,8 +34,8 @@ Deno.test(
   `
 
     const ruleModule = await import('./no-default-export.ts')
-    assertEquals(typeof ruleModule.noDefaultExport, 'object',)
-  },
+    assertEquals(typeof ruleModule.noDefaultExport, 'object')
+  }
 )
 
 Deno.test(
@@ -48,6 +48,6 @@ Deno.test(
   `
 
     const ruleModule = await import('./no-default-export.ts')
-    assertEquals(typeof ruleModule.noDefaultExport, 'object',)
-  },
+    assertEquals(typeof ruleModule.noDefaultExport, 'object')
+  }
 )

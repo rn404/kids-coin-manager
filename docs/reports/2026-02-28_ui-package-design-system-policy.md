@@ -14,10 +14,10 @@
 
 ```tsx
 // NG
-const [value, setValue,] = useState(0,)
+const [value, setValue] = useState(0)
 
 // OK
-const value = useSignal(0,)
+const value = useSignal(0)
 const isDisabled = useComputed(() => value.value >= max)
 ```
 
@@ -52,7 +52,7 @@ apps/ops/islands/NumberInput.tsx        ← 1行の re-export
 
 ```tsx
 // apps/web/islands/NumberInput.tsx
-export { NumberInput, } from '@workspace/ui'
+export { NumberInput } from '@workspace/ui'
 ```
 
 **メリット**:
@@ -118,8 +118,8 @@ export type NumberInputProps =
 export const NumberInput = ({
   class: className,
   ...rest
-}: NumberInputProps,) => (
-  <div {...rest} class={twMerge('border border-black/20 ...', className,)}>
+}: NumberInputProps) => (
+  <div {...rest} class={twMerge('border border-black/20 ...', className)}>
     ...
   </div>
 )
@@ -132,8 +132,8 @@ export const NumberInput = ({
 単純な文字列結合だと Tailwind クラスの競合が発生し、適用結果が CSS 定義順に依存して予測できない。`tailwind-merge` を使うことで後から渡したクラスが優先されることを保証する。
 
 ```ts
-twMerge('bg-white px-2', 'bg-gray-100',) // → 'px-2 bg-gray-100'
-twMerge('px-2 py-1', 'px-4',) // → 'px-4 py-1'
+twMerge('bg-white px-2', 'bg-gray-100') // → 'px-2 bg-gray-100'
+twMerge('px-2 py-1', 'px-4') // → 'px-4 py-1'
 ```
 
 ### class prop の設計ポリシー

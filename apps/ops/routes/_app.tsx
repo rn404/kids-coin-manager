@@ -1,6 +1,6 @@
-import { define, } from '../main.ts'
+import { define } from '../main.ts'
 
-const App = define.page(({ Component, },) => {
+const App = define.page(({ Component }) => {
   return (
     <html>
       <head>
@@ -18,7 +18,7 @@ const App = define.page(({ Component, },) => {
       </body>
     </html>
   )
-},)
+})
 
 // deno-lint-ignore internal/no-default-export
 export default App

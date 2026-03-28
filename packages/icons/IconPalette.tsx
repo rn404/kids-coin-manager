@@ -1,6 +1,6 @@
 // Icon from Tabler Icons (MIT License) https://tabler.io/icons
 export function IconPalette(
-  props: { size?: number | string; class?: string },
+  props: { size?: number | string; class?: string }
 ) {
   return (
     <svg

@@ -1,10 +1,10 @@
-import { define, } from '../../main.ts'
+import { define } from '../../main.ts'
 
 export const handler = define.handlers({
-  GET(ctx,) {
+  GET(ctx) {
     const name = ctx.params.name
     return new Response(
-      `Hello, ${name.charAt(0,).toUpperCase() + name.slice(1,)}!`,
+      `Hello, ${name.charAt(0).toUpperCase() + name.slice(1)}!`
     )
-  },
-},)
+  }
+})

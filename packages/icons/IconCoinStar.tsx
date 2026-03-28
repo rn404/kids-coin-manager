@@ -1,6 +1,6 @@
 // Custom icon based on Tabler Icons (MIT License) https://tabler.io/icons
 export function IconCoinStar(
-  props: { size?: number | string; class?: string },
+  props: { size?: number | string; class?: string }
 ) {
   return (
     <svg

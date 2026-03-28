@@ -1,11 +1,11 @@
-import type { Signal, } from '@preact/signals'
-import { Button, } from '@workspace/ui'
+import type { Signal } from '@preact/signals'
+import { Button } from '@workspace/ui'
 
 interface CounterProps {
   count: Signal<number>
 }
 
-const Counter = (props: CounterProps,) => {
+const Counter = (props: CounterProps) => {
   return (
     <div class='flex gap-8 py-6'>
       <Button id='decrement' onClick={() => props.count.value -= 1}>-1</Button>

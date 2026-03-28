@@ -101,17 +101,17 @@ await coinUseCase.decreaseBy(userId, familyId, coinTypeId, {
   transactionType: 'use',
   metadata: {
     type: 'use',
-    timeSessionId: 'session-123',
-  },
-},)
+    timeSessionId: 'session-123'
+  }
+})
 
 await coinUseCase.increaseBy(userId, familyId, coinTypeId, {
   amount: 10,
   transactionType: 'daily_distribution',
   metadata: {
-    type: 'daily_distribution',
-  },
-},)
+    type: 'daily_distribution'
+  }
+})
 ```
 
 **注意事項:**

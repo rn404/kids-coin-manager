@@ -703,7 +703,7 @@ Failed resolving types. [ERR_TYPES_NOT_FOUND] Could not find types for
 
 ```typescript
 // @ts-ignore Workaround for https://github.com/denoland/deno/issues/30850
-const { default: babelReact, } = await import('npm:@babel/preset-react')
+const { default: babelReact } = await import('npm:@babel/preset-react')
 ```
 
 ただし、このワークアラウンドは JSR 公開時に失敗することも報告されている。

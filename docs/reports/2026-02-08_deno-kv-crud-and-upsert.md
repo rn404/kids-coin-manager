@@ -13,11 +13,11 @@
 
 ```typescript
 // ケース1: キーが存在しない場合
-await kv.set(['users', 'alice',], { name: 'Alice', balance: 100, },)
+await kv.set(['users', 'alice'], { name: 'Alice', balance: 100 })
 // → 新規作成される ✅
 
 // ケース2: キーが既に存在する場合
-await kv.set(['users', 'alice',], { name: 'Alice', balance: 200, },)
+await kv.set(['users', 'alice'], { name: 'Alice', balance: 200 })
 // → 上書きされる ✅（エラーにならない）
 ```
 
@@ -96,7 +96,7 @@ INSERT INTO users VALUES (1, 100);
 
 ```typescript
 // データの有無に関わらず書き込む
-await kv.set(['users', userId,], data,)
+await kv.set(['users', userId], data)
 ```
 
 **特徴**:
@@ -110,18 +110,18 @@ await kv.set(['users', userId,], data,)
 **使用場面**: 残高更新、在庫管理など整合性が重要な場合
 
 ```typescript
-const existing = await kv.get<User>(['users', userId,],)
+const existing = await kv.get<User>(['users', userId])
 
 if (existing.value === null) {
   // 新規作成
-  await kv.set(['users', userId,], { balance: 100, },)
+  await kv.set(['users', userId], { balance: 100 })
 } else {
   // 更新（残高加算など）
   await kv.atomic()
-    .check(existing,)
-    .set(['users', userId,], {
-      balance: existing.value.balance + 100,
-    },)
+    .check(existing)
+    .set(['users', userId], {
+      balance: existing.value.balance + 100
+    })
     .commit()
 }
 ```
@@ -137,26 +137,26 @@ if (existing.value === null) {
 **使用場面**: 残高更新、カウンター、統計情報など
 
 ```typescript
-async function updateBalance(userId: string, delta: number,): Promise<void> {
+async function updateBalance(userId: string, delta: number): Promise<void> {
   while (true) {
-    const existing = await kv.get<User>(['users', userId,],)
+    const existing = await kv.get<User>(['users', userId])
 
     const newBalance = (existing.value?.balance ?? 0) + delta
 
-    const op = kv.atomic().check(existing,)
+    const op = kv.atomic().check(existing)
 
     if (existing.value === null) {
       // 新規ユーザー
-      op.set(['users', userId,], {
+      op.set(['users', userId], {
         balance: newBalance,
-        createdAt: new Date(),
-      },)
+        createdAt: new Date()
+      })
     } else {
       // 既存ユーザー
-      op.set(['users', userId,], {
+      op.set(['users', userId], {
         ...existing.value,
-        balance: newBalance,
-      },)
+        balance: newBalance
+      })
     }
 
     const result = await op.commit()
@@ -178,15 +178,15 @@ async function updateBalance(userId: string, delta: number,): Promise<void> {
 **使用場面**: ユーザー登録、ユニークキーの作成
 
 ```typescript
-const existing = await kv.get(['users', userId,],)
+const existing = await kv.get(['users', userId])
 
 const result = await kv.atomic()
-  .check(existing,) // versionstamp: null を期待
-  .set(['users', userId,], newUser,)
+  .check(existing) // versionstamp: null を期待
+  .set(['users', userId], newUser)
   .commit()
 
 if (!result.ok) {
-  throw new Error('User already exists',)
+  throw new Error('User already exists')
 }
 ```
 
@@ -205,7 +205,7 @@ if (!result.ok) {
 ```typescript
 // 常に上書き（パターンAと同じ）
 await kv.atomic()
-  .set(['users', 'alice',], data,)
+  .set(['users', 'alice'], data)
   .commit() // 必ず成功
 ```
 
@@ -213,10 +213,10 @@ await kv.atomic()
 
 ```typescript
 // 条件付き上書き
-const existing = await kv.get(['users', 'alice',],)
+const existing = await kv.get(['users', 'alice'])
 const result = await kv.atomic()
-  .check(existing,) // versionstampが一致しないと失敗
-  .set(['users', 'alice',], data,)
+  .check(existing) // versionstampが一致しないと失敗
+  .set(['users', 'alice'], data)
   .commit() // result.ok === false の可能性がある
 ```
 
@@ -228,11 +228,11 @@ const result = await kv.atomic()
 
 ```typescript
 // シンプルに上書きでOK
-async function initializeBalance(userId: string,): Promise<void> {
-  await kv.set(['balances', userId,], {
+async function initializeBalance(userId: string): Promise<void> {
+  await kv.set(['balances', userId], {
     balance: 0,
-    createdAt: new Date(),
-  },)
+    createdAt: new Date()
+  })
 }
 ```
 
@@ -240,35 +240,35 @@ async function initializeBalance(userId: string,): Promise<void> {
 
 ```typescript
 // 整合性重視のリトライパターン
-async function addCoins(userId: string, amount: number,): Promise<void> {
+async function addCoins(userId: string, amount: number): Promise<void> {
   let retries = 0
   const maxRetries = 3
 
   while (retries < maxRetries) {
-    const existing = await kv.get<Balance>(['balances', userId,],)
+    const existing = await kv.get<Balance>(['balances', userId])
 
     if (existing.value === null) {
-      throw new Error('User not found',)
+      throw new Error('User not found')
     }
 
     const result = await kv.atomic()
-      .check(existing,)
-      .set(['balances', userId,], {
+      .check(existing)
+      .set(['balances', userId], {
         ...existing.value,
         balance: existing.value.balance + amount,
-        updatedAt: new Date(),
-      },)
+        updatedAt: new Date()
+      })
       .commit()
 
     if (result.ok) return
 
     retries++
-    await new Promise((resolve,) =>
-      setTimeout(resolve, Math.pow(2, retries,) * 100,)
+    await new Promise((resolve) =>
+      setTimeout(resolve, Math.pow(2, retries) * 100)
     )
   }
 
-  throw new Error('Failed to update balance after retries',)
+  throw new Error('Failed to update balance after retries')
 }
 ```
 
@@ -278,20 +278,20 @@ async function addCoins(userId: string, amount: number,): Promise<void> {
 // UPSERT的な挙動
 async function addCoinsOrCreate(
   userId: string,
-  amount: number,
+  amount: number
 ): Promise<void> {
   while (true) {
-    const existing = await kv.get<Balance>(['balances', userId,],)
+    const existing = await kv.get<Balance>(['balances', userId])
 
     const newBalance = (existing.value?.balance ?? 0) + amount
 
     const result = await kv.atomic()
-      .check(existing,)
-      .set(['balances', userId,], {
+      .check(existing)
+      .set(['balances', userId], {
         balance: newBalance,
         updatedAt: new Date(),
-        createdAt: existing.value?.createdAt ?? new Date(),
-      },)
+        createdAt: existing.value?.createdAt ?? new Date()
+      })
       .commit()
 
     if (result.ok) return
@@ -315,8 +315,8 @@ async function addCoinsOrCreate(
 **例:**
 
 ```typescript
-await kv.set(['settings', userId,], userSettings,)
-await kv.set(['cache', cacheKey,], cachedData,)
+await kv.set(['settings', userId], userSettings)
+await kv.set(['cache', cacheKey], cachedData)
 ```
 
 ### 🟡 `atomic().check()` を使うべき場面
@@ -330,10 +330,10 @@ await kv.set(['cache', cacheKey,], cachedData,)
 **例:**
 
 ```typescript
-const balance = await kv.get(['balances', userId,],)
+const balance = await kv.get(['balances', userId])
 await kv.atomic()
-  .check(balance,)
-  .set(['balances', userId,], updatedBalance,)
+  .check(balance)
+  .set(['balances', userId], updatedBalance)
   .commit()
 ```
 
@@ -349,10 +349,10 @@ await kv.atomic()
 ```typescript
 // 送金: 送信者と受信者の両方をチェック
 await kv.atomic()
-  .check(sender,)
-  .check(receiver,)
-  .set(senderKey, updatedSender,)
-  .set(receiverKey, updatedReceiver,)
+  .check(sender)
+  .check(receiver)
+  .set(senderKey, updatedSender)
+  .set(receiverKey, updatedReceiver)
   .commit()
 ```
 

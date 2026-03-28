@@ -1,8 +1,8 @@
-import { useComputed, useSignal, } from '@preact/signals'
-import type { Signal, } from '@preact/signals'
-import type { JSX, } from 'preact'
-import { twMerge, } from 'tailwind-merge'
-import { Icon, } from './Icon.tsx'
+import { useComputed, useSignal } from '@preact/signals'
+import type { Signal } from '@preact/signals'
+import type { JSX } from 'preact'
+import { twMerge } from 'tailwind-merge'
+import { Icon } from './Icon.tsx'
 
 type OwnProps = {
   id?: string
@@ -15,7 +15,7 @@ type OwnProps = {
   min?: number
   max?: number
   step?: number
-  onChange?: (value: number,) => void
+  onChange?: (value: number) => void
 }
 
 export type NumberInputProps =
@@ -35,29 +35,29 @@ export const NumberInput = ({
   placeholder,
   class: className,
   ...rest
-}: NumberInputProps,) => {
-  const internalSignal = useSignal(defaultValue,)
+}: NumberInputProps) => {
+  const internalSignal = useSignal(defaultValue)
   const signal = value ?? internalSignal
 
   const isDecrementDisabled = useComputed(
-    () => disabled || (min !== undefined && signal.value <= min),
+    () => disabled || (min !== undefined && signal.value <= min)
   )
   const isIncrementDisabled = useComputed(
-    () => disabled || (max !== undefined && signal.value >= max),
+    () => disabled || (max !== undefined && signal.value >= max)
   )
 
-  const handleChange = (newValue: number,) => {
+  const handleChange = (newValue: number) => {
     let result = newValue
-    if (min !== undefined) result = Math.max(min, result,)
-    if (max !== undefined) result = Math.min(max, result,)
+    if (min !== undefined) result = Math.max(min, result)
+    if (max !== undefined) result = Math.min(max, result)
     signal.value = result
-    onChange?.(result,)
+    onChange?.(result)
   }
 
-  const handleInputChange = (e: Event,) => {
-    const parsed = parseInt((e.target as HTMLInputElement).value, 10,)
-    if (isNaN(parsed,) === false) {
-      handleChange(parsed,)
+  const handleInputChange = (e: Event) => {
+    const parsed = parseInt((e.target as HTMLInputElement).value, 10)
+    if (isNaN(parsed) === false) {
+      handleChange(parsed)
     }
   }
 
@@ -66,7 +66,7 @@ export const NumberInput = ({
       {...rest}
       class={twMerge(
         'border border-black/20 rounded-sm bg-white relative',
-        className,
+        className
       )}
     >
       <input
@@ -86,7 +86,7 @@ export const NumberInput = ({
       <div class='flex top-0 right-0 absolute h-full'>
         <button
           type='button'
-          onClick={() => handleChange(signal.value + step,)}
+          onClick={() => handleChange(signal.value + step)}
           disabled={isIncrementDisabled}
           aria-label='増やす'
           class='w-10 content-center hover:bg-gray-200 transition-colors cursor-pointer disabled:cursor-not-allowed disabled:opacity-40 border-l border-black/20'
@@ -95,7 +95,7 @@ export const NumberInput = ({
         </button>
         <button
           type='button'
-          onClick={() => handleChange(signal.value - step,)}
+          onClick={() => handleChange(signal.value - step)}
           disabled={isDecrementDisabled}
           aria-label='減らす'
           class='w-10 content-center hover:bg-gray-200 transition-colors cursor-pointer disabled:cursor-not-allowed disabled:opacity-40 border-l border-black/20'

@@ -1,9 +1,9 @@
-import { useSignal, } from '@preact/signals'
-import { Icon, } from '@workspace/ui'
+import { useSignal } from '@preact/signals'
+import { Icon } from '@workspace/ui'
 
-const EditButton = ({ onClick, }: {
+const EditButton = ({ onClick }: {
   onClick?: () => void
-},) => {
+}) => {
   return (
     <button
       type='button'
@@ -16,10 +16,10 @@ const EditButton = ({ onClick, }: {
   )
 }
 
-const DeleteModeToggle = ({ active, onClick, }: {
+const DeleteModeToggle = ({ active, onClick }: {
   active: boolean
   onClick?: () => void
-},) => {
+}) => {
   return (
     <button
       type='button'
@@ -36,10 +36,10 @@ const DeleteModeToggle = ({ active, onClick, }: {
   )
 }
 
-const SelectToggle = ({ selected, onClick, }: {
+const SelectToggle = ({ selected, onClick }: {
   selected: boolean
   onClick?: () => void
-},) => {
+}) => {
   return (
     <button
       type='button'
@@ -65,30 +65,30 @@ interface KvTableProps {
   entries: Array<KvEntry>
 }
 
-const PROTECTED_FIELDS = ['id', 'createdAt', 'updatedAt',]
+const PROTECTED_FIELDS = ['id', 'createdAt', 'updatedAt']
 
 const stripProtectedFields = (
-  value: unknown,
+  value: unknown
 ): Record<string, unknown> => {
   if (typeof value !== 'object' || value === null) return {}
   const obj = value as Record<string, unknown>
   const result: Record<string, unknown> = {}
-  for (const [k, v,] of Object.entries(obj,)) {
-    if (PROTECTED_FIELDS.includes(k,) === false) {
+  for (const [k, v] of Object.entries(obj)) {
+    if (PROTECTED_FIELDS.includes(k) === false) {
       result[k] = v
     }
   }
   return result
 }
 
-const KvTable = ({ prefix, entries, }: KvTableProps,) => {
-  const deleteMode = useSignal(false,)
-  const selectedKeys = useSignal<Set<number>>(new Set(),)
-  const isDeleting = useSignal(false,)
-  const editingIndex = useSignal<number | null>(null,)
-  const editValue = useSignal('',)
-  const editError = useSignal<string | null>(null,)
-  const isSaving = useSignal(false,)
+const KvTable = ({ prefix, entries }: KvTableProps) => {
+  const deleteMode = useSignal(false)
+  const selectedKeys = useSignal<Set<number>>(new Set())
+  const isDeleting = useSignal(false)
+  const editingIndex = useSignal<number | null>(null)
+  const editValue = useSignal('')
+  const editError = useSignal<string | null>(null)
+  const isSaving = useSignal(false)
 
   const toggleDeleteMode = () => {
     if (deleteMode.value) {
@@ -98,12 +98,12 @@ const KvTable = ({ prefix, entries, }: KvTableProps,) => {
     editingIndex.value = null
   }
 
-  const toggleSelection = (index: number,) => {
-    const next = new Set(selectedKeys.value,)
-    if (next.has(index,)) {
-      next.delete(index,)
+  const toggleSelection = (index: number) => {
+    const next = new Set(selectedKeys.value)
+    if (next.has(index)) {
+      next.delete(index)
     } else {
-      next.add(index,)
+      next.add(index)
     }
     selectedKeys.value = next
   }
@@ -112,20 +112,20 @@ const KvTable = ({ prefix, entries, }: KvTableProps,) => {
     if (selectedKeys.value.size === 0) return
 
     const ok = globalThis.confirm(
-      `${selectedKeys.value.size}件のアイテムを削除しますか？`,
+      `${selectedKeys.value.size}件のアイテムを削除しますか？`
     )
     if (ok === false) return
 
-    const keysToDelete = [...selectedKeys.value,].map(
-      (i,) => entries[i].key,
+    const keysToDelete = [...selectedKeys.value].map(
+      (i) => entries[i].key
     )
 
     isDeleting.value = true
     const res = await fetch(`/kv/${prefix}`, {
       method: 'DELETE',
-      headers: { 'Content-Type': 'application/json', },
-      body: JSON.stringify({ keys: keysToDelete, },),
-    },)
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ keys: keysToDelete })
+    })
 
     if (res.ok) {
       globalThis.location.reload()
@@ -133,10 +133,10 @@ const KvTable = ({ prefix, entries, }: KvTableProps,) => {
     isDeleting.value = false
   }
 
-  const startEdit = (index: number,) => {
+  const startEdit = (index: number) => {
     editingIndex.value = index
-    const editable = stripProtectedFields(entries[index].value,)
-    editValue.value = JSON.stringify(editable, null, 2,)
+    const editable = stripProtectedFields(entries[index].value)
+    editValue.value = JSON.stringify(editable, null, 2)
     editError.value = null
     deleteMode.value = false
     selectedKeys.value = new Set()
@@ -147,17 +147,17 @@ const KvTable = ({ prefix, entries, }: KvTableProps,) => {
     editError.value = null
   }
 
-  const handleSave = async (index: number,) => {
+  const handleSave = async (index: number) => {
     let parsed: unknown
     try {
-      parsed = JSON.parse(editValue.value,)
+      parsed = JSON.parse(editValue.value)
     } catch {
       editError.value = 'JSONの形式が正しくありません'
       return
     }
 
     if (
-      typeof parsed !== 'object' || parsed === null || Array.isArray(parsed,)
+      typeof parsed !== 'object' || parsed === null || Array.isArray(parsed)
     ) {
       editError.value = 'オブジェクトである必要があります'
       return
@@ -168,12 +168,12 @@ const KvTable = ({ prefix, entries, }: KvTableProps,) => {
 
     const res = await fetch(`/kv/${prefix}`, {
       method: 'PUT',
-      headers: { 'Content-Type': 'application/json', },
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         key: entries[index].key,
-        value: parsed,
-      },),
-    },)
+        value: parsed
+      })
+    })
 
     if (res.ok) {
       globalThis.location.reload()
@@ -216,16 +216,16 @@ const KvTable = ({ prefix, entries, }: KvTableProps,) => {
             </tr>
           </thead>
           <tbody>
-            {entries.map((entry, i,) => (
+            {entries.map((entry, i) => (
               <tr
                 key={i}
                 class={`border-t hover:bg-gray-50 ${
-                  selectedKeys.value.has(i,) ? 'bg-red-50' : ''
+                  selectedKeys.value.has(i) ? 'bg-red-50' : ''
                 } ${editingIndex.value === i ? 'bg-blue-50' : ''}`}
               >
                 <td class='px-4 py-2 text-gray-400'>{i + 1}</td>
                 <td class='px-4 py-2 font-mono text-xs align-top'>
-                  {JSON.stringify(entry.key,)}
+                  {JSON.stringify(entry.key)}
                 </td>
                 <td class='px-4 py-2'>
                   {editingIndex.value === i
@@ -234,7 +234,7 @@ const KvTable = ({ prefix, entries, }: KvTableProps,) => {
                         <textarea
                           class='w-full font-mono text-xs border border-gray-300 rounded p-2 min-h-30'
                           value={editValue.value}
-                          onInput={(e,) =>
+                          onInput={(e) =>
                             editValue.value =
                               (e.target as HTMLTextAreaElement).value}
                         />
@@ -246,7 +246,7 @@ const KvTable = ({ prefix, entries, }: KvTableProps,) => {
                         <div class='flex gap-2'>
                           <button
                             type='button'
-                            onClick={() => handleSave(i,)}
+                            onClick={() => handleSave(i)}
                             disabled={isSaving.value}
                             class='px-3 py-1 text-sm bg-blue-600 text-white rounded hover:bg-blue-700 cursor-pointer disabled:opacity-50'
                           >
@@ -270,12 +270,12 @@ const KvTable = ({ prefix, entries, }: KvTableProps,) => {
                         <div class='flex flex-col shrink-0 w-10 items-center'>
                           {deleteMode.value === false &&
                             editingIndex.value !== i && (
-                            <EditButton onClick={() => startEdit(i,)} />
+                            <EditButton onClick={() => startEdit(i)} />
                           )}
                           {deleteMode.value && (
                             <SelectToggle
-                              selected={selectedKeys.value.has(i,)}
-                              onClick={() => toggleSelection(i,)}
+                              selected={selectedKeys.value.has(i)}
+                              onClick={() => toggleSelection(i)}
                             />
                           )}
                         </div>

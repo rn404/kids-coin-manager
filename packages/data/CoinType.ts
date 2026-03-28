@@ -1,4 +1,4 @@
-import type { DataModel, } from './DataModel.ts'
+import type { DataModel } from './DataModel.ts'
 
 const COIN_TYPE_PREFIX_KEY = 'coin_types'
 
@@ -10,5 +10,5 @@ type CoinTypeDataModel = DataModel<{
   active: boolean
 }>
 
-export { COIN_TYPE_PREFIX_KEY, }
-export type { CoinTypeDataModel, }
+export { COIN_TYPE_PREFIX_KEY }
+export type { CoinTypeDataModel }

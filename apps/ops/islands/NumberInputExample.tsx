@@ -1,7 +1,7 @@
-import { NumberInputExamplePage, } from '@workspace/ui'
+import { NumberInputExamplePage } from '@workspace/ui'
 
 function NumberInputExample() {
   return <NumberInputExamplePage />
 }
 
-export { NumberInputExample, }
+export { NumberInputExample }

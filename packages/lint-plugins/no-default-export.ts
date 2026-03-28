@@ -4,19 +4,19 @@
  */
 const noDefaultExport = {
   // deno-lint-ignore no-explicit-any
-  create(context: any,) {
+  create(context: any) {
     return {
       // deno-lint-ignore no-explicit-any
-      ExportDefaultDeclaration(node: any,) {
+      ExportDefaultDeclaration(node: any) {
         context.report({
           node,
           message:
-            'Prefer named exports over default exports. Default exports make refactoring harder and reduce discoverability.',
-        },)
-      },
+            'Prefer named exports over default exports. Default exports make refactoring harder and reduce discoverability.'
+        })
+      }
     }
   },
-  defaultSeverity: 'error',
+  defaultSeverity: 'error'
 }
 
-export { noDefaultExport, }
+export { noDefaultExport }
