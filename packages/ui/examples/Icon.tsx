@@ -20,6 +20,7 @@ const iconNames: Array<IconName> = [
   'X',
   'ExternalLink',
   'Palette'
+  'Database',
 ]
 
 function IconExamplePage() {
