@@ -39,13 +39,15 @@ SVG=$(echo "$SVG" \
 # 1. Create icon component
 cat > "$ICON_FILE" << TEMPLATE
 // Icon from Tabler Icons (MIT License) https://tabler.io/icons
-export function Icon${ICON_NAME}(
+const Icon${ICON_NAME} = (
   props: { size?: number | string; class?: string },
-) {
+) => {
   return (
     ${SVG}
   )
 }
+
+export { Icon${ICON_NAME} }
 TEMPLATE
 
 # 2. Update mod.ts

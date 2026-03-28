@@ -38,7 +38,7 @@ type CreateCoinTypeParams = {
  * const coinType = buildCoinType({ familyId: 'family-1', name: 'ゴールドコイン' })
  * ```
  */
-export function buildCoinType(
+function buildCoinType(
   params: CreateCoinTypeParams
 ): CoinTypeDataModel {
   const now = getTimestamp()
@@ -63,7 +63,7 @@ export function buildCoinType(
  * const coinType = await createCoinType(kv, { familyId: 'family-1', name: 'ゴールドコイン' })
  * ```
  */
-export async function createCoinType(
+async function createCoinType(
   kv: Deno.Kv,
   params: CreateCoinTypeParams
 ): Promise<CoinTypeDataModel> {
@@ -71,3 +71,5 @@ export async function createCoinType(
   await kv.set([COIN_TYPE_PREFIX_KEY, params.familyId, coinType.id], coinType)
   return coinType
 }
+
+export { buildCoinType, createCoinType }

@@ -1,12 +1,12 @@
 import { App, createDefine, staticFiles } from 'fresh'
 
-export interface OpsState {
+interface OpsState {
   kv: Deno.Kv
 }
 
-export const define = createDefine<OpsState>()
+const define = createDefine<OpsState>()
 
-export const app = new App<OpsState>()
+const app = new App<OpsState>()
 
 const kv = await Deno.openKv(Deno.env.get('DENO_KV_PATH'))
 
@@ -16,3 +16,6 @@ app.use(async (ctx) => {
   return await ctx.next()
 })
 app.fsRoutes()
+
+export type { OpsState }
+export { app, define }

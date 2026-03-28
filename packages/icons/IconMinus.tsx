@@ -1,7 +1,7 @@
 // Icon from Tabler Icons (MIT License) https://tabler.io/icons
-export function IconMinus(
+const IconMinus = (
   props: { size?: number | string; class?: string }
-) {
+) => {
   return (
     <svg
       xmlns='http://www.w3.org/2000/svg'
@@ -20,3 +20,5 @@ export function IconMinus(
     </svg>
   )
 }
+
+export { IconMinus }

@@ -34,7 +34,7 @@ type CreateCoinParams = {
  * const coin = buildCoin({ userId: 'user-1', familyId: 'family-1', coinTypeId: 'cointype-1', amount: 500 })
  * ```
  */
-export function buildCoin(params: CreateCoinParams): CoinDataModel {
+function buildCoin(params: CreateCoinParams): CoinDataModel {
   const now = getTimestamp()
   return {
     id: generateUuid(),
@@ -57,7 +57,7 @@ export function buildCoin(params: CreateCoinParams): CoinDataModel {
  * const coin = await createCoin(kv, { userId: 'user-1', familyId: 'family-1', coinTypeId: 'cointype-1', amount: 500 })
  * ```
  */
-export async function createCoin(
+async function createCoin(
   kv: Deno.Kv,
   params: CreateCoinParams
 ): Promise<CoinDataModel> {
@@ -68,3 +68,5 @@ export async function createCoin(
   )
   return coin
 }
+
+export { buildCoin, createCoin }

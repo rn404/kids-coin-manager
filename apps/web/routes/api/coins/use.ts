@@ -1,7 +1,7 @@
 import { makeCoinUseCase } from '@workspace/data'
 import { define } from '../../../main.ts'
 
-export const handler = define.handlers({
+const handler = define.handlers({
   async POST(ctx) {
     const body = await ctx.req.json()
     const { coinTypeId, amount } = body as {
@@ -24,3 +24,5 @@ export const handler = define.handlers({
     return Response.json({ ok: true, amount: updatedCoin.amount })
   }
 })
+
+export { handler }

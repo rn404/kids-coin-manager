@@ -1,7 +1,7 @@
 // Icon from Tabler Icons (MIT License) https://tabler.io/icons
-export function IconArrowBack(
+const IconArrowBack = (
   props: { size?: number | string; class?: string }
-) {
+) => {
   return (
     <svg
       width={props.size}
@@ -20,3 +20,5 @@ export function IconArrowBack(
     </svg>
   )
 }
+
+export { IconArrowBack }

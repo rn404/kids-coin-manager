@@ -1,7 +1,7 @@
 // Icon from Tabler Icons (MIT License) https://tabler.io/icons
-export function IconTrashX(
+const IconTrashX = (
   props: { size?: number | string; class?: string }
-) {
+) => {
   return (
     <svg
       width={props.size}
@@ -23,3 +23,5 @@ export function IconTrashX(
     </svg>
   )
 }
+
+export { IconTrashX }

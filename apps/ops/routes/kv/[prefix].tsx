@@ -7,7 +7,7 @@ const DEFAULT_LIMIT = 100
 
 const PROTECTED_FIELDS = ['id', 'createdAt', 'updatedAt'] as const
 
-export const handler = define.handlers({
+const handler = define.handlers({
   async GET(ctx) {
     const prefix = ctx.params.prefix
     const url = new URL(ctx.req.url)
@@ -95,5 +95,6 @@ const PrefixPage = define.page<typeof handler>(({ data }) => {
   )
 })
 
+export { handler }
 // deno-lint-ignore internal/no-default-export
 export default PrefixPage

@@ -17,7 +17,7 @@
  * kv.close()
  * ```
  */
-export async function setupTestKv(): Promise<Deno.Kv> {
+async function setupTestKv(): Promise<Deno.Kv> {
   return await Deno.openKv(':memory:')
 }
 
@@ -39,10 +39,12 @@ export async function setupTestKv(): Promise<Deno.Kv> {
  * })
  * ```
  */
-export function cleanupTestKv(
+function cleanupTestKv(
   kv: Deno.Kv | null
 ): void {
   if (kv) {
     kv.close()
   }
 }
+
+export { cleanupTestKv, setupTestKv }

@@ -1,20 +1,20 @@
 import { App, createDefine, staticFiles } from 'fresh'
 
 // TODO: 認証実装時に差し替える
-export interface Me {
+interface Me {
   userId: string
   familyId: string
   timezone: string
 }
 
-export interface State {
+interface State {
   kv: Deno.Kv
   me: Me
 }
 
-export const define = createDefine<State>()
+const define = createDefine<State>()
 
-export const app = new App<State>()
+const app = new App<State>()
 
 const kv = await Deno.openKv(Deno.env.get('DENO_KV_PATH'))
 
@@ -42,3 +42,6 @@ app.use(exampleLoggerMiddleware)
 
 // Include file-system based routes here
 app.fsRoutes()
+
+export type { Me, State }
+export { app, define }

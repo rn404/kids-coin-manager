@@ -18,7 +18,7 @@ const KV_PREFIXES = [
   }
 ] as const
 
-export const handler = define.handlers({
+const handler = define.handlers({
   GET(_ctx) {
     return page({})
   }
@@ -57,5 +57,6 @@ const Index = define.page<typeof handler>(() => {
   )
 })
 
+export { handler }
 // deno-lint-ignore internal/no-default-export
 export default Index

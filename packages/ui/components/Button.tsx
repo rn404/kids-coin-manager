@@ -10,7 +10,7 @@ const variantClass = {
     'border-transparent border rounded-sm bg-red-500 hover:bg-red-400 text-white'
 } as const
 
-export interface ButtonProps {
+interface ButtonProps {
   id?: string
   onClick?: () => void
   children?: ComponentChildren
@@ -22,7 +22,7 @@ export interface ButtonProps {
   'aria-label'?: string
 }
 
-export const Button = ({
+const Button = ({
   variant = 'default',
   class: className,
   as = 'button',
@@ -53,3 +53,6 @@ export const Button = ({
     />
   )
 }
+
+export type { ButtonProps }
+export { Button }

@@ -65,7 +65,7 @@ type CreateCoinTransactionParams = {
  * })
  * ```
  */
-export function buildCoinTransaction(
+function buildCoinTransaction(
   params: CreateCoinTransactionParams
 ): CoinTransactionDataModel {
   const now = getTimestamp()
@@ -97,7 +97,7 @@ export function buildCoinTransaction(
  * })
  * ```
  */
-export async function createCoinTransaction(
+async function createCoinTransaction(
   kv: Deno.Kv,
   params: CreateCoinTransactionParams
 ): Promise<CoinTransactionDataModel> {
@@ -114,3 +114,5 @@ export async function createCoinTransaction(
   )
   return transaction
 }
+
+export { buildCoinTransaction, createCoinTransaction }

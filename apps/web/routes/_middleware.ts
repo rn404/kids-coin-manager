@@ -9,7 +9,7 @@ const STUB_ME: Omit<Me, 'timezone'> = {
   familyId: 'default-family'
 }
 
-export const handler = define.middleware(async (ctx) => {
+const handler = define.middleware(async (ctx) => {
   const timezone = ctx.req.headers.get('cookie')?.match(/tz=([^;]+)/)?.[1] ??
     DEFAULT_TIMEZONE
 
@@ -29,3 +29,5 @@ export const handler = define.middleware(async (ctx) => {
 
   return await ctx.next()
 })
+
+export { handler }

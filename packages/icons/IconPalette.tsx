@@ -1,7 +1,7 @@
 // Icon from Tabler Icons (MIT License) https://tabler.io/icons
-export function IconPalette(
+const IconPalette = (
   props: { size?: number | string; class?: string }
-) {
+) => {
   return (
     <svg
       xmlns='http://www.w3.org/2000/svg'
@@ -23,3 +23,5 @@ export function IconPalette(
     </svg>
   )
 }
+
+export { IconPalette }

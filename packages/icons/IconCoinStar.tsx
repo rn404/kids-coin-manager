@@ -1,7 +1,7 @@
 // Custom icon based on Tabler Icons (MIT License) https://tabler.io/icons
-export function IconCoinStar(
+const IconCoinStar = (
   props: { size?: number | string; class?: string }
-) {
+) => {
   return (
     <svg
       xmlns='http://www.w3.org/2000/svg'
@@ -20,3 +20,5 @@ export function IconCoinStar(
     </svg>
   )
 }
+
+export { IconCoinStar }

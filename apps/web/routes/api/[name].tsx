@@ -1,6 +1,6 @@
 import { define } from '../../main.ts'
 
-export const handler = define.handlers({
+const handler = define.handlers({
   GET(ctx) {
     const name = ctx.params.name
     return new Response(
@@ -8,3 +8,5 @@ export const handler = define.handlers({
     )
   }
 })
+
+export { handler }

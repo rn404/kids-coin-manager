@@ -9,7 +9,7 @@ const SHOWCASES = [
   { href: '/showcases/number-input', label: 'NumberInput' }
 ] as const
 
-export const handler = define.handlers({
+const handler = define.handlers({
   GET(_ctx) {
     return page({})
   }
@@ -34,5 +34,6 @@ const ShowcasesIndex = define.page<typeof handler>(() => {
   )
 })
 
+export { handler }
 // deno-lint-ignore internal/no-default-export
 export default ShowcasesIndex

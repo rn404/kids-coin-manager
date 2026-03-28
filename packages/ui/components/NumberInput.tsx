@@ -18,11 +18,11 @@ type OwnProps = {
   onChange?: (value: number) => void
 }
 
-export type NumberInputProps =
+type NumberInputProps =
   & OwnProps
   & Omit<JSX.IntrinsicElements['div'], keyof OwnProps | 'children'>
 
-export const NumberInput = ({
+const NumberInput = ({
   value,
   defaultValue = 0,
   onChange,
@@ -106,3 +106,6 @@ export const NumberInput = ({
     </div>
   )
 }
+
+export type { NumberInputProps }
+export { NumberInput }

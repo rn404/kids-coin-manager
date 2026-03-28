@@ -41,7 +41,7 @@ type CreateDailyCoinDistributionParams = {
  * })
  * ```
  */
-export function buildDailyCoinDistribution(
+function buildDailyCoinDistribution(
   params: CreateDailyCoinDistributionParams
 ): DailyCoinDistributionDataModel {
   const now = getTimestamp()
@@ -71,7 +71,7 @@ export function buildDailyCoinDistribution(
  * })
  * ```
  */
-export async function createDailyCoinDistribution(
+async function createDailyCoinDistribution(
   kv: Deno.Kv,
   params: CreateDailyCoinDistributionParams
 ): Promise<DailyCoinDistributionDataModel> {
@@ -87,3 +87,5 @@ export async function createDailyCoinDistribution(
   )
   return distribution
 }
+
+export { buildDailyCoinDistribution, createDailyCoinDistribution }
