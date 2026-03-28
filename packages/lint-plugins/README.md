@@ -11,6 +11,8 @@ Enforces explicit boolean comparisons instead of using negation operators (`!` a
 **Policy:**
 
 - All `!` and `!!` operators are detected and reported as errors
+- Single negation (`!`): reported as 1 violation
+- Double negation (`!!`): reported as 1 violation
 - Use `deno-lint-ignore` for exceptions where negation is necessary
 
 **❌ Bad:**
@@ -33,7 +35,7 @@ while (success === false) {}
 **Exception (when necessary):**
 
 ```typescript
-// deno-lint-ignore explicit-boolean-comparison
+// deno-lint-ignore internal/explicit-boolean-comparison
 if (!complexCondition) {}
 ```
 
@@ -90,6 +92,59 @@ import { F } from '@workspace/ui'
 import 'side-effect-that-must-come-last'
 ```
 
+### no-default-export
+
+Disallows default exports. Named exports improve refactorability and discoverability.
+
+**❌ Bad:**
+
+```typescript
+export default function foo() {}
+export default class Bar {}
+```
+
+**✅ Good:**
+
+```typescript
+function foo() {}
+class Bar {}
+export { Bar, foo }
+```
+
+**Exception (when required by a framework convention):**
+
+```typescript
+// deno-lint-ignore internal/no-default-export
+export default plugin
+```
+
+### no-inline-export
+
+Disallows inline named exports. Declaring first and exporting at the bottom keeps exports predictable and scannable in one place.
+
+**❌ Bad:**
+
+```typescript
+export const foo = 42
+export type Bar = string
+```
+
+**✅ Good:**
+
+```typescript
+const foo = 42
+type Bar = string
+export { foo }
+export type { Bar }
+```
+
+**Exception (when required by a framework convention):**
+
+```typescript
+// deno-lint-ignore internal/no-inline-export
+export const handler = ...
+```
+
 ## Usage
 
 This plugin is automatically enabled in the workspace via `deno.json`:
@@ -99,7 +154,7 @@ This plugin is automatically enabled in the workspace via `deno.json`:
   "lint": {
     "plugins": ["./packages/lint-plugins/mod.ts"],
     "rules": {
-      "include": ["explicit-boolean-comparison"]
+      "tags": ["fresh", "recommended"]
     }
   }
 }
@@ -112,9 +167,3 @@ Run tests with:
 ```bash
 deno test packages/lint-plugins/
 ```
-
-## Detection
-
-- **Single negation (`!`)**: Detected as 1 violation with message "Use explicit boolean comparisons instead of negation operator (!)"
-- **Double negation (`!!`)**: Detected as 1 violation with message "Use explicit boolean comparisons instead of double negation (!!)"
-- **No exceptions**: All negations are reported; use `deno-lint-ignore` for intentional cases
