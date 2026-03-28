@@ -145,6 +145,41 @@ export type { Bar }
 export const handler = ...
 ```
 
+### explicit-type-export
+
+Enforces the `type` modifier on exports of types declared in the same file. Required by `verbatimModuleSyntax: true` in the compiler options.
+
+Note: Re-exports from other modules (`export { Foo } from './types.ts'`) cannot be checked without type information — those are handled by `deno check`.
+
+**❌ Bad:**
+
+```typescript
+type Foo = string
+interface Bar {
+  id: string
+}
+export { Bar, Foo }
+```
+
+**✅ Good:**
+
+```typescript
+type Foo = string
+interface Bar {
+  id: string
+}
+export type { Bar, Foo }
+// or
+export { type Bar, type Foo }
+```
+
+**Exception (when necessary):**
+
+```typescript
+// deno-lint-ignore internal/explicit-type-export
+export { Foo }
+```
+
 ## Usage
 
 This plugin is automatically enabled in the workspace via `deno.json`:
