@@ -1,7 +1,7 @@
 import { useSignal } from '@preact/signals'
+import { NumberInput } from '../components/NumberInput.tsx'
 import { ExamplePage } from './ExamplePage.tsx'
 import { ExampleSection } from './ExampleSection.tsx'
-import { NumberInput } from '../components/NumberInput.tsx'
 
 function NumberInputExamplePage() {
   const controlled = useSignal(10)

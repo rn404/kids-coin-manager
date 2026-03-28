@@ -1,10 +1,10 @@
+import type { CoinTypeDataModel } from '@workspace/data'
+import type { ValidationError } from '@workspace/services'
 import { Head } from 'fresh/runtime'
-import { define } from '../../main.ts'
 import { page } from 'fresh'
 import { makeCoinManageService } from '@workspace/services'
 import { makeCoinUseCase } from '@workspace/data'
-import type { CoinTypeDataModel } from '@workspace/data'
-import type { ValidationError } from '@workspace/services'
+import { define } from '../../main.ts'
 
 const handler = define.handlers({
   async GET(ctx) {

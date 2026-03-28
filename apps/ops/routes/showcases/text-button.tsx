@@ -1,6 +1,6 @@
 import { page } from 'fresh'
-import { define } from '../../main.ts'
 import { TextButtonExamplePage } from '@workspace/ui'
+import { define } from '../../main.ts'
 
 export const handler = define.handlers({
   GET(_ctx) {

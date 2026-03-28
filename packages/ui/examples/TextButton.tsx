@@ -1,6 +1,6 @@
+import { TextButton } from '../components/TextButton.tsx'
 import { ExamplePage } from './ExamplePage.tsx'
 import { ExampleSection } from './ExampleSection.tsx'
-import { TextButton } from '../components/TextButton.tsx'
 
 const TextButtonExamplePage = () => {
   return (

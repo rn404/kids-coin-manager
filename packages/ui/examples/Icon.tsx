@@ -1,7 +1,7 @@
+import type { IconName } from '@workspace/icons'
+import { Icon } from '../components/Icon.tsx'
 import { ExamplePage } from './ExamplePage.tsx'
 import { ExampleSection } from './ExampleSection.tsx'
-import { Icon } from '../components/Icon.tsx'
-import type { IconName } from '@workspace/icons'
 
 const iconNames: Array<IconName> = [
   'ArrowBack',

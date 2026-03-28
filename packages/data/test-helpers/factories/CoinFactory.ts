@@ -2,9 +2,9 @@
  * Coin のテストデータ作成 Factory
  */
 
+import type { CoinDataModel } from '../../Coin.ts'
 import { generateUuid, getTimestamp } from '@workspace/foundations'
 import { COIN_PREFIX_KEY } from '../../Coin.ts'
-import type { CoinDataModel } from '../../Coin.ts'
 
 /**
  * Coin のデフォルト値

@@ -1,12 +1,12 @@
 import { afterEach, beforeEach, describe, it } from '@std/testing/bdd'
 import { assertEquals } from '@std/assert'
-import { makeCoinBalanceService } from './CoinBalanceService.ts'
 import {
   cleanupTestKv,
   createCoin,
   createCoinType,
   setupTestKv
 } from '@workspace/data/test-helpers'
+import { makeCoinBalanceService } from './CoinBalanceService.ts'
 
 let kv: Deno.Kv
 let service: ReturnType<typeof makeCoinBalanceService>

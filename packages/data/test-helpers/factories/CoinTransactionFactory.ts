@@ -2,9 +2,9 @@
  * CoinTransaction のテストデータ作成 Factory
  */
 
+import type { CoinTransactionDataModel } from '../../CoinTransaction.ts'
 import { generateUuid, getTimestamp } from '@workspace/foundations'
 import { COIN_TRANSACTION_PREFIX_KEY } from '../../CoinTransaction.ts'
-import type { CoinTransactionDataModel } from '../../CoinTransaction.ts'
 
 /**
  * CoinTransaction のデフォルト値

@@ -1,7 +1,7 @@
 import { afterEach, beforeEach, describe, it } from '@std/testing/bdd'
 import { assertEquals, assertExists, assertRejects } from '@std/assert'
-import { makeCoinTypeUseCase } from './CoinTypeUseCase.ts'
 import { cleanupTestKv, setupTestKv } from '../test-helpers/kv.ts'
+import { makeCoinTypeUseCase } from './CoinTypeUseCase.ts'
 
 let kv: Deno.Kv
 let useCase: ReturnType<typeof makeCoinTypeUseCase>

@@ -1,5 +1,5 @@
-import { makeCoinTypeUseCase, makeCoinUseCase } from '@workspace/data'
 import type { CoinTypeDataModel } from '@workspace/data'
+import { makeCoinTypeUseCase, makeCoinUseCase } from '@workspace/data'
 
 interface CoinBalance {
   coinTypeId: string

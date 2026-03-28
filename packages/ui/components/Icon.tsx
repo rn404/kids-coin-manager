@@ -1,6 +1,6 @@
-import { icons } from '@workspace/icons'
 import type { IconName } from '@workspace/icons'
 import { twMerge } from 'tailwind-merge'
+import { icons } from '@workspace/icons'
 
 function Icon({ name, size = 24, class: className, ...rest }: {
   /**

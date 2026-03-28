@@ -1,8 +1,8 @@
+import type { CoinBalance } from '@workspace/services'
 import { Head } from 'fresh/runtime'
 import { page } from 'fresh'
-import { define } from '../main.ts'
 import { makeCoinBalanceService } from '@workspace/services'
-import type { CoinBalance } from '@workspace/services'
+import { define } from '../main.ts'
 import CoinUseForm from '../islands/CoinUseForm.tsx'
 import AdminButton from '../islands/AdminButton.tsx'
 

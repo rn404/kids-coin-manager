@@ -1,11 +1,11 @@
 import { afterEach, beforeEach, describe, it } from '@std/testing/bdd'
 import { assertEquals, assertExists } from '@std/assert'
-import { makeCoinManageService } from './CoinManageService.ts'
 import {
   cleanupTestKv,
   createCoinType,
   setupTestKv
 } from '@workspace/data/test-helpers'
+import { makeCoinManageService } from './CoinManageService.ts'
 
 let kv: Deno.Kv
 let service: ReturnType<typeof makeCoinManageService>
