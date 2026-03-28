@@ -19,8 +19,8 @@ const iconNames: Array<IconName> = [
   'TrashX',
   'X',
   'ExternalLink',
-  'Palette'
-  'Database',
+  'Palette',
+  'Database'
 ]
 
 function IconExamplePage() {
