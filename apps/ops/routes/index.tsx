@@ -1,5 +1,4 @@
 import { page } from 'fresh'
-import { define } from '../main.ts'
 import {
   COIN_PREFIX_KEY,
   COIN_TRANSACTION_PREFIX_KEY,
@@ -7,6 +6,7 @@ import {
   DAILY_COIN_DISTRIBUTION_PREFIX_KEY
 } from '@workspace/data'
 import { Icon } from '@workspace/ui'
+import { define } from '../main.ts'
 
 const KV_PREFIXES = [
   { prefix: COIN_TYPE_PREFIX_KEY, label: 'CoinType' },

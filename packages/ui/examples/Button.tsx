@@ -1,6 +1,6 @@
+import { Button } from '../components/Button.tsx'
 import { ExamplePage } from './ExamplePage.tsx'
 import { ExampleSection } from './ExampleSection.tsx'
-import { Button } from '../components/Button.tsx'
 
 const ButtonExamplePage = () => {
   return (

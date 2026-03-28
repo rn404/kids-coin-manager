@@ -1,6 +1,6 @@
-import { COIN_TYPE_PREFIX_KEY } from '../CoinType.ts'
 import type { CoinTypeDataModel } from '../CoinType.ts'
 import { generateUuid, getTimestamp, withRetry } from '@workspace/foundations'
+import { COIN_TYPE_PREFIX_KEY } from '../CoinType.ts'
 
 interface CoinTypeUseCaseInterface {
   create(

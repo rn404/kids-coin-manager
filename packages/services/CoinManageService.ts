@@ -1,5 +1,5 @@
-import { makeCoinTypeUseCase } from '@workspace/data'
 import type { CoinTypeDataModel } from '@workspace/data'
+import { makeCoinTypeUseCase } from '@workspace/data'
 
 interface AddCoinTypeInput {
   name: string

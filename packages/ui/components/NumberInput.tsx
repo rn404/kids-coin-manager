@@ -1,6 +1,6 @@
-import { useComputed, useSignal } from '@preact/signals'
 import type { Signal } from '@preact/signals'
 import type { JSX } from 'preact'
+import { useComputed, useSignal } from '@preact/signals'
 import { twMerge } from 'tailwind-merge'
 import { Icon } from './Icon.tsx'
 

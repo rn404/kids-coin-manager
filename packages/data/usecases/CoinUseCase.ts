@@ -1,8 +1,8 @@
-import { COIN_PREFIX_KEY } from '../Coin.ts'
 import type { CoinDataModel } from '../Coin.ts'
-import { COIN_TRANSACTION_PREFIX_KEY } from '../CoinTransaction.ts'
 import type { CoinTransactionDataModel } from '../CoinTransaction.ts'
 import { generateUuid, getTimestamp, withRetry } from '@workspace/foundations'
+import { COIN_PREFIX_KEY } from '../Coin.ts'
+import { COIN_TRANSACTION_PREFIX_KEY } from '../CoinTransaction.ts'
 
 interface CoinUseCaseInterface {
   listByUser(
