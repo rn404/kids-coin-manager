@@ -107,8 +107,8 @@ async function createCoinTransaction(
       COIN_TRANSACTION_PREFIX_KEY,
       params.userId,
       params.familyId,
-      params.coinTypeId,
-      transaction.id
+      transaction.id,
+      params.coinTypeId
     ],
     transaction
   )

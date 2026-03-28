@@ -204,8 +204,8 @@ const makeCoinDistributionUseCase = (
             COIN_TRANSACTION_PREFIX_KEY,
             userId,
             familyId,
-            coinType.id,
-            transactionId
+            transactionId,
+            coinType.id
           ],
           transaction
         )

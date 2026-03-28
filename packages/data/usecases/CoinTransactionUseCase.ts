@@ -4,8 +4,12 @@ import { COIN_TRANSACTION_PREFIX_KEY } from '../CoinTransaction.ts'
 interface CoinTransactionUseCaseInterface {
   listByUser(
     userId: CoinTransactionDataModel['userId'],
-    familyId: CoinTransactionDataModel['familyId']
-  ): Promise<Array<CoinTransactionDataModel>>
+    familyId: CoinTransactionDataModel['familyId'],
+    options?: { cursor?: string; limit?: number }
+  ): Promise<{
+    transactions: Array<CoinTransactionDataModel>
+    nextCursor: string | null
+  }>
 }
 
 const makeCoinTransactionUseCase = (
@@ -13,20 +17,35 @@ const makeCoinTransactionUseCase = (
 ): CoinTransactionUseCaseInterface => {
   const listByUser = async (
     userId: CoinTransactionDataModel['userId'],
-    familyId: CoinTransactionDataModel['familyId']
+    familyId: CoinTransactionDataModel['familyId'],
+    options?: { cursor?: string; limit?: number }
   ): ReturnType<CoinTransactionUseCaseInterface['listByUser']> => {
-    const transactions: Array<CoinTransactionDataModel> = []
-    const entries = deps.kv.list<CoinTransactionDataModel>({
-      prefix: [COIN_TRANSACTION_PREFIX_KEY, userId, familyId]
-    })
+    const limit = options?.limit ?? 10
+    const iter = deps.kv.list<CoinTransactionDataModel>(
+      { prefix: [COIN_TRANSACTION_PREFIX_KEY, userId, familyId] },
+      {
+        reverse: true,
+        ...(options?.cursor !== undefined && { cursor: options.cursor })
+      }
+    )
 
-    for await (const entry of entries) {
+    const transactions: Array<CoinTransactionDataModel> = []
+    let cursorAfterPage: string | null = null
+    let hasMore = false
+
+    for await (const entry of iter) {
+      if (transactions.length === limit) {
+        hasMore = true
+        break
+      }
       transactions.push(entry.value)
+      cursorAfterPage = iter.cursor
     }
 
-    transactions.sort((a, b) => b.createdAt.localeCompare(a.createdAt))
-
-    return transactions
+    return {
+      transactions,
+      nextCursor: hasMore ? cursorAfterPage : null
+    }
   }
 
   return { listByUser }

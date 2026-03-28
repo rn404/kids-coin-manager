@@ -11,11 +11,10 @@ import { makeCoinUseCase } from './CoinUseCase.ts'
 async function listTransactions(
   kv: Deno.Kv,
   userId: string,
-  familyId: string,
-  coinTypeId: string
+  familyId: string
 ): Promise<Array<CoinTransactionDataModel>> {
   const entries = kv.list<CoinTransactionDataModel>({
-    prefix: [COIN_TRANSACTION_PREFIX_KEY, userId, familyId, coinTypeId]
+    prefix: [COIN_TRANSACTION_PREFIX_KEY, userId, familyId]
   })
   const results: Array<CoinTransactionDataModel> = []
   for await (const entry of entries) {
@@ -195,8 +194,7 @@ describe('CoinUseCase#decreaseBy', () => {
     const transactions = await listTransactions(
       kv,
       userId,
-      familyId,
-      coinTypeId
+      familyId
     )
     assertEquals(transactions.length, 1)
     assertEquals(transactions[0].amount, -300)
@@ -241,8 +239,7 @@ describe('CoinUseCase#decreaseBy', () => {
     const transactions = await listTransactions(
       kv,
       userId,
-      familyId,
-      coinTypeId
+      familyId
     )
     assertEquals(transactions.length, 3)
   })
@@ -289,8 +286,7 @@ describe('CoinUseCase#decreaseBy', () => {
     const transactions = await listTransactions(
       kv,
       userId,
-      familyId,
-      coinTypeId
+      familyId
     )
     assertEquals(transactions.length, 1)
   })
@@ -340,8 +336,7 @@ describe('CoinUseCase#increaseBy', () => {
     const transactions = await listTransactions(
       kv,
       userId,
-      familyId,
-      coinTypeId
+      familyId
     )
     assertEquals(transactions.length, 1)
     assertEquals(transactions[0].amount, 300)
@@ -413,8 +408,7 @@ describe('CoinUseCase#increaseBy', () => {
     const transactions = await listTransactions(
       kv,
       userId,
-      familyId,
-      coinTypeId
+      familyId
     )
     assertEquals(transactions.length, 1)
     assertEquals(transactions[0].amount, 50)
@@ -474,8 +468,7 @@ describe('CoinUseCase#concurrent operations', () => {
       const transactions = await listTransactions(
         kv,
         userId,
-        familyId,
-        coinTypeId
+        familyId
       )
       assertEquals(transactions.length, 4)
     })

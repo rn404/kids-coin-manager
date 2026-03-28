@@ -109,8 +109,8 @@ const makeCoinUseCase = (
           COIN_TRANSACTION_PREFIX_KEY,
           userId,
           familyId,
-          coinTypeId,
-          transactionId
+          transactionId,
+          coinTypeId
         ], transaction)
         .commit()
 

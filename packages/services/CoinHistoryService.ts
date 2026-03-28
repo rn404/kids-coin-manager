@@ -15,36 +15,31 @@ interface CoinHistoryItem {
   createdAt: string
 }
 
-interface CoinHistoryPage {
+interface CoinHistoryResult {
   items: Array<CoinHistoryItem>
-  page: number
-  totalPages: number
-  hasPrev: boolean
-  hasNext: boolean
+  nextCursor: string | null
 }
 
 const makeCoinHistoryService = (deps: { kv: Deno.Kv }) => {
   const listHistory = async (
     familyId: string,
     userId: string,
-    page: number
-  ): Promise<CoinHistoryPage> => {
+    cursor?: string
+  ): Promise<CoinHistoryResult> => {
     const coinTransactionUseCase = makeCoinTransactionUseCase(deps)
     const coinTypeUseCase = makeCoinTypeUseCase(deps)
 
-    const [transactions, coinTypes] = await Promise.all([
-      coinTransactionUseCase.listByUser(userId, familyId),
+    const [{ transactions, nextCursor }, coinTypes] = await Promise.all([
+      coinTransactionUseCase.listByUser(userId, familyId, {
+        cursor,
+        limit: PAGE_SIZE
+      }),
       coinTypeUseCase.listAllByFamily(familyId)
     ])
 
     const coinTypeMap = new Map(coinTypes.map((ct) => [ct.id, ct.name]))
 
-    const totalPages = Math.max(1, Math.ceil(transactions.length / PAGE_SIZE))
-    const currentPage = Math.min(Math.max(1, page), totalPages)
-    const start = (currentPage - 1) * PAGE_SIZE
-    const pageItems = transactions.slice(start, start + PAGE_SIZE)
-
-    const items: Array<CoinHistoryItem> = pageItems.map((t) => ({
+    const items: Array<CoinHistoryItem> = transactions.map((t) => ({
       id: t.id,
       coinTypeName: coinTypeMap.get(t.coinTypeId) ?? t.coinTypeId,
       transactionType: t.transactionType,
@@ -53,17 +48,11 @@ const makeCoinHistoryService = (deps: { kv: Deno.Kv }) => {
       createdAt: t.createdAt
     }))
 
-    return {
-      items,
-      page: currentPage,
-      totalPages,
-      hasPrev: currentPage > 1,
-      hasNext: currentPage < totalPages
-    }
+    return { items, nextCursor }
   }
 
   return { listHistory }
 }
 
 export { makeCoinHistoryService }
-export type { CoinHistoryItem, CoinHistoryPage }
+export type { CoinHistoryItem, CoinHistoryResult }
