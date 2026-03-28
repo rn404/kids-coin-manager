@@ -67,6 +67,7 @@
   },
   "nodeModulesDir": "auto",
   "compilerOptions": {
+    "verbatimModuleSyntax": true,
     "lib": [
       "dom",
       "dom.asynciterable",
