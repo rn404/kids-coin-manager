@@ -3,12 +3,13 @@
  *
  * ## Purpose
  *
- * With `verbatimModuleSyntax: true` in the TypeScript compiler options,
- * type-only exports must use the `type` modifier. This rule catches violations
- * at lint time for types declared in the same file.
+ * This rule is a complement to `verbatimModuleSyntax: true` in the TypeScript
+ * compiler options. It provides early feedback at lint time for types declared
+ * in the same file, before `deno check` runs.
  *
  * Note: Re-exports from other modules (`export { Foo } from './types.ts'`)
- * cannot be checked without type information — those are handled by `deno check`.
+ * cannot be checked without type information — those are covered by `deno check`
+ * when `verbatimModuleSyntax: true` is set.
  *
  * ## Required pattern
  *

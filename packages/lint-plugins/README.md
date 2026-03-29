@@ -175,7 +175,9 @@ const signal = useSignal(complexInitialValue)
 
 ### explicit-type-export
 
-Enforces the `type` modifier on exports of types declared in the same file. Required by `verbatimModuleSyntax: true` in the compiler options.
+> **Prerequisite:** This rule is designed to work alongside `verbatimModuleSyntax: true` in `compilerOptions`. It is most effective when that option is enabled, as `deno check` then enforces the same constraint with full type information and covers cases this rule cannot (e.g. re-exports from other modules).
+
+Enforces the `type` modifier on exports of types declared in the same file. Provides early feedback at lint time before `deno check` runs.
 
 Note: Re-exports from other modules (`export { Foo } from './types.ts'`) cannot be checked without type information — those are handled by `deno check`.
 
