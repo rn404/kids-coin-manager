@@ -145,6 +145,34 @@ export type { Bar }
 export const handler = ...
 ```
 
+### explicit-signal-type
+
+Enforces explicit type arguments on `useSignal` and `useComputed` calls from `@preact/signals`. Even when TypeScript can infer the type, omitting it hides intent.
+
+**❌ Bad:**
+
+```typescript
+const flag = useSignal(false)
+const count = useSignal(0)
+const double = useComputed(() => count.value * 2)
+```
+
+**✅ Good:**
+
+```typescript
+const flag = useSignal<boolean>(false)
+const count = useSignal<number>(0)
+const label = useSignal<string | null>(null)
+const double = useComputed<number>(() => count.value * 2)
+```
+
+**Exception (when necessary):**
+
+```typescript
+// deno-lint-ignore internal/explicit-signal-type
+const signal = useSignal(complexInitialValue)
+```
+
 ### explicit-type-export
 
 Enforces the `type` modifier on exports of types declared in the same file. Required by `verbatimModuleSyntax: true` in the compiler options.
