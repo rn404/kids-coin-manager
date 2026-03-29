@@ -4,7 +4,7 @@ import { ExamplePage } from './ExamplePage.tsx'
 import { ExampleSection } from './ExampleSection.tsx'
 
 function NumberInputExamplePage() {
-  const controlled = useSignal(10)
+  const controlled = useSignal<number>(10)
 
   return (
     <ExamplePage

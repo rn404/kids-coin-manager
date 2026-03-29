@@ -82,13 +82,13 @@ const stripProtectedFields = (
 }
 
 const KvTable = ({ prefix, entries }: KvTableProps) => {
-  const deleteMode = useSignal(false)
+  const deleteMode = useSignal<boolean>(false)
   const selectedKeys = useSignal<Set<number>>(new Set())
-  const isDeleting = useSignal(false)
+  const isDeleting = useSignal<boolean>(false)
   const editingIndex = useSignal<number | null>(null)
-  const editValue = useSignal('')
+  const editValue = useSignal<string>('')
   const editError = useSignal<string | null>(null)
-  const isSaving = useSignal(false)
+  const isSaving = useSignal<boolean>(false)
 
   const toggleDeleteMode = () => {
     if (deleteMode.value) {

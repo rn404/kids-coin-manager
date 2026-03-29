@@ -36,13 +36,13 @@ const NumberInput = ({
   class: className,
   ...rest
 }: NumberInputProps) => {
-  const internalSignal = useSignal(defaultValue)
+  const internalSignal = useSignal<number>(defaultValue)
   const signal = value ?? internalSignal
 
-  const isDecrementDisabled = useComputed(
+  const isDecrementDisabled = useComputed<boolean>(
     () => disabled || (min !== undefined && signal.value <= min)
   )
-  const isIncrementDisabled = useComputed(
+  const isIncrementDisabled = useComputed<boolean>(
     () => disabled || (max !== undefined && signal.value >= max)
   )
 

@@ -10,10 +10,10 @@ interface CoinUseFormProps {
 const CoinUseForm = (
   { coinTypeId, name, initialAmount }: CoinUseFormProps
 ) => {
-  const isOpen = useSignal(false)
-  const amount = useSignal(1)
-  const currentAmount = useSignal(initialAmount)
-  const isLoading = useSignal(false)
+  const isOpen = useSignal<boolean>(false)
+  const amount = useSignal<number>(1)
+  const currentAmount = useSignal<number>(initialAmount)
+  const isLoading = useSignal<boolean>(false)
   const error = useSignal<string | null>(null)
 
   const handleSubmit = async () => {
