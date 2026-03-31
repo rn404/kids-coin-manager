@@ -2,13 +2,7 @@ import type { CoinTypeDataModel } from '../CoinType.ts'
 import { generateUuid, getTimestamp, withRetry } from '@workspace/foundations'
 import { COIN_TYPE_PREFIX_KEY } from '../CoinType.ts'
 
-interface CoinTypeUseCaseInterface {
-  create(
-    familyId: CoinTypeDataModel['familyId'],
-    name: CoinTypeDataModel['name'],
-    durationMinutes: CoinTypeDataModel['durationMinutes'],
-    dailyDistribution: CoinTypeDataModel['dailyDistribution']
-  ): Promise<CoinTypeDataModel>
+interface CoinTypeUseCaseReadOnlyInterface {
   findById(
     familyId: CoinTypeDataModel['familyId'],
     id: CoinTypeDataModel['id']
@@ -16,6 +10,15 @@ interface CoinTypeUseCaseInterface {
   listAllByFamily(
     familyId: CoinTypeDataModel['familyId']
   ): Promise<Array<CoinTypeDataModel>>
+}
+
+interface CoinTypeUseCaseInterface extends CoinTypeUseCaseReadOnlyInterface {
+  create(
+    familyId: CoinTypeDataModel['familyId'],
+    name: CoinTypeDataModel['name'],
+    durationMinutes: CoinTypeDataModel['durationMinutes'],
+    dailyDistribution: CoinTypeDataModel['dailyDistribution']
+  ): Promise<CoinTypeDataModel>
   update(
     familyId: CoinTypeDataModel['familyId'],
     id: CoinTypeDataModel['id'],
@@ -144,3 +147,4 @@ const makeCoinTypeUseCase = (
 }
 
 export { makeCoinTypeUseCase }
+export type { CoinTypeUseCaseReadOnlyInterface }

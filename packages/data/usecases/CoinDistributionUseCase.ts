@@ -9,12 +9,16 @@ import { COIN_TRANSACTION_PREFIX_KEY } from '../CoinTransaction.ts'
 import { COIN_TYPE_PREFIX_KEY } from '../CoinType.ts'
 import { DAILY_COIN_DISTRIBUTION_PREFIX_KEY } from '../DailyCoinDistribution.ts'
 
-interface CoinDistributionUseCaseInterface {
+interface CoinDistributionUseCaseReadOnlyInterface {
   findById(
     familyId: DailyCoinDistributionDataModel['familyId'],
     userId: DailyCoinDistributionDataModel['userId'],
     summaryDate: DailyCoinDistributionDataModel['summaryDate']
   ): Promise<DailyCoinDistributionDataModel['distributions'] | null>
+}
+
+interface CoinDistributionUseCaseInterface
+  extends CoinDistributionUseCaseReadOnlyInterface {
   ensure(
     familyId: DailyCoinDistributionDataModel['familyId'],
     userId: DailyCoinDistributionDataModel['userId'],
@@ -245,3 +249,4 @@ const makeCoinDistributionUseCase = (
 }
 
 export { makeCoinDistributionUseCase }
+export type { CoinDistributionUseCaseReadOnlyInterface }

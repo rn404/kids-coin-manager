@@ -4,11 +4,19 @@ import { generateUuid, getTimestamp, withRetry } from '@workspace/foundations'
 import { COIN_PREFIX_KEY } from '../Coin.ts'
 import { COIN_TRANSACTION_PREFIX_KEY } from '../CoinTransaction.ts'
 
-interface CoinUseCaseInterface {
+interface CoinUseCaseReadOnlyInterface {
   listByUser(
     userId: CoinDataModel['userId'],
     familyId: CoinDataModel['familyId']
   ): Promise<Array<CoinDataModel>>
+  findById(
+    userId: CoinDataModel['userId'],
+    familyId: CoinDataModel['familyId'],
+    coinTypeId: CoinDataModel['coinTypeId']
+  ): Promise<CoinDataModel | null>
+}
+
+interface CoinUseCaseInterface extends CoinUseCaseReadOnlyInterface {
   increaseBy(
     userId: CoinDataModel['userId'],
     familyId: CoinDataModel['familyId'],
@@ -29,11 +37,6 @@ interface CoinUseCaseInterface {
       metadata: CoinTransactionDataModel['metadata']
     }
   ): Promise<CoinDataModel>
-  findById(
-    userId: CoinDataModel['userId'],
-    familyId: CoinDataModel['familyId'],
-    coinTypeId: CoinDataModel['coinTypeId']
-  ): Promise<CoinDataModel | null>
 }
 
 const makeCoinUseCase = (
@@ -206,3 +209,4 @@ const makeCoinUseCase = (
 }
 
 export { makeCoinUseCase }
+export type { CoinUseCaseReadOnlyInterface }
