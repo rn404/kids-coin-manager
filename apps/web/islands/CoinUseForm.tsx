@@ -7,6 +7,8 @@ interface CoinUseFormProps {
   initialAmount: number
 }
 
+const MAX_USE_AMOUNT = 10
+
 const CoinUseForm = (
   { coinTypeId, name, initialAmount }: CoinUseFormProps
 ) => {
@@ -61,7 +63,7 @@ const CoinUseForm = (
         </Button>
         {isOpen.value && (
           <div class='shrink-0 flex items-center gap-2'>
-            <NumberInput value={amount} min={1} max={currentAmount.value} />
+            <NumberInput value={amount} min={1} max={MAX_USE_AMOUNT} />
             <Button
               onClick={handleSubmit}
               disabled={isLoading.value}
