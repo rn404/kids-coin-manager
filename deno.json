@@ -25,7 +25,9 @@
     "update": "deno run -A -r jsr:@fresh/update .",
     "source-guard": "deno fmt --check --fail-fast --ignore='**/*.md' . && deno lint . && deno check -q",
     "runtime-guard": "deno task test && cd apps/web && deno task build",
-    "validate-mermaid": "./scripts/validate-mermaid.sh"
+    "validate-mermaid": "./scripts/validate-mermaid.sh",
+    "console:local": "CONSOLE_TARGET=local deno repl --unstable-kv --allow-env --allow-net --allow-read --allow-write --eval-file=packages/data/tools/console.ts",
+    "console:remote": "CONSOLE_TARGET=remote deno repl --unstable-kv --allow-env --allow-net --allow-read --eval-file=packages/data/tools/console.ts"
   },
   "fmt": {
     "semiColons": false,

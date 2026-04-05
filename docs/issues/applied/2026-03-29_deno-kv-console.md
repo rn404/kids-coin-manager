@@ -1,4 +1,4 @@
-Status: Planned
+Status: Applied
 
 # Summary
 
@@ -101,6 +101,25 @@ const coinUseCase: CoinUseCaseReadOnlyInterface | typeof fullUseCase =
 
 # Results
 
+以下のファイルを新規作成・更新した。
+
+- `packages/data/tools/console.ts` — REPL 初期化スクリプト
+- `deno.json` — `console:local` / `console:remote` タスクを追加
+
+タスクを local / remote で分離し、それぞれ必須の環境変数が未指定の場合はエラーメッセージを出して終了するバリデーションを実装した。起動時に環境名・モード（read-only / read/write）を表示する。
+
+| タスク           | 必須環境変数                                             | `--allow-write`       |
+| ---------------- | -------------------------------------------------------- | --------------------- |
+| `console:local`  | `DENO_KV_PATH`                                           | あり（SQLite のため） |
+| `console:remote` | `DENO_KV_ACCESS_TOKEN` + `PREVIEW_DB_ID` or `PROD_DB_ID` | なし                  |
+
+### 実装時のメモ
+
+- `deno repl --eval-file` は相対 import を CWD 基準で解決するため、`../mod.ts` のような相対パスは使えない。`@workspace/data` のワークスペース import を使って解決した。
+- local KV の SQLite ファイルへは read だけでなく write 権限も必要（WAL・ロックファイル書き込みのため）。remote 接続には不要なためタスク分離で対応した。
+
 # References
+
+- `docs/issues/applied/2026-03-30_usecase-read-write-separation.md`
 
 # Feedback
