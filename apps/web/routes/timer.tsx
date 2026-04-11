@@ -3,7 +3,7 @@ import { define } from '../main.ts'
 
 const Timer = define.page((_ctx) => {
   return (
-    <div class='px-4 py-8 mx-auto min-h-screen'>
+    <div class='px-4 py-8 mx-auto min-h-dvh'>
       <Head>
         <title>Timer - Kids Coin Manager</title>
       </Head>

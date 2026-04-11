@@ -66,7 +66,7 @@ const CoinTypesPage = define.page<typeof handler>(
     const { coinTypes, errors } = data
 
     return (
-      <div class='px-4 py-8 mx-auto min-h-screen'>
+      <div class='px-4 py-8 mx-auto min-h-dvh'>
         <Head>
           <title>コイン種類管理 - Kids Coin Manager</title>
         </Head>
