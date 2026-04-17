@@ -6,10 +6,11 @@
   "hooks": {
     "PreToolUse": [
       {
-        "matcher": "Bash(git commit:*)",
+        "matcher": "Bash",
         "hooks": [
           {
             "type": "command",
+            "if": "Bash(git commit:*)",
             "command": "deno task precommit && exit 0 || { echo '❌ Pre-commit checks failed' >&2; exit 2; }"
           }
         ]
@@ -17,7 +18,7 @@
     ],
     "PostToolUse": [
       {
-        "matcher": "Edit|Write|Update",
+        "matcher": "Edit|Write|MultiEdit",
         "hooks": [
           {
             "type": "command",
