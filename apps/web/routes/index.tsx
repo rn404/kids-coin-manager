@@ -22,7 +22,7 @@ const Dashboard = define.page<typeof handler>(
     const { balances } = data
 
     return (
-      <div class='px-4 py-8 mx-auto min-h-dvh'>
+      <div class='px-4 py-8'>
         <Head>
           <title>Kids Coin Manager</title>
         </Head>
